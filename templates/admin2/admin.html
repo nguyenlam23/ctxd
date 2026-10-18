@@ -1,0 +1,124 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+    function reset_password(username){
+        $.post('{{ settings.base_url }}/admin/reset_password/', {
+                    'username': username
+                }, function(data){
+                    if(data.state=='success')
+                        alert('操作成功')
+                    else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+    }
+    function reset_password2(username){
+        $.post('{{ settings.base_url }}/admin/reset_password2/', {
+                    'username': username,
+                    'new_password': $('#new_password_'+username).val()
+                }, function(data){
+                if(data.state=='success'){
+                        alert('操作成功')
+                        $('#new_password_'+username).val(data.new_password);
+                    }else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+    }
+    function del_admin(username){
+        if (confirm('确认要删除管理员【' + username + '】吗？')) {
+            $.post('{{ settings.base_url }}/admin/del_admin/', {
+                        'username': username
+                    }, function(data){
+                    if(data.state=='success'){
+                            alert('操作成功');
+                            $('#'+ username).hide();
+                            } else{
+                            alert('出现错误: '+data.msg)
+                            }
+                        }, 'json')
+            }
+        }
+    function reset_phone_num(username) {
+        var new_phone = $('#phone_num_' + username).val()
+        $.post('{{ settings.base_url }}/admin/reset_phone_num/', {
+                    'username': username,
+                    'phone': new_phone
+                }, function(data){
+                if(data.state=='success'){
+                        alert('操作成功')
+                    }else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+    }
+    function open_op_logs() {
+        window.open('welcome.html');
+    }
+    function force_logout_user(username) {
+        $.post('{{ settings.base_url }}/admin/force_logout_user/', {
+            'username': username,
+        }, function (data) {
+            if (data.state == 'success') {
+                if (username == 'all') {
+                    alert('所有用户已全部退出登录')
+                } else {
+                    alert(username + ' 已退出登录')
+                }
+            } else
+                alert('出现错误: ' + data.msg)
+        }, 'json')
+    }
+</script>
+<h2>管理员管理</h2>
+
+<p>
+<a href='{{ settings.BASE_URL}}/admin/edit_add_admin/'>添加管理员</a>
+<a href='{{ settings.BASE_URL}}/admin/admin_op_logs/'>查看操作日志</a>
+<a href='#' onclick="force_logout_user('all')">全部退出登录</a>
+</p>
+
+<table border='1'>
+    <tr>
+        <th>角色</th>
+        <th>登录名</th>
+        <th>手机号</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>&nbsp;</th>
+        <th>功能权限</th>
+        <th>分区权限</th>
+        <th>分组权限</th>
+        <th>登录时间</th>
+        <th>登录IP</th>
+        <th>充值总额</th>
+        <th>操作</th>
+    </tr>
+    {% for admin in admin_list %}
+    <tr id="{{admin.username}}">
+        <td>{{ admin.role }}</td>
+        <td>{{ admin.username }}</td>
+        <td><input id='phone_num_{{admin.username}}' type='text' style='width: 100px' value="{{ admin.phone }}" /><input type='button' value='绑定手机号' onclick='reset_phone_num("{{ admin.username }}")' /></td>
+        <td><a href='{{ settings.BASE_URL }}/admin/edit_add_admin/?username={{ admin.username }}'>编辑</a></td>
+        <td><input type='button' value='将密码重置为{{de_pwd}}' onclick='reset_password("{{ admin.username }}")' /></td>
+        <td><input type='text' style='width: 100px' id='new_password_{{admin.username}}' name='new_password_{{admin.username}}' /><input type='button' value='设置密码' onclick='reset_password2("{{ admin.username }}")' /></td>
+        <td><input type='button' value='删除' onclick='del_admin("{{ admin.username }}")' /></td>
+        <td>{%if admin.default_pwd%}Default Pwd{%else%}New Pwd{%endif%}</td>
+        <td>{{ admin.permission_rate }}</td>
+        <td>{{ admin.zone_count }}</td>
+        <td>{{ admin.zone_groups }}</td>
+        <td>{{ admin.last_login_time}}</td>
+        <td>{{ admin.last_login_ip}}</td>
+        <td>
+            {% ifequal admin.pay_money 0 %}
+                {{ admin.pay_money }}
+            {% else %}
+                <a href='{{ settings.BASE_URL}}/admin/admin_pay_records/?username={{ admin.username }}'>{{ admin.pay_money }}</a>
+            {% endifequal %}
+        </td>
+        <td><a href='#' onclick="force_logout_user('{{admin.username}}')">退出登录</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
+

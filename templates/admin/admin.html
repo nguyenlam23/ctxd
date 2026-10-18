@@ -1,0 +1,124 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  function reset_password(username){
+    $.post('{{ settings.base_url }}/admin/reset_password/', {
+          'username': username
+        }, function(data){
+          if(data.state=='success')
+            alert(' thao tác thành công ')
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+  function reset_password2(username){
+    $.post('{{ settings.base_url }}/admin/reset_password2/', {
+          'username': username,
+          'new_password': $('#new_password_'+username).val()
+        }, function(data){
+        if(data.state=='success'){
+            alert(' thao tác thành công ')
+            $('#new_password_'+username).val(data.new_password);
+          }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+  function del_admin(username){
+    if (confirm(' xác nhận yếu cắt bỏ nhân viên quản lý (' + username + ') sao ？')) {
+      $.post('{{ settings.base_url }}/admin/del_admin/', {
+            'username': username
+          }, function(data){
+          if(data.state=='success'){
+              alert(' thao tác thành công ');
+              $('#'+ username).hide();
+              } else{
+              alert(' xuất hiện lệch lạc: '+data.msg)
+              }
+            }, 'json')
+      }
+    }
+  function reset_phone_num(username) {
+    var new_phone = $('#phone_num_' + username).val()
+    $.post('{{ settings.base_url }}/admin/reset_phone_num/', {
+          'username': username,
+          'phone': new_phone
+        }, function(data){
+        if(data.state=='success'){
+            alert(' thao tác thành công ')
+          }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+  function open_op_logs() {
+    window.open('welcome.html');
+  }
+  function force_logout_user(username) {
+    $.post('{{ settings.base_url }}/admin/force_logout_user/', {
+      'username': username,
+    }, function (data) {
+      if (data.state == 'success') {
+        if (username == 'all') {
+          alert(' sở hữu người sử dụng dĩ toàn bộ rời khỏi đăng ký ')
+        } else {
+          alert(username + ' đã lui ra đăng ký ')
+        }
+      } else
+        alert(' xuất hiện lệch lạc: ' + data.msg)
+    }, 'json')
+  }
+</script>
+<h2> nhân viên quản lý quản lý </h2>
+
+<p>
+<a href='{{ settings.BASE_URL}}/admin/edit_add_admin/'> tăng thêm nhân viên quản lý </a>
+<a href='{{ settings.BASE_URL}}/admin/admin_op_logs/'> kiểm tra thao tác nhật ký </a>
+<a href='#' onclick="force_logout_user('all')"> toàn bộ rời khỏi đăng ký </a>
+</p>
+
+<table border='1'>
+  <tr>
+    <th> vai </th>
+    <th> đăng ký danh </th>
+    <th> số điện thoại di động </th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th> công năng quyền hạn </th>
+    <th> phân khu quyền hạn </th>
+    <th> phân tổ quyền hạn </th>
+    <th> đăng ký thời gian </th>
+    <th> đăng ký IP</th>
+    <th> sung trị tổng ngạch </th>
+    <th> thao tác </th>
+  </tr>
+  {% for admin in admin_list %}
+  <tr id="{{admin.username}}">
+    <td>{{ admin.role }}</td>
+    <td>{{ admin.username }}</td>
+    <td><input id='phone_num_{{admin.username}}' type='text' style='width: 100px' value="{{ admin.phone }}"/><input type='button' value=' bảng định số điện thoại di động ' onclick='reset_phone_num("{{ admin.username }}")' /></td>
+    <td><a href='{{ settings.BASE_URL }}/admin/edit_add_admin/?username={{ admin.username }}'> biên tập </a></td>
+    <td><input type='button' value=' tương mật mã nặng đưa vi {{de_pwd}}' onclick='reset_password("{{ admin.username }}")' /></td>
+    <td><input type='text' style='width: 100px' id='new_password_{{admin.username}}' name='new_password_{{admin.username}}' /><input type='button' value=' thiết trí mật mã ' onclick='reset_password2("{{ admin.username }}")' /></td>
+    <td><input type='button' value=' cắt bỏ ' onclick='del_admin("{{ admin.username }}")' /></td>
+    <td>{%if admin.default_pwd%}Default Pwd{%else%}New Pwd{%endif%}</td>
+    <td>{{ admin.permission_rate }}</td>
+    <td>{{ admin.zone_count }}</td>
+    <td>{{ admin.zone_groups }}</td>
+    <td>{{ admin.last_login_time}}</td>
+    <td>{{ admin.last_login_ip}}</td>
+    <td>
+      {% ifequal admin.pay_money 0 %}
+        {{ admin.pay_money }}
+      {% else %}
+        <a href='{{ settings.BASE_URL}}/admin/admin_pay_records/?username={{ admin.username }}'>{{ admin.pay_money }}</a>
+      {% endifequal %}
+    </td>
+    <td><a href='#' onclick="force_logout_user('{{admin.username}}')"> rời khỏi đăng ký </a></td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+
