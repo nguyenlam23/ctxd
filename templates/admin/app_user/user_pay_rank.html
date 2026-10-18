@@ -1,0 +1,168 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js"type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet"href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css"type="text/css"/>
+<script type='text/javascript'>
+
+  function statistic(){
+    var from_date = $("#from_date").val()
+    var to_date = $("#to_date").val()
+    if (from_date && to_date){
+    if (from_date> to_date){
+    alert(' thỉnh chính xác tuyển trạch thời gian khu đang lúc ')
+      return false;
+    }
+    }
+  }
+$(function() {
+		var dates = $('#from_date').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"+0",
+      minDate:"2010-04-15",
+			onSelect: function(selectedDate) {
+			}
+		});
+
+	});
+
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+
+
+<h2> sung trị đứng hàng thứ </h2>
+<form id="cform"action="{{settings.BASE_URL}}/admin/app_user/user_pay_rank/"method="post"target="mainFrame">
+
+  From：<input readonly size="10"name="from_date"id="from_date"value="{{from_date}}"/> 
+    <select name="add_date"id="add_date">
+      {%for item in add_date_list%}
+      <option {%ifequal item add_date%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+      {%endfor%}
+    </select>
+    <input type="checkbox"name="check_time"{%ifequal check_time 1%}checked=checked{%endifequal%} id="check_time"value="1"/>
+    &nbsp;
+    &nbsp;
+    &nbsp;
+    <select name="zone"id="zone">
+      {%for item in zone_list%}
+      <option {%ifequal item.0 zone%}selected=selected{%endifequal%} value="{{item.0}}">{{item.1}}</option>
+      {%endfor%}
+    </select>
+    <select name="country"id="country">
+      <option {%ifequal country 'all'%}selected=selected{%endifequal%} value="all"> quan sát </option>
+      {%for item in c_list%}
+      <option {%ifequal item.0 country%}selected=selected{%endifequal%} value="{{item.0}}">{{item.1}}</option>
+      {%endfor%}
+    </select>
+    <select name="pf"id="pf">
+      <option {%ifequal pf 'all'%}selected=selected{%endifequal%} value="all"> quan sát </option>
+      {%for item in pf_list%}
+      <option {%ifequal item.0 pf%}selected=selected{%endifequal%} value="{{item.0}}">{{item.1}}</option>
+      {%endfor%}
+    </select>
+  <input type ="submit"value ="tuần tra"/>
+</form>
+
+
+
+<br/>
+
+
+{% if pay_rank_list%}
+<table border=1>
+  <tr>
+    <td> thứ tự </td>
+    <td>PF</td>
+    <td>Uid</td>
+    <td>Uname</td>
+    <td> quốc gia </td>
+    <td> chức quan </td>
+    <td> biệt thự đẳng cấp </td>
+    <td> tước vị đẳng cấp </td>
+    <td> ở hình đường thẳng thái </td>
+    <td><font color="red"> thực tế sung trị </font></td>
+    <td><font color="red"> giả thuyết sung trị </font></td>
+    <td><font color="red"> để trừ kim ngạch </font></td>
+    <td>Coin</td>
+    <td> công huân </td>
+    <td> tiễn </td>
+    <td> lương </td>
+    <td> Mộc </td>
+    <td> thiết </td>
+    <td> đánh chết </td>
+    <td> kiến thiết </td>
+    <td> cực mạnh Anh Hùng </td>
+    <td> chiến lực </td>
+  <tr/>
+    {%for item in pay_rank_list%}
+  <tr>
+    <td>{{item.rank}}</td>
+    <td>{{item.pf}}</td>
+    <td>
+      <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.uid}}">{{item.uid}}</a>
+    </td>
+    <td>{{item.uname}}</td>
+    <td>{{item.country}}</td>
+    <td>{{item.official}}</td>
+    <td>{{item.building_lv}}</td>
+    <td>{{item.office}}</td>
+    <td>{%if item.is_online%}
+      <font color="green"> ở tuyến </font>
+      {%else%}
+      <font color="red"> ly tuyến </font>
+      {%endif%}
+      {{item.t}}
+    </td>
+    <td><font color="red">{{item.pay_money}}</font></td>
+    <td><font color="red">{{item.admin_pay}}</font></td>
+    <td><font color="red">{{item.sale_money}}</font></td>
+    <td>{{item.coin}}</td>
+    <td>{{item.merit}}</td>
+    <td>{{item.gold}}</td>
+    <td>{{item.food}}</td>
+    <td>{{item.wood}}</td>
+    <td>{{item.iron}}</td>
+    <td>{{item.kill_num}}</td>
+    <td>{{item.build_count}}</td>
+    <td>{{item.hero}}</td>
+    <td>{{item.power}}</td>
+  <tr/>
+    {%endfor%}
+</table>
+<br/>
+
+
+<div id='log_list' name="log_list">
+  {{log_str_list|safe}}
+</div>
+
+
+
+</p>
+{% endif %}
+
+{% endblock %}

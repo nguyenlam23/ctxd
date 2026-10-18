@@ -1,0 +1,263 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js"type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet"href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css"type="text/css"/>
+
+<script type='text/javascript'>
+  function statistic(){
+    var from_date = $("#from_date").val()
+    var to_date = $("#to_date").val()
+    if (from_date && to_date){
+    if (from_date> to_date){
+    alert(' thỉnh chính xác tuyển trạch thời gian khu đang lúc ')
+      return false;
+    }
+
+    }
+  }
+$(function() {
+		var dates = $('#from_date, #to_date').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"+0",
+      minDate:"2010-04-15",
+			onSelect: function(selectedDate) {
+        statistic();
+			}
+		});
+
+	});
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+
+<h2> tiêu phí ghi lại </h2>
+<form id="cform"action="{{settings.BASE_URL}}/admin/coin_record/buy_record/"method="post"target="mainFrame">
+
+  From：<input readonly size="10"name="from_date"id="from_date"value="{{from_date}}"/> 
+  To：<input readonly size="10"name="to_date"id="to_date"value="{{to_date}}"/> 
+    <select 'id'='zone' name='zone'>
+      <option value='all' {%ifequal zone 'all'%}selected='selected'{%endifequal%}> quan sát </option>
+      {%for k,v in zone_list%}
+      <option value='{{k}}' {%ifequal zone k%}selected='selected'{%endifequal%}>{{v.0}}</option>
+      {%endfor%}
+      </select>
+      {%ifequal first '0'%}
+    <select 'id'='free' name='free'>
+      <option value='all' {%ifequal free 'all'%}selected='selected'{%endifequal%}> quan sát </option>
+      <option value='0' {%ifequal free '0'%}selected='selected'{%endifequal%}> trả tiền </option>
+      <option value='1' {%ifequal free '1'%}selected='selected'{%endifequal%}> vị trả tiền </option>
+      </select>
+      {%endifequal%}
+      <input type ="hidden"name="first"value ="{{first}}"/>
+
+  <input type ="submit"value ="tuần tra"/>
+</form>
+{%if record_list%}
+{%ifequal zone 'all'%}
+<font color='red'> sở hữu khu quan sát </font>
+{%else%}
+<font color='red'>{{zone_name}}</font>
+{%endifequal%}
+<table border="0"cellpadding="0"cellspacing="0">
+  <tr>
+    <td valign="top">
+<table border="1"cellpadding="0"cellspacing="0">
+  <tr>
+    <td>
+       ngày 
+    </td>
+    <td>
+       tiêu phí số lần 
+    </td>
+    <td>
+       tiêu phí nhân số 
+    </td>
+    <td>
+       tiêu phí kim ngạch (Coin)
+    </td>
+  </tr>
+  {%for item in record_list.coin%}
+  <tr>
+    <td>
+      {{item.day}}
+    </td>
+    <td>
+      {{item.times}}
+    </td>
+    <td>
+      {{item.ulen}}
+    </td>
+    <td>
+      {{item.amount}}
+    </td>
+    <td>
+      {%ifequal item.day 'total'%}
+      {%else%}
+      <a href="{{settings.BASE_URL}}/admin/coin_record/coin_ana_day/{{item.day}}/?ptype=coin&zone={{zone}}&free={{free}}&first={{first}}"> phân loại công tác thống kê </a>
+      {%endifequal%}
+    </td>
+    <td>
+      {%ifequal item.day 'total'%}
+      {%else%}
+      <a href="{{settings.BASE_URL}}/admin/coin_record/buy_record_day/{{item.day}}/?ptype=coin&zone={{zone}}&free={{free}}&first={{first}}"> kiểm tra kể lại </a>
+      {%endifequal%}
+    </td>
+    <td>
+      {%ifequal item.day 'total'%}
+      {%else%}
+      <a href="{{settings.BASE_URL}}/admin/coin_record/export_buy_record_day/{{item.day}}.csv?ptype=coin&zone={{zone}}&free={{free}}&first={{first}}"> đạo ra kể lại </a>
+      {%endifequal%}
+    </td>
+  </tr>
+  {%endfor%}
+</table>
+    </td>
+<td valign="top">
+<table border="1"cellpadding="0"cellspacing="0">
+  <tr>
+    <td>
+       ngày 
+    </td>
+    <td>
+       tiêu phí số lần 
+    </td>
+    <td>
+       tiêu phí nhân số 
+    </td>
+    <td>
+       tiêu phí kim ngạch （ huân chương ）
+    </td>
+  </tr>
+  {%for item in record_list.medal%}
+  <tr>
+    <td>
+      {{item.day}}
+    </td>
+    <td>
+      {{item.times}}
+    </td>
+    <td>
+      {{item.ulen}}
+    </td>
+    <td>
+      {{item.amount}}
+    </td>
+    <td>
+      {%ifequal item.day 'total'%}
+      {%else%}
+      <a href="{{settings.BASE_URL}}/admin/coin_record/coin_ana_day/{{item.day}}/?ptype=medal&zone={{zone}}&free={{free}}&first={{first}}"> phân loại công tác thống kê </a>
+      {%endifequal%}
+    </td>
+    <td>
+      {%ifequal item.day 'total'%}
+      {%else%}
+      <a href="{{settings.BASE_URL}}/admin/coin_record/buy_record_day/{{item.day}}/?ptype=medal&zone={{zone}}&free={{free}}&first={{first}}"> kiểm tra kể lại </a>
+      {%endifequal%}
+    </td>
+    <td>
+      {%ifequal item.day 'total'%}
+      {%else%}
+      <a href="{{settings.BASE_URL}}/admin/coin_record/export_buy_record_day/{{item.day}}.csv?ptype=medal&zone={{zone}}&free={{free}}&first={{first}}"> đạo ra kể lại </a>
+      {%endifequal%}
+    </td>
+  </tr>
+  {%endfor%}
+</table>
+
+
+  </td>
+
+
+
+<td valign="top">
+<table border="1"cellpadding="0"cellspacing="0">
+  <tr>
+    <td>
+       ngày 
+    </td>
+    <td>
+       tiêu phí số lần 
+    </td>
+    <td>
+       tiêu phí nhân số 
+    </td>
+    <td>
+       tiêu phí kim ngạch （ trung tâm ）
+    </td>
+  </tr>
+  {%for item in record_list.score%}
+  <tr>
+    <td>
+      {{item.day}}
+    </td>
+    <td>
+      {{item.times}}
+    </td>
+    <td>
+      {{item.ulen}}
+    </td>
+    <td>
+      {{item.amount}}
+    </td>
+    <td>
+      {%ifequal item.day 'total'%}
+      {%else%}
+      <a href="{{settings.BASE_URL}}/admin/coin_record/coin_ana_day/{{item.day}}/?ptype=score&zone={{zone}}&free={{free}}&first={{first}}"> phân loại công tác thống kê </a>
+      {%endifequal%}
+    </td>
+    <td>
+      {%ifequal item.day 'total'%}
+      {%else%}
+      <a href="{{settings.BASE_URL}}/admin/coin_record/buy_record_day/{{item.day}}/?ptype=score&zone={{zone}}&free={{free}}&first={{first}}"> kiểm tra kể lại </a>
+      {%endifequal%}
+    </td>
+    <td>
+      {%ifequal item.day 'total'%}
+      {%else%}
+      <a href="{{settings.BASE_URL}}/admin/coin_record/export_buy_record_day/{{item.day}}.csv?ptype=score&zone={{zone}}&free={{free}}&first={{first}}"> đạo ra kể lại </a>
+      {%endifequal%}
+    </td>
+  </tr>
+  {%endfor%}
+</table>
+
+
+  </td>
+</tr>
+</table>
+{%endif%}
+
+{% endblock %}
+
+
+
+
+
+
+
+
+

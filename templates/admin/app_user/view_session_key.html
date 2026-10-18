@@ -1,0 +1,97 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  function change_sessionid(){
+    var args = {}
+    var new_sessionid = $("#new_sessionid").val();
+    if (new_sessionid == ''){
+      alert(' mật mã bất năng vi Trống ');
+      return false;
+    }
+    args['new_sessionid'] = $("#new_sessionid").val();
+    args['session_key'] = '{{udict.uid}}';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_sessionid/', args,
+         function(data){
+          if(data.state=='success')
+            alert(' nặng đưa thành công ');
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+function succ(){
+$('#desc').show();
+setTimeout("$('#desc').hide()",4000)
+}
+
+
+
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/view_session_key/"method="post">
+     Tên nhân vật：<input id="session_key"name="session_key"
+    value="{{session_key}}"/>
+    <input type="radio"{%ifequal exact 1%}checked="checked"{%endifequal%} id="exact"name="exact"value="1"/> Kiểm Tra Chính Xác
+    <input type="radio"{%ifequal exact 0%}checked="checked"{%endifequal%} id="exact"name="exact"value="0"/> Kiểm Tra Không Chính Xác 
+    <select name="zone"id="zone">
+      {%for item in zone_list%}
+      <option {%ifequal item.0 zone%}selected=selected{%endifequal%} value="{{item.0}}">{{item.1}}</option>
+      {%endfor%}
+    </select>
+  <input type="submit"value="&nbsp; tra &nbsp;&nbsp; hoa &nbsp;"/>
+  </form>
+</div>
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/view_user_tel/"method="post">
+     Tên Tài Khoản：<input id="pf_key"name="pf_key"value=""/>
+    <input id="view_type"type="hidden"name="view_type"value="pf_key"/>
+  <input type="submit"value="&nbsp; tra &nbsp;&nbsp; hoa &nbsp;"/>
+  </form>
+</div>
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/view_user_tel/"method="post">
+     bảng định số điện thoại di động ：<input id="tel"name="tel"value=""/>
+    <input id="view_type"type="hidden"name="view_type"value="tel"/>
+  <input type="submit"value="&nbsp; tra &nbsp;&nbsp; hoa &nbsp;"/>
+  </form>
+</div>
+{%if ulist%}
+<table border="1"cellpadding="0"cellspacing="0">
+{%for item in ulist%}
+<tr>
+<td>
+  Uid: <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.0}}">{{item.0}}</a>
+</td>
+<td>
+Uname: <font color="red">{{item.1}}</font>
+</td>
+<tr>
+{%endfor%}
+</table>
+
+{%endif%}
+<br/>
+
+{% endblock %}

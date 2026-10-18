@@ -1,0 +1,46 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<link REL="stylesheet"href="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/css/bootstrap.min.css"TYPE="text/css">
+<script src="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/js/bootstrap.min.js"type="text/javascript"></script>
+
+<script type='text/javascript'>
+</script>
+<div class="container-fluid">
+  <h3><strong> manh tiền phát thưởng  tăng thêm </strong></h3>
+  <hr/>
+  <div class="row">
+    <div class="col-md-12">
+      <form class="form-horizontal"action="{{settings.BASE_URL}}/admin/reward/add_ucoin_reward/"method="post">
+        <div class="form-group">
+          <label class="col-md-1 control-label"style="text-align: left"> người sử dụng UID</label>
+          <div class="col-md-5">
+            <textarea name="uids"class="form-control"rows="2"placeholder="5100,5200"></textarea>
+          </div>
+          <div class="col-md-5">
+            (nhiều người dùng dùng tiếng Anh dấu phẩy phân cách ，<font color="red"> điền người sử dụng ngắn uid</font>)
+          </div>
+        </div>
+        <div class="form-group"style="">
+          <label class="col-md-1 control-label"style="text-align: left"> ghi chú tin tức </label>
+          <div class="col-md-5">
+            <input type="text"class="form-control"name="remark">
+          </div>
+        </div>
+        <div class="form-group"style="">
+          <label class="col-md-1 control-label"style="text-align: left"> manh tiền số lượng </label>
+          <div class="col-md-2">
+            <input type="text"class="form-control"name="ucoin">
+          </div>
+        </div>
+        <div class="form-group"style="">
+          <label class="col-md-1 control-label"style="text-align: left"></label>
+          <div class="col-md-2">
+            <button type="submit"class="btn btn-primary"> tăng thêm </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

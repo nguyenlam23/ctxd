@@ -1,0 +1,117 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+function view_user(zone){
+$('#zone').val(zone);
+$('#uid').val('{{uid}}');
+$('#frm').submit();
+}
+function chose_zone(zone){
+  $("#zone_"+zone).attr('selected', 'selected');
+}
+</script>
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/msg/msg_view_user/"method="post">
+     người sử dụng ID：<input id="uid"name="uid"value=""/>
+    <input id="view_uid"name="view_uid"value="1"type="hidden"/>
+  <br />
+  <input type="submit"value="tuần tra"/>
+  </form>
+</div>
+<br/>
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/msg/re_msg/"method="post">
+    Uid|Zone：{{bug_msg.uid}}<br/>
+  <br />
+
+<textarea id="content"name="content"style="width: 60%; height: 100px"></textarea>
+</br>
+<input type="hidden"id="uid"name="uid_zone"value="{{bug_msg.uid}}"/>
+  <input type="submit"value="gữi đi tin tức"/>
+  </form>
+</div>
+<br/>
+{%if bug_msg.data%}
+  <table>
+    <tr>
+      <td>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/msg/pass_msg/"method="post">
+    <input type="hidden"id="uid"name="uid_zone"value="{{bug_msg.uid}}"/>
+  <input style="color:green;"type="submit"value="hốt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; hơi"/>
+  </form>
+      </td>
+      <td>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/msg/mark_msg/"method="post">
+    <input type="hidden"id="uid"name="uid_zone"value="{{bug_msg.uid}}"/>
+  <input style="color:red;"type="submit"value="đưa vi nghi nan vấn đề"/>
+  </form>
+      </td>
+      <td>
+  {%if up_uid%}
+  <a href="{{settings.BASE_URL}}/admin/msg/msg_view_user/?uid_zone={{up_uid}}"> thượng một </a>
+  {%endif%}
+  {%if next_uid%}
+  <a href="{{settings.BASE_URL}}/admin/msg/msg_view_user/?uid_zone={{next_uid}}"> kế tiếp </a>
+  {%endif%}
+      </td>
+    </tr>
+  </table>
+
+    <table border=1 width="100%">
+
+      <tr>
+        <td>
+           đệ trình thời gian 
+        </td>
+        <td width="80%">
+          nội dung 
+        </td>
+      </tr>
+      {%for item in bug_msg.data%} 
+      <tr>
+        <td>
+          {{item.time}}
+        </td>
+        <td>
+          <font 
+            {%ifequal item.st 1%}color="green"{%endifequal%}
+            {%ifequal item.st 2%}color="red"{%endifequal%}
+            {%ifequal item.st 3%}color="green"{%endifequal%}
+           >
+          {{item.content}}
+          </font>
+        </td>
+      </tr>
+
+      {% endfor %}
+    </table>
+
+
+
+  {%endif%}
+<!--
+<p> phát thưởng bưu kiện kiểm tra:</p>
+<table border=1 width="100%">
+  <tr>
+    <td> thưởng cho Id</td>
+    <td> tiêu đề </td>
+    <td> chính văn </td>
+    <td> thưởng cho nội dung </td>
+    <td> trạng thái </td>
+    <td> thời gian </td>
+  </tr>
+{%for item in gift_msg.data%} 
+  <tr>
+    <td>{{item.rid}}</td>
+    <td>{{item.name}}</td>
+    <td>{{item.info}}</td>
+    <td>{{item.rewards_dict}}</td>
+    <td>{{item.status}}</td>
+    <td>{{item.time}}</td>
+  </tr>
+{%endfor%}
+
+</table>
+-->
+
+{% endblock %}

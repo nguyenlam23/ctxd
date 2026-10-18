@@ -1,0 +1,179 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  function other_freeze_msg(){
+  fre_msg = $('#freeze_msg').val();
+  if(fre_msg == -1){
+  $('#other_msg').show();
+  }else{
+  $('#other_msg').val('');
+  $('#other_msg').hide();
+  }
+
+  }
+
+
+function succ(){
+$('#desc').show();
+setTimeout("$('#desc').hide()",4000)
+}
+
+
+function view_user(zone){
+$('#zone').val(zone);
+$('#uid').val('{{user_zone.uid}}');
+$('#frm').submit();
+}
+
+
+</script>
+<style type="text/css">
+input.text{text-align:center;width:40px;}
+</style>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/drop_user_prop/"method="post">
+     ngoạn gia ID：<input id="uid"name="uid"value="{{user_zone.uid}}"/>
+     ngoạn gia số trương mục ：<input id="pf_key"name="pf_key"value="{{user_zone.pf_key}}"/>
+  <br />
+  <input type="submit"value="nói  giao"/>
+  <input type="hidden"name="zone"id="zone"value=""/>
+  </form>
+</div>
+{%if zone_list%}
+<br/>
+Uid: <font color="red">{{user_zone.uid}}</font>
+PfKey: <font color="red">{{user_zone.pf_key}}</font>
+<br/>
+{%for k,v in zone_list%}
+<input style="{%ifequal k zone%}color:red;font-weight:bold;{%endifequal%}"value='{{v}}' type="button"onclick="view_user('{{k}}');"/>
+{%endfor%}
+
+<br/>
+{%endif%}
+<br/>
+{% if app_user %} 
+<table border="1"cellpadding="0"cellspacing="0">
+  <tr>
+    <td>
+      Uid
+    </td>
+    <td>
+      PfKey
+    </td>
+    <td>
+       khu phục nick name 
+    </td>
+    <td>
+       ở hình đường thẳng thái 
+    </td>
+  </tr>
+  <tr>
+    <td>
+      {{user_zone.uid}}
+    </td>
+    <td>
+      {{user_zone.pf_key}}
+    </td>
+    <td>
+      {{app_user.uname}}
+    </td>
+    <td>{%if is_online%}
+      <font color="green"> ở tuyến </font>
+      {%else%}
+      <font color="red"> ly tuyến </font>
+      {%endif%}
+      {{online_t}}
+    </td>
+  </tr>
+</table>
+<br/>
+<br/>
+  <form action="{{settings.BASE_URL}}/admin/app_user/drop_user_prop_p/"method="post">
+<table border="1"cellpadding="0"cellspacing="0">
+  <tr>
+    <td colspan=2 align="right">
+      <font color="red">
+      <input style="color:red;"type="submit"value="trừ  trừ  nói  cụ"/>
+      <input type="hidden"name="uid"value="{{user_zone.uid}}"/>
+      <input type="hidden"name="zone"value="{{zone}}"/>
+      </font>
+    </td>
+  <tr>
+  {%for item in input_content%}
+  <tr>
+    <td>
+      {{item.1}}
+    </td>
+    <td>
+      <font color="red">{{item.2}}</font>
+      -
+      <input name="{{item.0}}"id="{{item.0}}"type="txt"value=""/>
+    </td>
+  </tr>
+  {%endfor%}
+
+
+  {%for pt,prop_list in all_prop_list%}
+
+  <tr>
+    <td colspan=2>
+      <font color="red"> (đạo cụ --{{pt}}) </font>
+    </td>
+  <tr>
+    <td colspan=2>
+      <table>
+        {%for item in prop_list%}
+        <tr>
+        {%for v in item%}
+          <td>
+            <font{%if v.2%} color="red"{%endif%} id="color_prop{{pt}}_{{v.0}}">{{v.1}}| 
+              {%if v.2%}
+              {{v.2}}
+              {%else%}
+              0
+              {%endif%}
+            </font>- <input type="text"name="{{v.0}}"id="prop{{pt}}_{{v.0}}"value=""style="width:40px;">
+          </td>
+        {%endfor%}
+        </tr>
+          {%endfor%}
+      </table>
+    </td>
+  </tr>
+  {%endfor%}
+
+
+
+</table>
+</form>
+
+
+
+
+
+
+{% endif %}
+
+{% endblock %}

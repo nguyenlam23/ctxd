@@ -1,0 +1,100 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<style type="text/css">
+*{ margin:0; padding:0;}
+.imglist { width:650px; margin:0 auto;}
+.imglist li { width:100px; height:100px; list-style:none; float:left; border:5px solid white; margin:10px;}
+.imglist li img { width:100px; height:100px;}
+.fntlist font.border { border-color:red;}
+</style>
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js"type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet"href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css"type="text/css"/>
+<script type='text/javascript' src='{{settings.MEDIA_URL}}/js/reward_content.js?v=22'></script>
+<script type='text/javascript'>
+  function chk(){ 
+    return true;
+  }
+
+  function change_gift_type(){ 
+    var gift_type = $('#gift_type').val();
+    var gt = document.getElementById(gift_type).value;
+    if (gt==1){
+      $('#gift_content_td').text(' số lượng ');
+      $('#kami_content').hide();
+      $('#gift_num').show();
+    }else{
+      $('#gift_content_td').text(' tạp mật ');
+      $('#kami_content').show();
+      $('#gift_num').hide();
+    }
+  }
+
+</script>
+<h2>
+ lợi thế thương thành - thực vật giao hàng 
+</h2>
+<br/>
+<form action="{{settings.BASE_URL}}/admin/casino_gift/send_casino_gift_p/"method="post"enctype="multipart/form-data"onsubmit="return chk();">
+<table width="700px"border=1>
+  <tr>
+    <td width="10%">
+      Uid
+    </td>
+    <td>
+      {{cg.uid}}
+    </td>
+  </tr> 
+  <tr>
+    <td width="10%">
+      GiftType
+    </td>
+    <td>
+      {{cg.gift_type}}
+    </td>
+  </tr> 
+  <tr>
+    <td width="10%">
+       mua giới cách 
+    </td>
+    <td>
+      {{cg.cchip}}
+    </td>
+  </tr> 
+  <tr>
+    <td width="10%">
+       mua thời gian 
+    </td>
+    <td>
+      {{cg.buy_time}}
+    </td>
+  </tr> 
+  <tr>
+    <td width="10%">
+       giao hàng địa chỉ 
+    </td>
+    <td>
+      {{cg.addr}}
+    </td>
+  </tr> 
+  <tr>
+    <td width="10%">
+       vận đơn hào 
+    </td>
+    <td>
+      <input type="text"name="order_num"id="order_num"value="{%if cg.order_num%}{{cg.order_num}}{%endif%}"/>
+      <input type=""name="id"id="id"value="{{cg.id}}"/>
+    </td>
+  </tr> 
+  <tr>
+    <td width="10%">
+    </td>
+    <td>
+      <input type="submit"value="đệ trình"/>
+    </td>
+  </tr> 
+</table>
+</form>
+
+
+{% endblock %}

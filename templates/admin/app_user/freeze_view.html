@@ -1,0 +1,226 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<style type="text/css">
+/* phân trang */
+div.page {
+	padding:5px;
+	font-family:Arial, Helvetica, sans-serif;
+	margin-left:10px;
+	background:#eee;
+	margin-top:20px;
+	text-align:center;
+	padding-top:6px;
+	color:#336699;
+}
+div.page a {
+	padding:0px 5px; margin:2px; color:#336699; background:#eee; text-decoration:none;
+}
+div.page a:hover {
+	color:#3399cc; background:#fff
+}
+div.page span.current {
+	padding:0px 5px; font-weight:bold; margin:2px; color:#336699; background:#fff;
+}
+div.page span.disabled {
+	padding:0px 5px; margin:2px; color:#797979;
+}
+/* phân trang kết thúc */
+
+
+</style>
+<script type='text/javascript'>
+  var status = '{{parameter.status}}';
+  function user_coin_records(uid){
+    $.post('{{ settings.base_url }}/admin/app_user/user_coin_records/', {
+          'uid': uid
+        }, function(data){
+            $('#cr_'+uid).text(data.coin_num);
+          }, 'json');
+
+  } 
+  
+  function re_msg_p(){
+    var mid = $('#mid').val();
+    var uid = $('#uid').val();
+    var rcontent = $('#rcontent').val();
+    //if (mid.length == 0){
+    //  alert(' thỉnh tuyển trạch hồi phục tin tức ');
+    //  return false;
+    //}
+    if (rcontent.length == 0){
+      alert(' thỉnh điền hồi phục nội dung ');
+      $('#rcontent').focus();
+      return false;
+    }
+    $.post('{{settings.base_url}}/admin/msg/re_msg/', {
+          'mid': mid,
+          'uid': uid,
+          'rcontent': rcontent
+        }, function(data){
+          if(data.state=='success'){
+            $('#mid_'+mid).hide();
+            $('#uid').val(null);
+            $('#mid').val(null);
+            //$('#content').text('');
+            //$('#rcontent').text('');
+            $('#rcontent').val(null);
+            $('#content').val(null);
+            alert(' hồi phục thành công ');
+          }else{
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }
+          }, 'json');
+  }
+  function del_msg(mid){
+    var type = 'del';
+    if(status == 2){
+      type = 'back';
+    }
+    $.post('{{settings.base_url}}/admin/msg/re_msg/', {
+          'mid': mid,
+          'type': type
+        }, function(data){
+          if(data.state=='success'){
+            $('#mid_'+mid).hide();
+          }else{
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }
+          }, 'json');
+  }
+  function re_msg(mid, uid, rtime){
+    $('#uid').val(uid);
+    $('#mid').val(mid);
+    var content = $('#ct_'+mid).val();
+    var rcontent = $('#rc_'+mid).val();
+    $('#content').val(content);
+    if(status == '1'){
+      $('#rtime').val(rtime);
+      $('#rcontent').val(rcontent);
+    }
+  }
+
+  function do_freezes(uid, name, fdays){
+    if (fdays == 7){
+      var s = ' Đóng băng 7 thiên '
+    }else if(fdays==-1){
+      var s = ' vĩnh cửu Đóng băng '
+    }else if(fdays==1){
+      var s = ' Đóng băng 1 thiên ' 
+    }else if(fdays==3){
+      var s = ' Đóng băng 3 thiên ' 
+    }else if(fdays==-1){
+      var s = ' vĩnh cửu Đóng băng ' 
+    }else if(fdays==0){
+      var s = ' tuyết tan ' 
+    }
+    if (!confirm(' có hay không xác định tương ' + name +' ' + uid + ' tiến hành ' + s +' thao tác ')){
+      return false;
+    }
+    $.post('{{settings.base_url}}/admin/app_user/do_freezes/', {
+          'uid': uid,
+          'fdays': fdays 
+        }, function(data){
+            $('#freezes_time_'+uid).text(data.freezes_time);
+            $('#admin_user_'+uid).text(data.admin_user);
+            $('#last_mark_'+uid).text(data.last_mark);
+            return false;
+          if(data.state=='success'){
+            if(data.status == 1){
+            $('#f_'+uid).text(' tuyết tan ');
+            $('#s_'+uid).text(' dĩ Đóng băng ');
+            }else if(data.status == 2){
+            $('#f_'+uid).text(' Đóng băng ');
+            $('#s_'+uid).text(' vị Đóng băng nhưng không hề lương ghi lại ');
+            }
+          }else{
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }
+          }, 'json');
+  }
+</script>
+
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/freeze_view/"method="post">
+     người sử dụng ID：<input id="uid_zone"name="uid_zone"value="{%if uid_zone%}{{uid_zone}}{%endif%}"/>
+  (cách thức ：uid|zone)
+  <br />
+  <input type="submit"value="đệ trình"/>
+  <input type="hidden"name="zone"id="zone"value=""/>
+  </form>
+</div>
+
+</br>
+
+    <table border=1 width="100%">
+      <tr>
+        <td>
+          Uid
+        </td>
+        <td>
+          Uname
+        </td>
+        <td>
+           Đóng băng thời hạn cuối cùng 
+        </td>
+        <td>
+           Đóng băng nguyên nhân 
+        </td>
+        <td>
+           Đóng băng loại hình 
+        </td>
+        <td>
+           nhân viên quản lý 
+        </td>
+        <td>
+           thao tác thời gian 
+        </td>
+      </tr>
+      {%for item in freeze_list%} 
+      <tr>
+        <td>
+          {%if is_37%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/freeze_user/?uid_zone={{item.uid}}">{{item.uid}}</a>
+          {%else%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.uid}}">{{item.uid}}</a>
+          {%endif%}
+        </td>
+        <td>
+          {{item.uname}}
+        </td>
+        <td>
+          {{item.freeze_time}}
+        </td>
+        <td>
+          {{item.freeze_msg}}
+        </td>
+        <td>
+          {%ifequal item.status 0%}
+           dĩ mổ phong 
+          {%endifequal%}
+          {%ifequal item.status 1%}
+           Đóng băng đăng ký 
+          {%endifequal%}
+          {%ifequal item.status 2%}
+           cấm lên tiếng 
+          {%endifequal%}
+        </td>
+        <td>
+          {{item.admin_user}}
+        </td>
+        <td>
+          {{item.admin_time}}
+        </td>
+
+      </tr>
+      {% endfor %}
+      <tr>
+        <td colspan="16">
+         <div class="page"style="background:#fff; margin-left:0; font-size:12px;">
+    {{p.render|safe}}
+        </div>
+        </td>
+      </tr>
+    </table>
+  </td>
+
+{% endblock %}

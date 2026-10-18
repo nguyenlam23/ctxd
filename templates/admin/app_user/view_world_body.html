@@ -1,0 +1,350 @@
+{% if zone%}
+<table>
+  <tr>
+    <td width='50%' valign="top">
+<table id="table_c"border=1>
+  <tr>
+    <td width="50px"> dành trước </td>
+    <td width>
+      <font color="{{backup_status.1}}"><strong>{{backup_status.0}}</strong></font>
+    </td>
+  </tr>
+  <tr>
+    <td width="50px"> thế giới </td>
+    <td width>
+       mở ra số trời <font color="blue">{{open_days}},{{season}}</font>
+      <input style="color:red"type="button"value="nảy sinh cái mới khí trời"onclick="refresh_weather();"/>
+       thế giới tối cao chính vụ sổ <input size=5 name="finish_gtask_max"id="finish_gtask_max"value="{{finish_gtask_max}}">
+       thế giới đẳng cấp <input size=5 name="world_lv"id="world_lv"value="{{world_lv}}">
+       cao ngoạn đẳng cấp <input size=5 name="pve_lv"id="pve_lv"value="{{pve_lv}}">
+      <input style="color:red"type="button"value="sửa chữa"onclick="change_world_lv();"/>
+       thế giới địa đồ hướng dẫn tra cứu <font color="blue">{{merge_maps}}</font>
+       hoạt động hướng dẫn tra cứu <font color="blue">{{merge_ploys}}</font>
+    </td>
+  </tr>
+  <tr>
+    <td width="50px"> quốc gia </td>
+    <td width>
+      <input name="country_id"id="country_id"type="radio"value="0"checked=checked>
+       ngụy 
+      &nbsp;
+      &nbsp;
+      <input name="country_id"id="country_id"type="radio"value="1">
+       thục 
+      &nbsp;
+      &nbsp;
+      <input name="country_id"id="country_id"type="radio"value="2">
+       ngô 
+      &nbsp;
+      &nbsp;
+      <input style="color:red"type="button"value="nặng đưa quốc gia"onclick="init_country();"/>
+      &nbsp;
+      &nbsp;
+      <input style="color:red"type="button"value="tương Tương Dương thuộc sở hữu cai nước"onclick="change_xiangyang_country();"/>
+      &nbsp;
+      &nbsp;
+      <input style="color:red"type="button"value="thanh không mất đất số liệu"onclick="clean_land_lost();"/>
+      &nbsp;
+      &nbsp;
+      <input style="color:red"type="button"value="đăng báo quốc gia số liệu"onclick="report_country_data();"/>
+      <br/>
+       quốc gia nhiệm vụ <input size=5 name="country_task"id="country_task"value="">
+      <input style="color:red"type="button"value="sửa chữa quốc gia nhiệm vụ"onclick="change_country_task();"/>
+      &nbsp;
+      Uid<input size=5 name="king_uid"id="king_uid"value=""> <input style="color:red"type="button"value="chỉ định uid là vua"
+      onclick="change_country_king();"/>
+    </td>
+  </tr>
+  <tr>
+    <td width="50px"> Thành thị </td>
+    <td width>
+      <input name="city_id"id="city_id"type="radio"value="all">
+       sở hữu Thành thị 
+      &nbsp;
+      &nbsp;
+      <input name="city_id"id="city_id"type="radio"value="city"checked=checked>
+       chỉ định Thành thị 
+      <input name="cid"id="cid"value=""size=5>
+      <br/>
+      <input style="color:red"type="button"value="nặng đưa Thành thị"onclick="init_city('init_city');"/>
+      <input style="color:red"type="button"value="thanh lý chiến đấu và bộ đội"onclick="init_city('init_troop');"/>
+      <input style="color:red"type="button"value="bổ xung đầy đủ phòng thủ thành phố quân"onclick="init_city('full_des_army');"/>
+      <input style="color:red"type="button"value="thanh không phòng thủ thành phố quân"onclick="init_city('zero_des_army');"/>
+      <input style="color:red"type="button"value="phòng thủ thành phố quân đưa vi 1"onclick="init_city('one_des_army');"/>
+      <input style="color:red"type="button"value="cà ra hoàng khăn 1 quân"onclick="init_city('thief_one');"/>
+      <input style="color:red"type="button"value="cà ra hoàng khăn 2 quân"onclick="init_city('thief_two');"/>
+    </td>
+  </tr>
+  <tr>
+    <td width="100px"></td>
+    <td width>
+      <input style="color:red"type="button"value="thi đấu quý kết toán"onclick="honour_done();"/>
+    </td>
+  </tr>
+</table>
+</br>
+<table border=1>
+  <tr>
+    <td width="100px"> quốc gia </td>
+    <td width="100px"> nhân khí phân </td>
+    <td width="100px"> hào khí phân </td>
+    <td></td>
+  </tr>
+  {% for item in country_advise_score %}
+  <tr>
+    <td>{{item.0}}</td>
+    <td><input size=5 id="renqi_score_{{ item.1 }}"value="{{ item.2 }}"></td>
+    <td><input size=5 id="haoqi_score_{{ item.1 }}"value="{{ item.3 }}"></td>
+    <td><a href="#"onclick="change_country_advise_score({{ item.1 }})"> sửa chữa </a></td>
+  </tr>
+  {% endfor %}
+</table>
+</br>
+<table border=1>
+  <tr>
+    <td width="50px"rowspan="2"> thao tác </td>
+    <td>
+      <input style="color:red"type="button"value="mới bắt đầu hóa luận võ đại hội"onclick="init_pk_yard();"/>
+    </td>
+    <td>
+      <input style="color:red"type="button"value="thanh lý thế giới nói chuyện phiếm"onclick="clean_chat_cache();"/>
+    </td>
+    {% if settings.SUBTEST %}
+    <td>
+      <input style="color:red"type="button"value="thanh lý bài thi số liệu"onclick="clean_ask();"/>
+    </td>
+    <td>
+      <input style="color:red"type="button"value="thanh lý tân thiên hạ đại thế"onclick="clean_new_milepost();"/>
+    </td>
+    <td>
+      <input style="color:red"type="button"value="bắt chước hợp phục kết toán"onclick="simulate_merge();"/>
+    </td>
+    <td>
+      <input style="color:red"type="button"value="thanh lý tuyển cử quốc vương số liệu"onclick="clean_elect();"/>
+    </td>
+    <td>
+      <input style="color:red"type="button"value="thanh lý tân luận võ đại hội"onclick="clean_pk_yard_new();"/>
+    </td>
+    {% endif %}
+  </tr>
+  <tr>
+    {% if settings.SUBTEST %}
+    <td>
+       giới sổ 
+      <input name="bindex"id="bindex"value="1"size=2>
+      <br/>
+      <input style="color:red"type="button"value="nặng đưa phục ma chiến trường"onclick="reset_exorcism();"/>
+    </td>
+    {% endif %}
+  </tr>
+</table>
+
+<br/>
+
+{% if settings.SUBTEST %}
+<table border=1>
+  <tr>
+    <td width="50px"rowspan="2"> công năng ứng dụng </td>
+    <td>
+      <input name="use_function"id="use_function"
+                    value="use_city_control"checked
+                    type="radio"> Thành thị tiếp quản ({{use_function.use_city_control}})
+      <input name="use_function"id="use_function"value="use_pk_yard_new"
+                     type="radio"> tân luận võ đại hội ({{use_function.use_pk_yard_new}})
+      <input name="use_function"id="use_function"value="use_ng_task"
+                     type="radio"> tân chính vụ ({{use_function.use_ng_task}})
+      <input name="use_function"id="use_function"value="use_milepost"
+                     type="radio"> tân thiên hạ đại thế ({{use_function.use_milepost}})
+      <input name="use_function"id="use_function"value="use_newinstall"
+                     type="radio"> tay mới dẫn đạo ({{use_function.use_newinstall}})
+      <input name="use_function"id="use_function"value="use_drink"
+                     type="radio"> tiệc rượu ({{use_function.use_drink}})
+      <input name="use_function"id="use_function"value="use_newpreward"
+                     type="radio"> thưởng cho phối trí ({{use_function.use_newpreward}})
+      <input name="use_function"id="use_function"value="use_office37"
+                     type="radio"> tước vị 37({{use_function.use_office37}})
+      <br/>
+      <input style="color:red"type="button"value="thay đổi công năng trạng thái"onclick="change_use_function();"/>
+    </td>
+  </tr>
+</table>
+<br/>
+{% endif %}
+
+<table border=1>
+  <tr>
+    <td width="100px"> ảo cảnh trắc thí </td>
+    <td>
+       Bù Nhìn đẳng cấp: <input name="puppet_lv"id="puppet_lv"value="1"size=2>
+       số lần: <input name="times"id="times"value="100"size=2>
+
+      <select name="dungeon_id"id="dungeon_id">
+        {%for item in story_dungeons%}
+        <option {% ifequal item.2 1%}selected=selected{% endifequal %} value="{{item.0}}">{{item.1}}({{item.0}})</option>
+        {%endfor%}
+      </select>
+      <input style="color:red"type="button"value="bắt đầu trắc thí"onclick="test_story_dungeon();"/>
+    </td>
+  </tr>
+  <tr>
+    <td width="100px"> kết quả khảo nghiệm </td>
+    <td>
+      <p id="aver_time"style="margin: 1px"></p>
+      <p id="aver_goals"style="margin: 1px"></p>
+      <p id="aver_gifts"style="margin: 1px"></p>
+    </td>
+  </tr>
+</table>
+
+
+<div id='log_list' name="log_list">
+  {{log_str_list|safe}}
+</div>
+
+<div>
+<a target="_blank"href="{{settings.BASE_URL}}/admin/app_user/download_world/?zone={{zone}}"> kế tiếp thế giới tin tức </a>
+<a target="_blank"href="{{settings.BASE_URL}}/admin/app_user/download_world/?zone={{zone}}&type=json"> kế tiếp thế giới tin tức 2</a>
+<a href="{{settings.BASE_URL}}/admin/app_user/user_power_rank/?zone={{zone}}"> ngoạn gia đứng hàng thứ </a>
+<a target="_blank"href="{{settings.BASE_URL}}/admin/app_user/ignore_user_list/?zone={{zone}}"> vị gia chở ngoạn gia liệt biểu </a>
+</div>
+<div>
+<a target="_blank"href="{{settings.BASE_URL}}/admin/app_user/get_pk_yard_log/?zone={{zone}}"> luận võ chiến báo </a>
+<input id="ym"value="1"size=2> tua 
+<input id="tn"value="1"size=2> tổ 
+<input id="sn"value="1"size=2> tràng 
+<input style="color:red"type="button"value="độc thủ"onclick="get_pk_yard_log();"/>
+</div>
+    </td>
+    <td valign="top">
+      {%if honour_open%}
+        <table border=1>
+          <tr>
+            <td>
+               thi đấu quý giới sổ 
+            </td>
+            <td>
+              {{honour_dict.num}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+               lúc bắt đầu đang lúc 
+            </td>
+            <td>
+              {{honour_dict.start_time}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+               thi đấu quý tiến hành số trời 
+            </td>
+            <td>
+              {{honour_dict.keep_days}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+               chiến tích cường độ 
+            </td>
+            <td>
+              {{honour_dict.strength}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+               chiến tích độ khó 
+            </td>
+            <td>
+              {{honour_dict.exp_multiple}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+               tối đại anh hùng thi đấu quý đẳng cấp 
+            </td>
+            <td>
+              {{honour_dict.max_lv}}
+            </td>
+          </tr>
+          <tr>
+            <td>
+               tối đại anh hùng thi đấu quý kinh nghiệm 
+            </td>
+            <td>
+              {{honour_dict.max_exp}}
+            </td>
+          </tr>
+        </table>
+        <br/>
+        <br/>
+        <table border=1>
+          <tr>
+            <td>
+               thứ tự 
+            </td>
+            <td>
+              Uid
+            </td>
+            <td>
+              Uname
+            </td>
+            <td>
+               quốc gia 
+            </td>
+            <td>
+               chiến lực 
+            </td>
+            <td>
+               tổng chiến tích đẳng cấp 
+            </td>
+          <tr>
+            {%for item in honour_rank%}
+          <tr>
+            <td>
+              {{item.rank}}
+            </td>
+            <td>
+            <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.uid_zone}}">{{item.uid_zone}}</a>
+            </td>
+            <td>
+              {{item.uname}}
+            </td>
+            <td>
+              {{item.country}}
+            </td>
+            <td>
+              {{item.power}}
+            </td>
+            <td>
+              {{item.total_lv}}
+            </td>
+          <tr>
+            {%endfor%}
+        <table>
+      {%else%}
+      <center><font color="red"> thi đấu quý vị mở ra </font></center>
+      {%endif%}
+    </td>
+  </tr>
+</table>
+<br/>
+<!--
+ chi tiết cặn kẽ ：
+ <input style="color:red"type="button"value="đệ trình"onclick="save_world();"/>
+ -->
+
+<br/>
+
+<!--
+<textarea id="world"name="world"style="width: 90%; height: 700px"readonly>{{world}}</textarea>
+ -->
+<script>
+  var subTest = '{{settings.SUBTEST}}'
+  if (subTest == 'False') {
+    var x = document.getElementById('table_c').getElementsByTagName('input');
+    for(var i=0; i<x.length; i++){
+      x[i].disabled = 'disabled';
+    }
+  }
+</script>
+{% endif %}

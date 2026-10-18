@@ -1,0 +1,68 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  var activeZone = undefined;
+
+  $(document).ready(function () {
+    var zone = $nx.request.getUrlParam('zone', window);
+    if (zone) {
+      view_user_msg_log(zone);
+      window.location.hash="#"+ zone;
+    }
+  });
+  function view_user_msg_log(zone){
+    if (activeZone!== zone) {
+      $('#'+activeZone).removeClass('active-zone');
+      $('#'+zone).addClass('active-zone');
+      activeZone = zone;
+    }
+    var params = {zone: zone};
+    $nx.request.postfs('app_user/user_msg_log/', params, function (data) {
+      $('#user_msg_log_body').html(data.user_msg_log_body)
+    })
+  };
+
+
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+
+{%if zone_list%}
+<div class="zone-list">
+  <table>
+    {%for item in zone_list%}
+    <tr>
+      {%for k,v in item%}
+        <td align="left">
+          <input id='{{ k }}' value='{{v}}' type="button"onclick="view_user_msg_log('{{k}}');"/>
+        </td>
+      {%endfor%}
+    </tr>
+    {%endfor%}
+  </table>
+</div>
+{%endif%}
+<br/>
+
+<div id="user_msg_log_body"></div>
+{% endblock %}

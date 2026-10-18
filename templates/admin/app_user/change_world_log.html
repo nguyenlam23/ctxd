@@ -1,0 +1,11 @@
+
+{%for item in change_world_log%}
+<font>{{item.admin_user}} </font> 
+ vu 
+<font>{{item.time}} </font> 
+ sử dụng 
+<font> (<font color="blue">{{item.change_key}}</font>)  thao tác </font> 
+ tham số vi <font color="blue">{{item.params}}</font>
+<br/>
+
+{%endfor%}

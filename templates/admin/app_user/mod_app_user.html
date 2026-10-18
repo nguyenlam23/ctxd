@@ -1,0 +1,1028 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  var paySuccT = undefined;
+  function other_freeze_msg(){
+  fre_msg = $('#freeze_msg').val();
+  if(fre_msg == -1){
+  $('#other_msg').show();
+  }else{
+  $('#other_msg').val('');
+  $('#other_msg').hide();
+  }
+
+  }
+  function add_fragment(){
+    $.post('{{ settings.BASE_URL}}/admin/app_user/add_fragment/', {
+        pay_record_uu: $('#pay_record_uu').val(),
+        eid: $('#eid').val()
+        },
+         function(data){
+          if(data.state=='success')
+            succ()
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+  function admin_pay(pid,pay_name){
+    $('#pay_succ').hide();
+    var args = {}
+    args['uid'] = '{{uid}}';
+    args['zone'] = '{{zone}}';
+    args['pid'] = pid;
+    if (confirm(' xác định sung trị '+pay_name+'?')){
+    $.post('{{ settings.BASE_URL}}/admin/app_user/admin_pay/', args,
+         function(data){
+          if(data.state=='success')
+            succ_pay(data.pay_ids, pay_name);
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+    }
+  }
+
+  function user_interim_pwd(){
+    var args = {}
+    args['uid'] = '{{uid}}';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/user_interim_pwd/', args,
+         function(data){
+          if(data.state=='success')
+            $("#interim_pwd").html(data.pwd);
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function cleanup_troops() {
+    var args = {};
+    args['uid'] = '{{uid}}';
+    args['zone'] = '{{zone}}';
+    $nx.request.postfs('app_user/cleanup_troops/', args, function (data) {
+      if (data.state == 'success') {
+        alert(' bộ đội thanh lý thành công ')
+      } else {
+        alert(' xuất hiện lệch lạc ：' + data.msg)
+      }
+    })
+  }
+
+  function cleanup_ucoin() {
+    var args = {};
+    args['uid'] = '{{uid}}';
+    $nx.request.postfs('app_user/cleanup_ucoin/', args, function (data) {
+      if (data.state == 'success') {
+        alert(' manh tiền dĩ thanh linh ')
+      } else {
+        alert(' xuất hiện lệch lạc ：' + data.msg)
+      }
+    })
+  }
+
+  function cleanup_homeland_building() {
+    var args = {};
+    args['uid'] = '{{uid}}';
+    args['zone'] = '{{zone}}';
+    $nx.request.postfs('app_user/cleanup_homeland_building/', args, function (data) {
+      if (data.state == 'success') {
+        alert(' gia viên kiến trúc số liệu thanh lý thành công ')
+      } else {
+        alert(' xuất hiện lệch lạc ：' + data.msg)
+      }
+    })
+  }
+  function cleanup_ng_task() {
+    var args = {};
+    args['uid'] = '{{uid}}';
+    args['zone'] = '{{zone}}';
+    $nx.request.postfs('app_user/cleanup_ng_task/', args, function (data) {
+      if (data.state == 'success') {
+        alert(' chính vụ số liệu thanh lý thành công ')
+      } else {
+        alert(' xuất hiện lệch lạc ：' + data.msg)
+      }
+    })
+  }
+
+  function relieve_duplicate_ban() {
+    var args = {};
+    args['uid'] = '{{uid}}';
+    args['zone'] = '{{zone}}';
+    $nx.request.postfs('app_user/relieve_duplicate_ban/', args, function (data) {
+      if (data.state == 'success') {
+        alert(' nhảy qua phục chiến Cấm thi đấu giải trừ thành công ')
+      } else {
+        alert(' xuất hiện lệch lạc ：' + data.msg)
+      }
+    })
+  }
+
+  function refresh_tomb() {
+    var args = {};
+    args['uid'] = '{{uid}}';
+    args['zone'] = '{{zone}}';
+    $nx.request.postfs('app_user/refresh_tomb/', args, function (data) {
+      if (data.state == 'success') {
+        alert(' địa cung nảy sinh cái mới thành công ！')
+      } else {
+        alert(' xuất hiện lệch lạc ：' + data.msg)
+      }
+    })
+  }
+
+  function sync_invitation() {
+    var args = {};
+    args['uid'] = '{{uid}}';
+    args['zone'] = '{{zone}}';
+    $nx.request.postfs('app_user/sync_invitation/', args, function (data) {
+      if (data.state == 'success') {
+        alert(' nảy sinh cái mới thành công ！')
+      } else {
+        alert(' xuất hiện lệch lạc ：' + data.msg)
+      }
+    })
+  }
+  function simulate_merge() {
+    var args = {};
+    args['uid'] = '{{uid}}';
+    args['zone'] = '{{zone}}';
+    if (confirm(' xác định đối cai ngoạn gia chấp hành bắt chước hợp phục kết toán thao tác sao ？')) {
+      $nx.request.postfs('app_user/simulate_merge/', args, function (data) {
+        if (data.state == 'success') {
+          alert(' bắt chước hợp phục kết toán thành công ！')
+        } else {
+          alert(' xuất hiện lệch lạc ：' + data.msg)
+        }
+      })
+    }
+  }
+  
+  function mod_user_tel(){
+    var args = {}
+    args['uid'] = '{{uid}}';
+    args['tel'] = $("#tel").val();
+    $.post('{{ settings.BASE_URL}}/admin/app_user/mod_user_tel/', args,
+         function(data){
+          if(data.state=='success')
+            alert(' sửa chữa thành công ');
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+  function save_user(){
+    var args = {}
+    args['uid'] = '{{uid}}';
+    args['app_user'] = $("#app_user").val();
+    args['app_user_extra'] = $("#app_user_extra").val();
+    args['zone'] = '{{zone}}';
+    //$.post('http://192.168.1.116:3344/admin/app_user/save_user/', args,
+    $.post('{{ settings.BASE_URL}}/admin/app_user/save_user/', args,
+         function(data){
+          if(data.state=='success')
+            succ()
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function show_table(table_num){
+
+    if (table_num == 1){
+      $("#app_user").show()
+      $("#app_user_extra").hide()
+      $("#t1").css("color","blue")
+      $("#t2").css("color","black")
+
+    } else {
+      $("#app_user").hide()
+      $("#app_user_extra").show()
+      $("#t2").css("color","blue")
+      $("#t1").css("color","black")
+    }
+
+  }
+
+  function cancel_member() {
+    var args = {};
+    args['uid'] = '{{uid}}';
+    $nx.request.postfs('app_user/cancel_member/', args, function (data) {
+      if (data.state == 'success') {
+        alert(' vĩnh cửu tạp dĩ gạch bỏ ')
+      } else {
+        alert(' xuất hiện lệch lạc ：' + data.msg)
+      }
+    })
+  }
+
+function view_player_data(uid, zone) {
+  var params = {
+    uid: uid,
+    zone: zone
+  }
+  $nx.request.getfs('gather_player/view_player_data/', params, function(data){
+    open_view_player_modal(data.data);
+  })
+}
+
+function change_player_status(uid, status) {
+  var params = {
+    uid: uid,
+    status:status 
+  }
+  $nx.request.postfs('gather_player/change_player_user_zone_status/', params, function(data){
+    window.location.reload()
+  })
+}
+
+function player_command(uid, zone, action) {
+  var params = {
+    uid: uid,
+    zone: zone,
+    action: action
+  }
+  $nx.request.getfs('gather_player/player_command/', params, function(data){
+    alert(' chấp hành thành công ');
+  })
+}
+
+
+function succ(){
+$('#desc').show();
+setTimeout("$('#desc').hide()",4000)
+}
+
+function succ_pay(pay_ids, succ_msg){
+  if (paySuccT!= undefined) {
+    clearTimeout(paySuccT);
+  }
+  if (succ_msg) {
+    $('#pay_succ font').text(` (${succ_msg}) sung trị thành công...`)
+  }
+  $('#pay_succ').show();
+  paySuccT = setTimeout("$('#pay_succ').hide()", 5000)
+  $('#pay_ids').val(pay_ids);
+}
+
+function view_user(zone){
+$('#zone').val(zone);
+$('#uid').val('{{uid}}');
+$('#frm').submit();
+}
+
+function weixin_pid_add(pid){
+  var pid_num = $("#weixin_admin_pid_"+pid).val();
+  pid_num = parseInt(pid_num) + 1;
+  if (pid_num<=5){
+    $('#weixin_admin_pid_'+pid).val(pid_num);
+  }
+}
+
+function weixin_pid_reduce(pid){
+  var pid_num = $("#weixin_admin_pid_"+pid).val();
+  pid_num = parseInt(pid_num) - 1;
+  if (pid_num>=0){
+    $('#weixin_admin_pid_'+pid).val(pid_num);
+  }
+}
+
+function weixin_admin_pay(){
+    var args = {'uid': '{{uid}}', 'zone': '{{zone}}'}
+    {% for item in pay_config%}
+    args['{{item.0}}'] = $("#weixin_admin_pid_"+"{{item.0}}").val();
+    {%endfor%}
+    $.post('{{ settings.BASE_URL}}/admin/app_user/weixin_admin_pay/', args,
+         function(data){
+         if(data.state=='success'){
+          $('#pay_img').show();
+          $('#pay_img').attr('src','{{settings.BASE_URL}}/admin/app_user/pay_url_img/?pay_url='+data.pay_url);
+          $('#pay_des').html(' sung trị kim ngạch:'+data.pay_money+'&nbsp;&nbsp;&nbsp;&nbsp; chiết khấu:'+ data.sale_num);
+          $('#pay_des').show();
+         }else{
+          alert(' xuất hiện lệch lạc: '+data.msg);
+         }
+          }, 'json')
+  }
+
+  function admin_join_duplicate() {
+    var level = $("#duplicate_level").val();
+    var uid = '{{ uid }}';
+    var zone = '{{ zone }}';
+    if (!zone) {
+      alert(' thỉnh tuyển trạch khu phục ')
+    }
+    var params = {
+      level: level,
+      uid: uid,
+      zone: zone
+    }
+    $.post('{{ settings.BASE_URL }}/admin/app_user/admin_join_duplicate/', params, function(data) {
+      if (data.state == 'success') {
+        alert(' báo danh thành công ')
+      } else {
+        alert(data.msg)
+      }
+    }, 'json')
+  }
+
+  function join_zone_server() {
+    var uid = '{{ uid }}';
+    var zone = '{{ zone }}';
+    if (!zone) {
+      alert(' thỉnh tuyển trạch khu phục ')
+    }
+    var params = {
+      uid: uid,
+      zone: zone
+    }
+    $.post('{{ settings.BASE_URL }}/admin/app_user/join_zone_server/', params, function(data) {
+      if (data.state == 'success') {
+        alert(' ngoạn gia số liệu xen vào trò chơi thành công ')
+        view_user(zone);
+      } else {
+        alert(data.msg)
+      }
+    }, 'json')
+  }
+
+  function free_api_black() {
+    var uid = '{{ uid }}';
+    var zone = '{{ zone }}';
+    if (!zone) {
+      alert(' thỉnh tuyển trạch khu phục ')
+    }
+    var params = {
+      uid: uid,
+      zone: zone
+    }
+    $.post('{{ settings.BASE_URL }}/admin/app_user/free_api_black/', params, function(data) {
+      if (data.state == 'success') {
+        alert(' dĩ giải trừ tiếp lời đóng cửa ')
+        view_user(zone);
+      } else {
+        alert(data.msg)
+      }
+    }, 'json')
+  }
+
+  function open_role_modal() {
+    $('#create_role_modal').show();
+  }
+  function close_role_modal () {
+    $('#create_role_modal').hide();
+  }
+  function create_role() {
+    var params = {
+      uid: {{ uid }},
+      zone: $("#old_zone").val(),
+      merge_zone: $("#merge_zone").val()
+    }
+    $.post('{{ settings.BASE_URL }}/admin/app_user/create_role/', params, function(data) {
+      if (data.state == 'success') {
+        close_role_modal();
+        window.location.reload()
+      } else {
+        alert(data.msg)
+      }
+    }, 'json')
+  }
+
+
+
+  function open_admin_pay_modal() {
+    var title = ' người sử dụng sung trị - ({{ new_uid }}|{{ uname }}) ';
+    $("#admin_pay_title").text(title);
+    $('#admin_pay').show();
+  }
+  function close_admin_pay_modal () {
+    $('#admin_pay').hide();
+  }
+
+  function open_view_player_modal(player_data) {
+    var title = ' bồi ngoạn số liệu ';
+    $("#view_player_title").text(title);
+    $("#player_data").text(player_data);
+    $('#view_player').show();
+  }
+  function close_view_player_modal () {
+    $('#view_player').hide();
+  }
+
+  // đương điểm kích khuông thái khuông bên ngoài đích ý khu vực thì đóng khuông thái khuông 
+  window.onclick = function(event) {
+    if (event.target == $('#create_role_modal')[0]) {
+      close_role_modal();
+    } else if (event.target == $('#admin_pay')[0]) {
+      close_admin_pay_modal();
+    } else if (event.target == $('#view_player')[0]) {
+      close_view_player_modal();
+    }
+  }
+</script>
+<style type="text/css">
+input.text{text-align:center;width:40px;}
+</style>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/view_app_user/"method="post">
+     người sử dụng ID：<input id="uid"name="uid"value="{%if uid%}{{uid}}{%endif%}"/>
+  <br />
+  <input type="submit"value="đệ trình"/>
+  <input type="hidden"name="zone"id="zone"value=""/>
+  </form>
+</div>
+{%if zone_list%}
+<br/>
+Uid: <font color="red">{{uid}}</font>
+<br/>
+{%for k,v in zone_list%}
+<input style="{%ifequal k zone%}color:red;font-weight:bold;{%endifequal%}"value='{{v}}' type="button"onclick="view_user('{{k}}');"/>
+{%endfor%}
+<input value='+' type="button"onclick="open_role_modal({{uid}});"/>
+
+<br/>
+<table>
+  {% if user_zone.player_id %}
+  <tr>
+    <td>
+       bồi ngoạn gỗ cốp pha 
+    </td>
+    <td>
+      <a href="{{settings.BASE_URL}}/admin/gather_player/?uid={{user_zone.player_id}}"target="_blank">{{ user_zone.player_id }}</a>&nbsp;&nbsp;
+      {% ifequal user_zone.player 1 %}
+        <input type="button"value="Cấm dùng"style="color: red"onclick="change_player_status({{user_zone.uid}}, 0)"/>
+      {% else %}
+        <input type="button"value="bắt đầu dùng"style="color: green"onclick="change_player_status({{user_zone.uid}}, 1)"/>
+      {% endifequal %}
+      {% if zone %}
+        <input type="button"value="bồi ngoạn số liệu"onclick="view_player_data({{user_zone.uid}}, '{{zone}}')"/>
+        <input type="button"value="login"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'online_time')"/>
+        <input type="button"value="logout"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'offline_time')"/>
+        <input type="button"value="canh tân gỗ cốp pha"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'update_player_data')"/>
+        <input type="button"value="sáng tạo bộ đội"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'troop_create')"/>
+        <input type="button"value="bổ binh"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'troop_add')"/>
+        <input type="button"value="cà mục đích"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'troop_move_aim')"/>
+        <input type="button"value="hành quân & gia tốc"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'troop_move')"/>
+        <input type="button"value="quá quan trảm tướng"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}', 'climb')"/>
+        <input type="button"value="quần hùng tranh giành"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}', 'pk_user')"/>
+        <input type="button"value="luận võ áp chú"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'pk_yard_gamble')"/>
+        <input type="button"value="lôi đài khiêu chiến"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'join_pk_arena')"/>
+        <input type="button"value="sung trị tiền lì xì"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'redbag_reward')"/>
+        <input type="button"value="thành trì kiến thiết"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'build_city_build')"/>
+        <input type="button"value="quốc gia sản nghiệp nhiệm vụ"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'work_country_task')"/>
+        <input type="button"value="nước ngoài tới chơi"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'club_alien_join_v1')"/>
+        <input type="button"value="đấu giá"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'cost_auction')"/>
+        <input type="button"value="phúc tướng khiêu chiến"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'pk_bless')"/>
+        <input type="button"value="bổ sung sáng tạo bộ đội"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'create_troop_num')"/>
+        <input type="button"value="lắp đặt xưng hào"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'hero_install_title')"/>
+        {% if settings.SUBTEST %}
+        <input type="button"value="nặng đưa gỗ cốp pha"
+        onclick="player_command({{user_zone.uid}}, '{{zone}}',
+        'reset_player_data')"/>
+        {% endif %}
+      {% endif %}
+    </td>
+  </tr>
+  {% endif %}
+  <tr>
+    <td>
+       trò chơi số trương mục 
+    </td>
+    <td>
+      {{user_zone.pf_key}}
+    </td>
+  </tr>
+  <tr>
+    <td>
+       bảng định số điện thoại di động 
+    </td>
+    <td>
+      <input size=10 name="tel"id="tel"value="{{user_zone.tel}}"/>
+      <input type="button"value="sửa chữa bảng định số điện thoại di động"onclick="mod_user_tel();"/>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input type="button"value="sanh thành đến lúc mật mã"onclick="user_interim_pwd();"/>
+    </td>
+    <td style="color:red"id="interim_pwd">
+      {{interim_pwd}}
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <input type="button"value="thanh không manh tiền"onclick="cleanup_ucoin();"/>
+    </td>
+  </tr>
+
+</table>
+{%endif%}
+<div>
+{% if app_user and mod_user %}
+  <a href="{{settings.BASE_URL}}/admin/app_user/user_power_rank/?zone={{merge_zone}}"> ngoạn gia đứng hàng thứ </a>
+  &nbsp;
+  &nbsp;
+  <a href="{{settings.BASE_URL}}/admin/app_user/chat_log/?zone={{merge_zone}}"> thế giới nói chuyện phiếm </a>
+  &nbsp;
+  &nbsp;
+  <a href="{{settings.BASE_URL}}/admin/msg/msg_view_user/?uid_zone={{uid}}|{{zone}}">Bug tặng lại </a>
+  &nbsp;
+  &nbsp;
+  <a href="{{settings.BASE_URL}}/admin/app_user/view_world/?zone={{merge_zone}}"> thế giới tin tức </a>
+  &nbsp;
+  &nbsp;
+  <a href="{{settings.BASE_URL}}/admin/reward/set_reward_to_user/?uid={{ new_uid }}"> ****Gửi Thư ****</a>
+  &nbsp;
+  &nbsp;
+  <a href="{{settings.BASE_URL}}/admin/app_user/drop_user_prop/?uid={{uid}}&zone={{ zone }}"> khấu trừ đạo cụ </a>
+  &nbsp;
+  &nbsp;
+  <a href="{{settings.BASE_URL}}/admin/app_user/view_duplicate/?uid={{uid}}"> nhảy qua phục chiến </a>
+  &nbsp;
+  &nbsp;
+  {% if settings.SUBTEST %}
+  <select id="duplicate_level">
+    {%for item in duplicate_level_list%}
+    <option {% if item.selected %}selected=selected{% endif %} value="{{item.id}}">{{item.name}}</option>
+    {%endfor%}
+  </select>
+  <input type="button"onclick="admin_join_duplicate()"value="báo danh nhảy qua phục chiến">
+  &nbsp;
+  &nbsp;
+  {% endif %}
+  {% if is_db_data %}
+  <input type="button"onclick="join_zone_server()"value="xen vào trò chơi">
+  {% endif %}
+  {% if api_black %}
+  <font color="red"> tiếp lời đóng cửa trung ：{{api_black}}</font>
+  <input type="button"onclick="free_api_black()"value="giải trừ đóng cửa">
+  {% endif %}
+</div>
+<div style="width: 100%; margin-top: 10px;">
+  <div id="mod0"style="width: 20%; float: left;">
+    <table border="1"cellpadding="0"cellspacing="0"style="max-width: 300px;">
+      {% for item in mod_user.0%}
+      {% if item.1%}
+        <tr>
+          <td style="width: 100px">
+            {{item.1}}
+          </td>
+          <td style="width: 150px">
+          {% if item.3 %}
+            <font color="{{ item.3 }}">{{ item.2 }}</font>
+          {% else %}
+            {{ item.2 }}
+          {% endif %}
+          </td>
+        </tr>
+      {%endif%}
+      {% endfor %}
+    </table>
+  </div>
+  <div id="mod1"style="width: 15%; float: left;">
+    <table border="1"cellpadding="0"cellspacing="0"style="max-width: 200px;">
+      {% for item in mod_user.1%}
+      {% if item.1%}
+        <tr>
+          <td style="width: 100px">
+            {{item.1}}
+          </td>
+          <td style="width: 100px">
+          {% if item.3 %}
+            <font color="{{ item.3 }}">{{ item.2 }}</font>
+          {% else %}
+            {{ item.2 }}
+          {% endif %}
+          </td>
+        </tr>
+      {%endif%}
+      {% endfor %}
+    </table>
+  </div>
+  <div id="mod2"style="width: 15%; float: left;">
+    <table border="1"cellpadding="0"cellspacing="0"style="max-width: 200px;">
+      {% for item in mod_user.2%}
+      {% if item.1%}
+        <tr>
+          <td style="width: 100px">
+            {{item.1}}
+          </td>
+          <td style="width: 100px">
+          {% if item.3 %}
+            <font color="{{ item.3 }}">{{ item.2 }}</font>
+          {% else %}
+            {{ item.2 }}
+          {% endif %}
+          </td>
+        </tr>
+      {%endif%}
+      {% endfor %}
+    </table>
+  </div>
+  <div id="mod3"style="width: 15%; float: left;">
+    <table border="1"cellpadding="0"cellspacing="0"style="max-width: 200px;">
+      {% for item in mod_user.3%}
+      {% if item.1%}
+        <tr>
+          <td style="width: 100px">
+            {{item.1}}
+          </td>
+          <td style="width: 100px">
+          {% if item.3 %}
+            <font color="{{ item.3 }}">{{ item.2 }}</font>
+          {% else %}
+            {{ item.2 }}
+          {% endif %}
+          </td>
+        </tr>
+      {%endif%}
+      {% endfor %}
+    </table>
+  </div>
+
+  <div style="float: left; width: 20%">
+    <div>
+      <a onclick="open_admin_pay_modal()"href="#"> người sử dụng sung trị </a>
+      &nbsp;&nbsp;
+      <a href="{{settings.BASE_URL}}/admin/pay_record/user_record/?uid={{uid}}"> sung trị ghi lại </a>
+      &nbsp;&nbsp;
+      <a href="{{settings.BASE_URL}}/admin/app_user/coin_records/?uid={{ uid }}&zone={{ zone }}"> tiêu phí ghi lại </a>
+      <br/>
+      Pay_ids:
+      <br/>
+      <textarea id="pay_ids"name="pay_ids"style="width: 300px; height: 100px">{{admin_pay_list}}</textarea>
+      <br/>
+    </div>
+  </div>
+{#  <div style="float: left;">#}
+{#    <table style="margin-left:55px;"cellpadding="0"cellspacing="0">#}
+{#      <tr>#}
+{#        <td>#}
+{#          <font color="red"> đánh gãy sung trị </font>#}
+{#        </td>#}
+{#      </tr>#}
+{#      {% for item in pay_config%}#}
+{#      <tr>#}
+{#        <td>#}
+{#          <input type="button"value="-"onclick="weixin_pid_reduce('{{item.0}}');"/>#}
+{#          <input class="text"readonly="readonly"type="txt"size="1"id="weixin_admin_pid_{{item.0}}"value="0"/>#}
+{#          <input type="button"value="+"onclick="weixin_pid_add('{{item.0}}');"/>#}
+{#        {{item.0}}--{{item.1}}#}
+{#        </td>#}
+{#      </tr>#}
+{#      {% endfor %}#}
+{#      <tr>#}
+{#        <td>#}
+{#          <input type="button"value="sanh thành hai chiều con ngựa"onclick="weixin_admin_pay();"/>#}
+{#          <span id="pay_des"style="display:none;color:red;"></span>#}
+{#          <br/>#}
+{#          <br/>#}
+{#          <img style="display:none;width:140px;height:140px;"id="pay_img"/>#}
+{#        </td>#}
+{#      </tr>#}
+{#    </table>#}
+{#  </div>#}
+</div>
+<div style="width: 50%; clear: both;">
+  <table border="1"cellpadding="0"cellspacing="0">
+    {% for item in mod_user.4%}
+    {% if item.1%}
+      <tr>
+        <td style="width: 100px">
+          {{item.1}}
+        </td>
+        <td>
+          {%for h in item.2%}
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_user_hero_dict/?uid_zone={{uid}}|{{zone}}&hid={{h.0}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{h.2}}{{h.1}},</a>
+          {%endfor%}
+        </td>
+      </tr>
+    {%endif%}
+    {% endfor %}
+  </table>
+</div>
+
+
+<div style="width: 100%; margin-top: 10px; clear: both;">
+  <input type="button"value="thanh lý bộ đội"onclick="cleanup_troops();"/>
+  <input type="button"value="nảy sinh cái mới địa cung"onclick="refresh_tomb();"/>
+  <input type="button"value="đồng bộ chia xẻ số liệu"onclick="sync_invitation();"/>
+  {% if settings.SUBTEST %}
+  <input type="button"value="bắt chước hợp phục kết toán"onclick="simulate_merge();"/>
+  <input type="button"value="thanh lý gia viên kiến trúc"onclick="cleanup_homeland_building();"/>
+  <input type="button"value="thanh lý chính vụ"onclick="cleanup_ng_task();"/>
+  {% endif %}
+</div>
+
+<div style="width: 100%; height: 330px; margin-top: 10px; clear: both;">
+  <div style="width: 45%; float: left; max-width: 750px">
+    <font color="red"> Đóng băng thao tác </font>
+&nbsp;
+&nbsp;
+    <a href="{{settings.BASE_URL}}/admin/app_user/freeze_history/?uid={{uid}}&zone={{zone}}"> Đóng băng ghi lại </a>
+    <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/freeze_do/"method="post">
+      <table border="1"cellpadding="0"cellspacing="0">
+        <tr>
+          <td>
+             Đóng băng trạng thái 
+          </td>
+          <td>
+            {%ifequal freeze_list.0 0%}
+            <font color="green"> vị Đóng băng </font>
+            {%endifequal%}
+            {%ifequal freeze_list.0 1%}
+            <font color="red"> Đóng băng đăng ký </font>
+            {%endifequal%}
+            {%ifequal freeze_list.0 2%}
+            <font color="red"> cấm lên tiếng </font>
+            {%endifequal%}
+          </td>
+        </tr>
+        <tr>
+          <td>
+             Đóng băng thời hạn cuối cùng 
+          </td>
+          <td>
+            <font color="{{freeze_list.5}}">
+            {{freeze_list.1}}
+            </font>
+          </td>
+        </tr>
+        <tr>
+          <td>
+             Đóng băng nguyên nhân 
+          </td>
+          <td>
+            {{freeze_list.2}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+             thao tác nhân viên quản lý 
+          </td>
+          <td>
+            {{freeze_list.3}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+             Đóng băng thao tác thời gian 
+          </td>
+          <td>
+            {{freeze_list.4}}
+          </td>
+        </tr>
+        <tr>
+          <td width="200">
+             Đóng băng phương thức 
+          </td>
+          <td width="200">
+          <select id='freeze' name='freeze'>
+            <option value='1'> Đóng băng đăng ký </option>
+            <option value='2'> cấm lên tiếng </option>
+            <option value='0'> mổ phong </option>
+            </select>
+
+          </td>
+        </tr>
+        <tr>
+          <td>
+             Đóng băng thời gian 
+          </td>
+          <td>
+          <input size="5"id="freeze_hours"name="freeze_hours"value="-1"/>(tiếng đồng hồ)(-1=2050 niên)
+          </td>
+        </tr>
+        <tr>
+          <td>
+             Đóng băng nguyên nhân 
+          </td>
+          <td>
+          <select id="freeze_msg"name="freeze_msg"onchange="other_freeze_msg();">
+            <option value='-1'> cái khác </option>
+            {%for item in freeze_msgs%}
+            <option value='{{item}}'>{{item}}</option>
+            {%endfor%}
+            </select>
+          <input id="other_msg"name="other_msg"value=""/>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <input type="hidden"name="uid"value="{{uid}}"/>
+            <input type="hidden"name="zone"value="{{zone}}"/>
+            <input type="hidden"name="uname"value="{{uname}}"/>
+          <input type="submit"value="đệ trình thao tác"/>
+          </td>
+          <td>
+          </td>
+        </tr>
+
+
+      </table>
+    </form>
+  </div>
+  <div style="float: left; max-height: 300px; overflow: auto; margin-left: 10px; max-width: 650px">
+    <font color="red"> nhảy qua phục chiến Cấm thi đấu trạng thái </font>
+    <table border="1"cellpadding="0"cellspacing="0">
+      <tr>
+        <td style="width: 150px">
+           Cấm thi đấu trạng thái 
+        </td>
+        <td style="width: 200px">
+          <font color="{{ duplicate_freeze.color }}">{{ duplicate_freeze.state }}</font>
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 150px">
+           Cấm thi đấu thời hạn cuối cùng 
+        </td>
+        <td style="width: 200px">
+          <font color="{{ duplicate_freeze.color }}">{{ duplicate_freeze.ban_time }}</font>
+        </td>
+      </tr>
+      <tr>
+        <td style="width: 150px">
+        </td>
+        <td style="width: 200px">
+          <input type="button"value="giải trừ Cấm thi đấu trạng thái"onclick="relieve_duplicate_ban()">
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div style="float: left; max-height: 300px; overflow: auto; margin-top: 20px; margin-left: 10px; max-width: 650px">
+    <table border="1"cellpadding="0"cellspacing="0">
+      <tr>
+        <td>
+           nhân viên quản lý 
+        </td>
+        <td>
+           thời gian 
+        </td>
+        <td>
+          Uid|Zone
+        </td>
+      </tr>
+      {%for item in admin_log%}
+      <tr>
+        <td>
+          {{item.admin_user}}
+        </td>
+        <td>
+          {{item.subtime}}
+        </td>
+        <td>
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.content}}">{{item.content}}</a>
+        </td>
+      </tr>
+      {%endfor%}
+    </table>
+  </div>
+</div>
+
+
+<div style="width: 100%;">
+  <div style="width: 100%; float: left; margin: 10px">
+    <div id='desc' name="desc"style="color:red; display:none"><font size="22"> sửa chữa thành công 。。。</font></div>
+    <br/>
+    <br/>
+     chi tiết cặn kẽ ：
+
+
+    <input style="color:red"type="button"value="đệ trình"onclick="save_user();"/>
+    &nbsp;&nbsp;
+    <input style="color:red"type="button"value="nảy sinh cái mới"onclick="view_user({{ zone }});"/>
+    <br/>
+
+    <textarea id="app_user"name="app_user"style="width: 90%; height: 500px">{{app_user}}</textarea>
+  </div>
+</div>
+{% endif %}
+
+<div id="create_role_modal"class="modal">
+ <!-- Modal content -->
+ <div class="modal-content"style="width: 40%">
+  <div class="modal-header">
+   <span class="modal-close"onclick="close_role_modal()">x</span>
+   <h2> sáng tạo tân vai </h2>
+  </div>
+  <div class="modal-body"style="height: 200px">
+    <p> tuyển trạch nguyên khu:
+      <select id="old_zone"style="width: 200px">
+        {%for item in old_zone_list%}
+        <option value="{{item.0}}">{{item.1}}</option>
+        {%endfor%}
+      </select>
+    </p>
+    <p> tuyển trạch hợp khu:
+      <select id="merge_zone"style="width: 200px">
+        {%for item in merge_zone_list%}
+        <option value="{{item.0}}">{{item.1}}</option>
+        {%endfor%}
+      </select>
+    </p>
+    <input type="hidden"value="{{ uid }}"/>
+    <p><input type='submit' value=' sáng tạo ' onclick="create_role()"/>
+  </div>
+ </div>
+</div>
+
+
+
+
+<div id="admin_pay"class="modal">
+ <!-- Modal content -->
+ <div class="modal-content">
+  <div class="modal-header">
+   <span class="modal-close"onclick="close_admin_pay_modal()">x</span>
+   <h2>
+     <span id="admin_pay_title"></span>
+     <span id="pay_succ"style="color:red; display:none; margin-right: 120px"><font size="4"> sung trị thành công...</font></span>
+   </h2>
+  </div>
+  <div class="modal-body"style="height: 600px;overflow-y:scroll">
+    {% for item in pay_config %}
+    <div>
+      <font color="blue">{{ item.type }}:</font>
+      <br/>
+      {% for pay_item in item.data %}
+      <input type="button"style="margin: 2px"value="{{pay_item.1}}"onclick="admin_pay('{{pay_item.0}}','{{pay_item.1}}');"/>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+ </div>
+</div>
+
+<div id="view_player"class="modal">
+ <!-- Modal content -->
+ <div class="modal-content">
+  <div class="modal-header">
+   <span class="modal-close"onclick="close_view_player_modal()">x</span>
+   <h2>
+     <span id="view_player_title"></span>
+   </h2>
+  </div>
+  <div class="modal-body"style="height: 600px;overflow-y:scroll">
+    <textarea id="player_data"name="player_data"style="width: 90%; height: 500px"></textarea>
+  </div>
+ </div>
+</div>
+{% endblock %}

@@ -1,0 +1,444 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  var activeZone = undefined;
+
+  $(document).ready(function () {
+    var zone = $nx.request.getUrlParam('zone', window);
+    if (zone) {
+      view_world(zone);
+      window.location.hash="#"+ zone;
+    }
+  });
+
+  function view_world(zone){
+    if (activeZone!== zone) {
+      $('#'+activeZone).removeClass('active-zone');
+      $('#'+zone).addClass('active-zone');
+      activeZone = zone;
+    }
+    $nx.request.postfs('app_user/view_world/', {'zone': zone}, function (data) {
+      $('#world_body').html(data.world_body)
+    })
+  }
+
+  function change_country_advise_score(country_id) {
+    var renqi_score = $("#renqi_score_"+ country_id).val();
+    var haoqi_score = $("#haoqi_score_"+ country_id).val();
+    var args = {
+      zone: activeZone,
+      country_id: country_id,
+      haoqi_score: haoqi_score,
+      renqi_score: renqi_score,
+      change_key: 'change_country_advise_score',
+    }
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function change_world_lv(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['world_lv'] = $('#world_lv').val();
+    args['pve_lv'] = $('#pve_lv').val();
+    args['finish_gtask_max'] = $('#finish_gtask_max').val();
+    args['change_key'] = 'change_world_lv';
+
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+  function change_country_task(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['country_task'] = $('#country_task').val();
+    args['change_key'] = 'change_country_task';
+    var obj=document.getElementsByName("country_id");
+      for (var i=0;i<obj.length;i++){ 
+        if(obj[i].checked){
+          args['country_id']=obj[i].value;
+        } 
+      }
+
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function change_country_king(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['king_uid'] = $('#king_uid').val();
+    args['change_key'] = 'change_country_king';
+    var obj=document.getElementsByName("country_id");
+      for (var i=0;i<obj.length;i++){ 
+        if(obj[i].checked){
+          args['country_id']=obj[i].value;
+        } 
+      }
+
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function change_xiangyang_country(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'change_xiangyang_country';
+    var obj=document.getElementsByName("country_id");
+      for (var i=0;i<obj.length;i++){ 
+        if(obj[i].checked){
+          args['country_id']=obj[i].value;
+        } 
+      }
+
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function clean_land_lost(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'clean_land_lost';
+    var obj=document.getElementsByName("country_id");
+      for (var i=0;i<obj.length;i++){
+        if(obj[i].checked){
+          args['country_id']=obj[i].value;
+        }
+      }
+
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+  function report_country_data() {
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'report_country_data'
+    var obj=document.getElementsByName("country_id")
+    for (var i=0;i<obj.length;i++){
+      if(obj[i].checked){
+        args['country_id']=obj[i].value;
+      }
+    }
+    $.post('{{ settings.BASE_URL }}/admin/app_user/change_world/', args,
+        function (data) {
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+
+        }, 'json')
+  }
+
+  function init_country(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'init_country';
+    var obj=document.getElementsByName("country_id");
+      for (var i=0;i<obj.length;i++){ 
+        if(obj[i].checked){
+          args['country_id']=obj[i].value;
+        } 
+      }
+
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function init_city(init_type){
+    var args = {}
+    args['zone'] = activeZone;
+    args['init_type'] = init_type
+    args['change_key'] = 'init_city';
+    var obj=document.getElementsByName("city_id");
+      for (var i=0;i<obj.length;i++){ 
+        if(obj[i].checked){
+          args['city_id']=obj[i].value;
+        } 
+      }
+    if (args['city_id']=='city'){
+      args['city_id'] = $('#cid').val()
+    }
+
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function init_pk_yard(){
+    var args = {}
+    args['zone'] = activeZone;
+    $.post('{{ settings.BASE_URL}}/admin/app_user/init_pk_yard/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function clean_ask(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'clean_ask';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function clean_elect(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'clean_elect';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function clean_chat_cache(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'clean_chat_cache';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function clean_pk_yard_new(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'clean_pk_yard_new';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function clean_new_milepost(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'clean_new_milepost';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function simulate_merge(){
+    var args = {}
+    args['zone'] = activeZone;
+    if (confirm(' xác định đối cai khu chấp hành bắt chước hợp phục kết toán thao tác sao ？')) {
+      $.post('{{ settings.BASE_URL}}/admin/app_user/simulate_merge/', args,
+         function(data){
+           if(data.state=='success'){
+            $('#log_list').html(data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+      }
+    }
+
+  function honour_done(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'honour_done';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function reset_exorcism(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'reset_exorcism';
+    args['bindex'] = $('#bindex').val()
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function get_pk_yard_log(){
+    var ym = $('#ym').val();
+    var tn = $('#tn').val();
+    var sn = $('#sn').val();
+    window.open('{{settings.BASE_URL}}/admin/app_user/get_pk_yard_log/?zone='
+        + activeZone + '&ym=' + ym + '&tn=' + tn + '&sn=' + sn,'newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
+  }
+
+  function succ(){
+    return false;
+    $('#desc').show();
+    setTimeout("$('#desc').hide()",2000)
+  }
+
+  function refresh_world(world_json,world_lv,log_str_list){
+    $('#world').val('');
+    setTimeout("$('#world').val("+JSON.stringify(world_json)+")",1000)
+    $('#world_lv').val(world_lv);
+    $('#log_list').html(log_str_list);
+  }
+
+
+
+  function refresh_weather(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'refresh_weather';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+  function change_use_function(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['change_key'] = 'change_use_function';
+    var obj=document.getElementsByName("use_function");
+      for (var i=0;i<obj.length;i++){ 
+        if(obj[i].checked){
+          args['change_function']=obj[i].value;
+        } 
+      }
+    if (args['change_function'] == undefined) {
+      alert(' xuất hiện lệch lạc: thỉnh tuyển trạch yếu thay đổi trạng thái công năng ')
+    }
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_world/', args,
+         function(data){
+           if(data.state=='success'){
+            refresh_world(data.world_json,data.world_lv,data.log_str_list);
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function test_story_dungeon(){
+    var args = {}
+    args['zone'] = activeZone;
+    args['dungeon_id'] = document.getElementById("dungeon_id").value;
+    args['puppet_lv'] = $('#puppet_lv').val()
+    args['times'] = $('#times').val()
+    $.post('{{ settings.BASE_URL}}/admin/app_user/test_story_dungeon/', args,
+         function(data){
+           if(data.state=='success'){
+             $('#aver_time').text(' bình quân thời gian ：' + data.test_data.aver_seconds)
+             $('#aver_goals').text(' bình quân thành tựu ：' + data.test_data.aver_goals)
+             $('#aver_gifts').text(' bình quân thưởng cho ：' + data.test_data.aver_gifts)
+
+           }else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+
+{%if zone_list%}
+<div class="zone-list">
+  <div>
+    <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/view_world/"method="post">
+    <input type="hidden"name="zone"id="zone"value=""/>
+    </form>
+  </div>
+  <table>
+    {%for item in zone_list%}
+    <tr>
+      {%for k,v in item%}
+        <td align="left">
+          <input id='{{ k }}' style="{%ifequal k zone%}color:red;{%endifequal%}{%ifequal k zone%}font-weight:bold;{%endifequal%}"value='{{v}}' type="button"onclick="view_world('{{k}}');"/>
+        </td>
+      {%endfor%}
+    </tr>
+    {%endfor%}
+  </table>
+</div>
+{%endif%}
+<br/>
+
+<div id="world_body"></div>
+{% endblock %}

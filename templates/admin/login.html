@@ -1,0 +1,52 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  $(document).ready(function () {
+    $('#img_verify_code').hide();
+  });
+  function getSmsCode() {
+    var username = $('#username').val();
+    var password = $('#password').val();
+
+    $nx.request.postfs('sms_verify_code/', {username: username, password: password}, function (data) {
+      if (data.verify_type === 'img_code') {
+        $('#sms_code').hide();
+        $('#img_verify_code').show();
+        $('#img_verify_code').html('<img src="{{settings.BASE_URL}}/admin/verify_code/?v={{nocache}}">')
+      } else {
+        $('#img_verify_code').hide();
+        $('#img_verify_code').html('')
+        alert(' đăng ký nghiệm chứng con ngựa dĩ gữi đi ！');
+      }
+    })
+  };
+</script>
+  <div>
+    <p style="font-size: 500%; margin: 0 0 0 0; color: {{ settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_TITLE }}">{{ settings.ADMIN_STYLE_CONFIG.TITLE }}</p>
+  </div>
+<div>
+  <form action='{{settings.BASE_URL}}/admin/' method='post' target='_top'>
+    {% if error %}
+      {% ifequal error 'null_username' %}
+      <font color="red"> người sử dụng không tồn tại </font>
+      {% endifequal %}
+      {% ifequal error 'err_userpass' %}
+      <font color="red"> người sử dụng danh hoặc mật mã lệch lạc </font>
+      {% endifequal %}
+      {% ifequal error 'err_verify_code' %}
+      <font color="red"> nghiệm chứng con ngựa lệch lạc hoặc đã qua kỳ ， thỉnh một lần nữa thu hoạch </font>
+      {% endifequal %}
+    {%endif%}
+    <p> Tài Khoản (admin): <input name='username' id='username'/></p>
+    <p> Pass: (111111): <input name='password' type='password' id='password'/></p>
+    <p id="img_verify_code"></p>
+    <!--<p> nghiệm chứng con ngựa: <input name='verify_code' style="width: 70px;"/>&nbsp;&nbsp;<button id="sms_code"type="button"onclick="getSmsCode()"> thu hoạch nghiệm chứng con ngựa </button></p> -->
+    <p><input type='submit' value=' Đăng nhập ' />
+  </form>
+
+  <font class="Apple-style-span"color="{{settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_TITLE}}"size="7"><b>
+      {{settings.ADMIN_STYLE_CONFIG.APP_NAME}}({{settings.ADMIN_STYLE_CONFIG.APP_NAME_CN}})</b></font>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,541 @@
+{%if zone%}
+<script type="text/javascript">
+  $("input[type=radio][name=selectModel]").change(function () {
+    var selectModel = $('input:radio[name="selectModel"]:checked').val();
+    activeModel = selectModel;
+    $nx.request.postfs('app_user/view_world_report/', {'zone': activeZone, 'smodel': selectModel}, function (data) {
+      $('#world_report_body').html(data.world_report_body)
+    })
+  })
+</script>
+<div class="row">
+  <div class="btn-group btn-group-sm"role="group">
+    <div class="radio">
+      <h4><font color="red">{{zone}}</font></h4>
+    </div>
+  </div>
+  <div class="btn-group btn-group-sm"role="group">
+    <div class="radio">
+      <p> tuyển trạch khuông khối ：</p>
+    </div>
+  </div>
+  <div class="btn-group btn-group-sm"role="group">
+    <div class="radio">
+      <label>
+        <input type="radio"name="selectModel"value='core' {%ifequal smodel 'core'%}checked{%endifequal%}> hạch tâm 
+      </label>
+    </div>
+  </div>
+  <div class="btn-group btn-group-sm"role="group">
+    <div class="radio">
+      <label>
+        <input type="radio"name="selectModel"value='cities' {%ifequal smodel 'cities'%}checked{%endifequal%}> lãnh thổ 
+      </label>
+    </div>
+  </div>
+  <div class="btn-group btn-group-sm"role="group">
+    <div class="radio">
+      <label>
+        <input type="radio"name="selectModel"value='warehouse' {%ifequal smodel 'warehouse'%}checked{%endifequal%}> quốc khố 
+      </label>
+    </div>
+  </div>
+  <div class="btn-group btn-group-sm"role="group">
+    <div class="radio">
+      <label>
+        <input type="radio"name="selectModel"value='official' {%ifequal smodel 'official'%}checked{%endifequal%}> chức quan 
+      </label>
+    </div>
+  </div>
+  <div class="btn-group btn-group-sm"role="group">
+    <div class="radio">
+      <label>
+        <input type="radio"name="selectModel"value='hero' {%ifequal smodel 'hero'%}checked{%endifequal%}> đan tương 
+      </label>
+    </div>
+  </div>
+</div>
+
+{%ifequal smodel 'core'%}
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>
+         khai phục niên độ 
+      </th>
+      <th>
+         quốc gia 
+      </th>
+      <th>
+         đô thành sổ 
+      </th>
+      <th>
+         thành trì sổ 
+      </th>
+      <th>
+         sinh động cao chiến sổ 
+      </th>
+      <th>
+         sinh động trung kiên sổ 
+      </th>
+      <th>
+         sinh động thấp chiến sổ 
+      </th>
+      <th>
+         bài danh vi tích phân 
+      </th>
+      <th>
+         sinh động mũi nhọn chiến lực 
+      </th>
+      <th>
+         sinh động tổng chiến lực 
+      </th>
+      <th>
+        30 thiên sinh động sung trị 
+      </th>
+      <th>
+         sinh động thực tế sung trị 
+      </th>
+      <th>
+         sinh động giả thuyết sung trị 
+      </th>
+      <th>
+         sinh động Coin
+      </th>
+      <th>
+         tổng hợp lại thực lực của một nước 
+      </th>
+      <th>
+         tiền 20 chiến công và 
+      </th>
+      <th>
+         quốc gia sinh động 
+      </th>
+      <th>
+         đan tương tối cao chiến lực 
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for item in data%}
+      {%for c in item.country_list%}
+      <tr class={{item.bg_color}}>
+        {%ifequal c.country 0%}
+        <td rowspan="3"style="vertical-align:middle; text-align:center">{{item.years}}</td>
+        {%endifequal%}
+        <td>{{c.country_name}}</td>
+        <td>{{c.capital_num}}</td>
+        <td>{{c.city_num}}</td>
+        <td>{{c.powerful_num}}</td>
+        <td>{{c.active_num}}</td>
+        <td>{{c.normal_num}}</td>
+        <td>{{c.rank_score}}</td>
+        <td>{{c.top_power}}</td>
+        <td>{{c.active_power_sum}}</td>
+        <td>{{c.thirty_pay_money}}</td>
+        <td>{{c.active_pay}}</td>
+        <td>{{c.active_pay_fake}}</td>
+        <td>{{c.active_coin}}</td>
+        <td>{{c.multiple_power}}</td>
+        <td>{{c.top20_country_credit}}</td>
+        <td>{{c.country_active}}</td>
+        <td>{{c.best_hero_power}}</td>
+      </tr>
+      {%endfor%}
+    {%endfor%}
+  </tbody>
+</table>
+{%endifequal%}
+
+{%ifequal smodel 'cities'%}
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>
+         khai phục niên độ 
+      </th>
+      <th>
+         quốc gia 
+      </th>
+      <th>
+         Tương Dương sổ 
+      </th>
+      <th>
+         đô thành sổ 
+      </th>
+      <th>
+         quan thành sổ 
+      </th>
+      <th>
+         quận thành sổ 
+      </th>
+      <th>
+         thị trấn sổ 
+      </th>
+      <th>
+         tất yếu sổ 
+      </th>
+      <th>
+         thành trì tổng số 
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for item in data%}
+      {%for c in item.country_list%}
+      <tr class={{item.bg_color}}>
+        {%ifequal c.country 0%}
+        <td rowspan="3"style="vertical-align:middle; text-align:center">{{item.years}}</td>
+        {%endifequal%}
+        <td>{{c.country_name}}</td>
+        <td>{{c.city_9}}</td>
+        <td>{{c.city_4}}</td>
+        <td>{{c.city_3}}</td>
+        <td>{{c.city_2}}</td>
+        <td>{{c.city_1}}</td>
+        <td>{{c.city_0}}</td>
+        <td>{{c.total}}</td>
+      </tr>
+      {%endfor%}
+    {%endfor%}
+  </tbody>
+</table>
+{%endifequal%}
+
+{%ifequal smodel 'warehouse'%}
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>
+         khai phục niên độ 
+      </th>
+      <th>
+         quốc gia 
+      </th>
+      <th>
+         Tương Dương sổ 
+      </th>
+      <th>
+         đô thành sổ 
+      </th>
+      <th>
+         thành trì tổng số 
+      </th>
+      <th>
+         hoàng kim tồn kho 
+      </th>
+      <th>
+         ngân lượng tồn kho 
+      </th>
+      <th>
+         lương thảo tồn kho 
+      </th>
+      <th>
+         niên độ tiêm địch sổ 
+      </th>
+      <th>
+         niên độ chiến tổn sổ 
+      </th>
+      <th>
+         niên độ kiến thiết giá trị 
+      </th>
+      <th>
+         thưởng cho tổng bội số 
+      </th>
+      <th>
+         phân phát nhân số 
+      </th>
+      <th>
+         đan bội hoàng kim 
+      </th>
+      <th>
+         đan bội ngân lượng 
+      </th>
+      <th>
+         đan bội lương thảo 
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for item in data%}
+      {%for c in item.country_list%}
+      <tr class={{item.bg_color}}>
+        {%ifequal c.country 0%}
+        <td rowspan="3"style="vertical-align:middle; text-align:center">{{item.years}}</td>
+        {%endifequal%}
+        <td>{{c.country_name}}</td>
+        <td>{{c.city_9}}</td>
+        <td>{{c.city_4}}</td>
+        <td>{{c.city_num}}</td>
+        <td>{{c.coin}}</td>
+        <td>{{c.gold}}</td>
+        <td>{{c.food}}</td>
+        <td>{{c.year_kill_num}}</td>
+        <td>{{c.year_dead_num}}</td>
+        <td>{{c.year_build}}</td>
+        <td>{{c.reward_copies}}</td>
+        <td>{{c.user_num}}</td>
+        <td>{{c.single_coin}}</td>
+        <td>{{c.single_gold}}</td>
+        <td>{{c.single_food}}</td>
+      </tr>
+      {%endfor%}
+    {%endfor%}
+  </tbody>
+</table>
+{%endifequal%}
+
+{%ifequal smodel 'official'%}
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>
+         khai phục niên độ 
+      </th>
+      <th>
+         quốc gia 
+      </th>
+      <th>
+         quốc vương 
+      </th>
+      <th>
+         chiếu tướng 1
+      </th>
+      <th>
+         chiếu tướng 2
+      </th>
+      <th>
+         chiếu tướng 3
+      </th>
+      <th>
+         chiếu tướng 4
+      </th>
+      <th>
+         quân sư 
+      </th>
+      <th>
+         quận thừa 
+      </th>
+      <th>
+         tế rượu 
+      </th>
+      <th>
+         Ngự Sử 
+      </th>
+      <th>
+         tướng quốc 
+      </th>
+      <th>
+         chủ bộ 
+      </th>
+      <th>
+         thế tử 
+      </th>
+      <th>
+         Đô úy 
+      </th>
+      <th>
+         dĩ phong Thái Thú 
+      </th>
+      <th>
+         nhưng phong Thái Thú 
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for item in data%}
+      {%for c in item.country_list%}
+      <tr class={{item.bg_color}}>
+        {%ifequal c.country 0%}
+        <td rowspan="3"style="vertical-align:middle; text-align:center">{{item.years}}</td>
+        {%endifequal%}
+        <td>{{c.country_name}}</td>
+        <td>
+          {%if c.official_0%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_0.0}}">{{c.official_0.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_1%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_1.0}}">{{c.official_1.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_2%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_2.0}}">{{c.official_2.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_3%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_3.0}}">{{c.official_3.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_4%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_4.0}}">{{c.official_4.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_5%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_5.0}}">{{c.official_5.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_6%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_6.0}}">{{c.official_6.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_7%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_7.0}}">{{c.official_7.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_8%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_8.0}}">{{c.official_8.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_9%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_9.0}}">{{c.official_9.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_10%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_10.0}}">{{c.official_10.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_11%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_11.0}}">{{c.official_11.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>
+          {%if c.official_12%}
+          <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_12.0}}">{{c.official_12.1}}</a>
+          {%else%}
+          --
+          {%endif%}
+        </td>
+        <td>{{c.mayor_num}}</td>
+        <td>{{c.not_mayor_num}}</td>
+      </tr>
+      {%endfor%}
+    {%endfor%}
+  </tbody>
+</table>
+{%endifequal%}
+
+{%ifequal smodel 'hero'%}
+<table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>
+         khai phục niên độ 
+      </th>
+      <th>
+         quốc gia 
+      </th>
+      <th>
+        No.1
+      </th>
+      <th>
+        No.2
+      </th>
+      <th>
+        No.3
+      </th>
+      <th>
+        No.4
+      </th>
+      <th>
+        No.5
+      </th>
+      <th>
+        No.6
+      </th>
+      <th>
+        No.7
+      </th>
+      <th>
+        No.8
+      </th>
+      <th>
+        No.9
+      </th>
+      <th>
+        No.10
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for item in data%}
+      {%for c in item.country_list%}
+      <tr class={{item.bg_color}}>
+        {%ifequal c.country 0%}
+        <td rowspan="3"style="vertical-align:middle; text-align:center">{{item.years}}</td>
+        {%endifequal%}
+        <td>{{c.country_name}}</td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=0&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.0.0}}({{c.0.1}})</a>
+        </td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=1&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.1.0}}({{c.1.1}})</a>
+        </td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=2&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.2.0}}({{c.2.1}})</a>
+        </td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=3&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.3.0}}({{c.3.1}})</a>
+        </td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=4&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.4.0}}({{c.4.1}})</a>
+        </td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=5&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.5.0}}({{c.5.1}})</a>
+        </td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=6&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.6.0}}({{c.6.1}})</a>
+        </td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=7&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.7.0}}({{c.7.1}})</a>
+        </td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=8&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.8.0}}({{c.8.1}})</a>
+        </td>
+        <td>
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=9&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{c.9.0}}({{c.9.1}})</a>
+        </td>
+      </tr>
+      {%endfor%}
+    {%endfor%}
+  </tbody>
+</table>
+{%endifequal%}
+
+
+{%endif%}

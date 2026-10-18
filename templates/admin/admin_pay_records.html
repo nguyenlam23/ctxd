@@ -1,0 +1,76 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script>
+  function admin_pay_sort(order_by) {
+    window.location.replace('{{ settings.BASE_URL}}/admin/admin_pay_records/?username={{ username }}&show_real={{ show_real }}&order_by=' + order_by)
+  };
+  function show_real_data() {
+    window.location.replace('{{ settings.BASE_URL}}/admin/admin_pay_records/?username={{ username }}&show_real=1')
+  };
+</script>
+<h2> tài khoản sung trị ghi lại </h2>
+
+  <div>
+  <button type="button"onclick="show_real_data()"> biểu hiện thực tế sung trị </button>
+  </div>
+<table border='1'>
+  <tr>
+    <th> thao tác người sử dụng </th>
+    <th> sung trị UID</th>
+    <th> gần nhất sung trị khu phục </th>
+    <th> gần nhất sung trị nick name </th>
+    <th>PF</th>
+    <th> ngôi cao ID</th>
+    <th>
+       giả thuyết sung trị tổng ngạch 
+      <span class="sort-wrapper">
+        <i class="sort-caret ascending"onclick="admin_pay_sort('pay_money')"></i>
+        <i class="sort-caret descending"onclick="admin_pay_sort('-pay_money')"></i>
+      </span>
+    </th>
+    <th>
+       lúc ban đầu giả thuyết sung trị thời gian 
+      <span class="sort-wrapper">
+        <i class="sort-caret ascending"onclick="admin_pay_sort('first_time')"></i>
+        <i class="sort-caret descending"onclick="admin_pay_sort('-first_time')"></i>
+      </span>
+    </th>
+    <th>
+       gần nhất giả thuyết sung trị thời gian 
+      <span class="sort-wrapper">
+        <i class="sort-caret ascending"onclick="admin_pay_sort('last_time')"></i>
+        <i class="sort-caret descending"onclick="admin_pay_sort('-last_time')"></i>
+      </span>
+    </th>
+    {% ifequal show_real 1 %}
+    <th style="color: #ff0000"> thực tế sung trị tổng ngạch </th>
+    <th style="color: #ff0000"> lúc ban đầu thực tế sung trị thời gian </th>
+    <th style="color: #ff0000"> gần nhất thực tế sung trị thời gian </th>
+    <th style="color: #ff0000"> có hay không tiên có thực tế sung trị </th>
+    <th style="color: #ff0000">20 cấp đã ngoài khu phục số lượng </th>
+    {% endifequal %}
+  </tr>
+  {% for item in records %}
+  <tr>
+    <td>{{ item.admin_user }}</td>
+    <td><a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid={{item.uid}}">{{item.uid}}</a></td>
+    <td>{{ item.last_zone}}</td>
+    <td>{{ item.last_uname}}</td>
+    <td>{{ item.pf}}</td>
+    <td>{{ item.pf_key}}</td>
+    <td>{{ item.pay_money}}</td>
+    <td>{{ item.first_time}}</td>
+    <td>{{ item.last_time}}</td>
+    {% ifequal show_real 1 %}
+    <td style="color: #ff0000">{{ item.real_pay_money}}</td>
+    <td style="color: #ff0000">{{ item.real_first_time}}</td>
+    <td style="color: #ff0000">{{ item.real_last_time}}</td>
+    <td style="color: #ff0000">{{ item.first_real}}</td>
+    <td style="color: #ff0000">{{ item.lv20_count}}</td>
+    {% endifequal %}
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+

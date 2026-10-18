@@ -1,0 +1,204 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  $(document).ready(function () {
+    get_server_list();
+  });
+
+
+  function get_server_list() {
+    $.get('{{ settings.BASE_URL}}/admin/maintain/get_server_list/', {}, function (data) {
+      $('#server_list_body').html(data.server_list_body);
+    }, 'json')
+  }
+
+  function push_maintain_status(zone, maintain_type, maintain_status) {
+    $.post('{{ settings.base_url }}/admin/maintain/push_zone_maintain_status/', {
+      'zone': zone,
+      'maintain_type': maintain_type,
+      'maintain_status': maintain_status
+      }, function(data){
+        if(data.state=='error'){
+          console.error(data.msg)
+        }
+      },
+      'json')
+  }
+
+  function get_zone_maintain_status(zone) {
+    $.get('{{ settings.BASE_URL}}/admin/maintain/get_zone_maintain_status/', {zone: zone}, function (data) {
+      $("#lnp_"+zone).css("color", data[1]);
+      $("#inp_"+zone).css("color", data[0]);
+    }, 'json')
+  };
+
+  function submit_maintain_config () {
+    var config_value = $("#config_value").val();
+    $.post('{{ settings.base_url }}/admin/maintain/', {
+      'config_value': config_value
+    }, function(data){
+      if(data.state=='success'){
+        $('#desc').show();
+        setTimeout("$('#desc').hide()",4000)
+      } else{
+        alert(' xuất hiện lệch lạc: '+data.msg)
+      }
+    },
+    'json')
+  };
+
+  function submit_zone_maintain (status) {
+    $.post('{{ settings.base_url }}/admin/maintain/change_zone_maintain_status/', {
+      'status': status
+    }, function (data) {
+      if(data.state == 'success'){
+        change_maintain_status(data.current_maintain_status);
+        $('#zone_desc').show();
+        setTimeout("$('#zone_desc').hide()",4000)
+        data.zone_list.forEach(function (item) {
+          if (item[1] === 1) {
+            push_maintain_status(item[0], 'zone', status)
+          }
+        });
+        get_server_list();
+      } else {
+        alert(' xuất hiện lệch lạc: '+ data.msg)
+      }
+    }, 'json')
+  };
+
+  function submit_full_maintain (status) {
+    $.post('{{ settings.base_url }}/admin/maintain/change_full_maintain_status/', {
+      'status': status
+    }, function(data){
+      if(data.state=='success'){
+        change_maintain_status(data.current_maintain_status)
+        $('#full_desc').show();
+        setTimeout("$('#full_desc').hide()",4000)
+        data.zone_list.forEach(function (item) {
+          push_maintain_status(item[0], 'full', status)
+        });
+        get_server_list();
+      } else{
+        alert(' xuất hiện lệch lạc: '+data.msg)
+      }
+    },
+    'json')
+  };
+  function change_maintain_status (current_maintain_status) {
+    if (current_maintain_status === 1) {
+      $('#maintain_status').text("toàn bộ khu giữ gìn trung");
+      $('#maintain_status').css("color","red");
+    } else if (current_maintain_status === 2) {
+      $('#maintain_status').text("phân khu giữ gìn trung");
+      $('#maintain_status').css("color","orange");
+    } else {
+      $('#maintain_status').text("vận hành trung");
+      $('#maintain_status').css("color","green");
+    }
+  }
+  function get_config_log(cid){
+    $('#config_log').val('');
+
+    var last_cid = $('#button_color').val();
+    if(last_cid){
+      $('#button_'+last_cid).css('color', '');
+    }
+    $('#button_'+cid).css('color', 'red');
+    $('#button_color').val(cid);
+    $.post('{{ settings.base_url }}/admin/system/get_config_log/', {
+          'cid': cid
+        }, function(data){
+        $('#config_log').show();
+        $('#config_log').val(data);
+          }, 'text')
+  }
+</script>
+  <style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<div style="width: 100%;">
+  <h2> phân khu giữ gìn </h2>
+  <div id='desc' name="desc"style="color:red; display:none"><font color="red"> sửa chữa thành công 。。。</font></div>
+  <div id='full_desc' name="full_desc"style="color:red; display:none"><font color="red"> toàn bộ khu giữ gìn thôi tống trung 。。。</font></div>
+  <div id='zone_desc' name="full_desc"style="color:red; display:none"><font color="red"> phân khu giữ gìn thôi tống trung 。。。</font></div>
+  <p> đang ở sửa chữa (<font color="red"> phân khu giữ gìn </font>) {%if config.sub_time%} lần trước sửa chữa (<font color="blue">{{config.sub_time}}</font>) (<font color="green">{{config.admin_user}}</font>) {%endif%}</p>
+  <textarea id="config_value"name="config_value"style="width: 100%; height: 350px">{{config.config_value}}</textarea>
+  <input type="button"onclick="submit_maintain_config()"value="đệ trình"/>
+  <input type="hidden"id="button_color"value=""/>
+  <br/>
+   lịch sử phiên bản ：
+  {%for item in config_logs%}
+  <input type="button"id="button_{{item.id}}"value="{{item.version}}"onclick="get_config_log({{item.id}});"/>
+  {%endfor%}
+  <br/>
+  <textarea id="config_log"name="config_log"style="width: 100%; height: 350px; display:none"></textarea>
+</div>
+</br>
+<div>
+  <input type="button"onclick="submit_zone_maintain(0)"value="phân khu giữ gìn"style="color: red"/>
+  <input type="button"onclick="submit_zone_maintain(1)"value="phân khu khai phục"style="color: green"/>
+  &nbsp;|&nbsp;
+  <input type="button"onclick="submit_full_maintain(0)"value="toàn bộ khu giữ gìn"style="color: red"/>
+  <input type="button"onclick="submit_full_maintain(1)"value="toàn bộ khu khai phục"style="color: green"/>
+</div>
+
+</br>
+  <p> trước mặt trạng thái ：
+  {% ifequal current_maintain_status 1 %}
+    <font id="maintain_status"color="red"> toàn bộ khu giữ gìn trung </font>
+  {% endifequal %}
+
+  {% ifequal current_maintain_status 2 %}
+    <font id="maintain_status"color="orange"> phân khu giữ gìn trung </font>
+  {% endifequal %}
+
+  {% ifequal current_maintain_status 3 %}
+    <font id="maintain_status"color="green"> vận hành trung </font>
+  {% endifequal %}
+  </p>
+
+<p>
+=====================================================================================
+</p>
+
+<p>
+ phân khu trạng thái 
+<br/>
+<p/>
+<div id="server_list_body">
+<img src="{{ settings.BASE_URL}}/static/images/loading.gif"/>
+<font color="gray"> phân khu trạng thái gia chở trung......</font>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+

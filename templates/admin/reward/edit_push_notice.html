@@ -1,0 +1,337 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<style type="text/css">
+*{ margin:0; padding:0;}
+.imglist { width:650px; margin:0 auto;}
+.imglist li { width:100px; height:100px; list-style:none; float:left; border:5px solid white; margin:10px;}
+.imglist li img { width:100px; height:100px;}
+.fntlist font.border { border-color:red;}
+</style>
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js"type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet"href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css"type="text/css"/>
+<script type='text/javascript'>
+
+        
+  function check_one_pf(pid){
+    var ack = $("#"+pid).is(":checked");
+    if(ack) $('#pf_'+pid).css('color', 'red');
+    else  $('#pf_'+pid).css('color', 'black');
+  }
+
+  function check_all_pf(){
+    var ack = $("#pf_all").is(":checked");
+    var inputs = document.getElementsByName('pfs');
+    for (var i = 0; i <inputs.length; i++) { 
+        var cid = (inputs[i].id);
+        inputs[i].checked = ack;
+        if(ack) $('#pf_'+cid).css('color', 'red');
+        else  $('#pf_'+cid).css('color', 'black');
+      }
+    } 
+
+$(function() {
+		var dates = $('#end_date').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"",
+      //minDate:"2010-04-15",
+      minDate:"-0",
+			onSelect: function(selectedDate) {
+        //statistic();
+			}
+		});
+		var dates = $('#start_date').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"",
+      //minDate:"2010-04-15",
+      minDate:"-0",
+			onSelect: function(selectedDate) {
+        //statistic();
+			}
+		});
+
+	});
+
+
+
+
+$(function() {
+		var dates = $('#cond_add_date_f').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"+0",
+      minDate:"2010-04-15",
+			onSelect: function(selectedDate) {
+        //statistic();
+			}
+		});
+
+	});
+
+$(function() {
+		var dates = $('#cond_add_date_t').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"+0",
+      minDate:"2010-04-15",
+			onSelect: function(selectedDate) {
+        //statistic();
+			}
+		});
+
+	});
+
+
+
+
+
+
+
+
+  function chk(){ 
+    if ($('#content').val() == ''){
+      alert(' chính văn bất năng vi Trống ');
+      $('#content').focus();
+      return false;
+    }
+
+    var inputs = document.getElementsByName('pfs');
+    var chk_pf = false;
+    for (var i = 0; i <inputs.length; i++) { 
+      if (inputs[i].checked){
+        chk_pf = true;
+      }
+      }
+    if (!chk_pf){
+      alert(' thỉnh câu chọn pf ');
+      return false;
+    }
+
+
+
+      if (document.getElementById('condition_type_user_lv').checked){
+        if ($('#condition_f_user_lv').val() == '' || $('#condition_t_user_lv').val() == ''){
+          alert(' thỉnh điền người sử dụng đẳng cấp ');
+          return false;
+        }
+      }
+
+      if (document.getElementById('condition_type_rank_score').checked){
+        if ($('#condition_f_rank_score').val() == '' || $('#condition_t_rank_score').val() == ''){
+          alert(' thỉnh điền đẳng cấp vi tích phân ');
+          return false;
+        }
+      }
+
+      if (document.getElementById('condition_type_add_time').checked){
+        if (!$('#cond_add_date_f').val()){
+          $('#cond_add_date_f').focus();
+          alert(' thỉnh điền điều kiện đăng kí thời gian ');
+          return false;
+        }
+        if (!$('#cond_add_date_t').val()){
+          $('#cond_add_date_t').focus();
+          alert(' thỉnh điền điều kiện đăng kí thời gian ');
+          return false;
+        }
+      }
+
+
+
+
+
+    if ($('#interval').val() == ''){
+      alert(' khoảng cách thời gian ');
+      $('#interval').focus();
+      return false;
+    }
+
+
+    if ($('#end_date').val() == ''){
+      alert(' thỉnh tuyển trạch thời hạn có hiệu lực ');
+      $('#end_date').focus();
+      return false;
+    }
+    if ($('#start_date').val() == ''){
+      alert(' thỉnh tuyển trạch thời hạn có hiệu lực ');
+      $('#start_date').focus();
+      return false;
+    }
+    
+
+
+
+
+
+
+  }
+
+</script>
+<h2>
+   tăng thêm  đèn kéo quân 
+</h2>
+<br/>
+<form action="{{settings.BASE_URL}}/admin/reward/edit_push_notice_p/"method="post"enctype="multipart/form-data"onsubmit="return chk();">
+<table width="100%">
+  <tr>
+    <td width="10%">
+       chính văn 
+    </td>
+    <td>
+         <textarea id="content"name="content"style="width: 90%; height: 30px">{{push_notice.content}}</textarea>
+
+    </td>
+  </tr> 
+  <tr>
+    <td>
+       có hiệu lực điều kiện 
+    </td>
+    <td>
+<p>
+<br/>
+      <input type="checkbox"name="pf_all"id="pf_all"value=""onclick="check_all_pf()"/>
+      <font color="red">pf toàn bộ chọn </font>
+      <br />
+      {%for item in pf_list%}
+      <input type="checkbox"name="pfs"id="{{item.0}}"value="{{item.0}}"{%if item.1 %}checked=checked{%endif%} onclick="check_one_pf('{{item.0}}')"/>
+            <font{%if item.1%} color="red"{%endif%} id='pf_{{item.0}}'>{{item.0}}</font>
+      {%endfor%}
+      <br />
+      <br />
+
+
+
+
+
+</p>
+<span>
+
+
+
+  <input type="checkbox"name="condition_type"id="condition_type_user_lv"value="user_lv"{%if user_lv_chk%}checked = checked{%else%}{%endif%}/> 
+  <input size=5 type="text"name="condition_f_user_lv"id="condition_f_user_lv"value="{{push_notice.condition.user_lv.condition_f}}"/>
+  <= người sử dụng đẳng cấp <=
+  <input size=5 type="text"name="condition_t_user_lv"id="condition_t_user_lv"value="{{push_notice.condition.user_lv.condition_t}}"/>
+  <br/><br/>
+  <input type="checkbox"name="condition_type"id="condition_type_rank_score"value="rank_score"{%if rank_score_chk%}checked = checked{%else%}{%endif%}/> 
+  <input size=5 type="text"name="condition_f_rank_score"id="condition_f_rank_score"value="{{push_notice.condition.rank_score.condition_f}}"/>
+  <= đẳng cấp vi tích phân <=
+  <input size=5 type="text"name="condition_t_rank_score"id="condition_t_rank_score"value="{{push_notice.condition.rank_score.condition_t}}"/>
+
+  <br/><br/>
+
+  <input type="checkbox"name="condition_type"id="condition_type_add_time"value="add_time"{%if add_time_chk%}checked = checked{%else%}{%endif%}/>
+
+  <input readonly size="7"name="cond_add_date_f"id="cond_add_date_f"value="{{push_notice.cond_add_date_f}}"/> 
+  <select name="cond_add_hour_f">
+    {% for item in hours %}
+    <option {%ifequal push_notice.cond_add_hour_f item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+ :
+  <select name="cond_add_minute_f">
+    {% for item in minutes %}
+    <option {%ifequal push_notice.cond_add_minute_f item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+  <= đăng kí thời gian <=
+  <input readonly size="7"name="cond_add_date_t"id="cond_add_date_t"value="{{push_notice.cond_add_date_t}}"/> 
+  <select name="cond_add_hour_t">
+    {% for item in hours %}
+    <option {%ifequal push_notice.cond_add_hour_t item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+ :
+  <select name="cond_add_minute_t">
+    {% for item in minutes %}
+    <option {%ifequal push_notice.cond_add_minute_t item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+</span>
+
+<br />
+<br /> 
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+    <td/>
+    <td>
+    <td/>
+  <tr/>
+
+
+
+
+
+  <tr>
+    <td>
+       khoảng cách thời gian 
+    </td>
+    <td>
+       <input size="7"name="interval"id="interval"value="{{push_notice.interval}}"/> (miểu)
+    </td>
+  </tr>
+
+
+  <tr>
+    <td>
+       thời hạn có hiệu lực 
+    </td>
+    <td>
+
+
+       bắt đầu: <input readonly size="7"name="start_date"id="start_date"value="{{push_notice.start_date}}"/> 
+  <select name="start_hour">
+    {% for item in hours %}
+    <option {%ifequal push_notice.start_hour item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+ :
+  <select name="start_minute">
+    {% for item in minutes %}
+    <option {%ifequal push_notice.start_minute item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+
+
+       kết thúc: <input readonly size="7"name="end_date"id="end_date"value="{{push_notice.end_date}}"/> 
+  <select name="end_hour">
+    {% for item in hours %}
+    <option {%ifequal push_notice.end_hour item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+ :
+  <select name="end_minute">
+    {% for item in minutes %}
+    <option {%ifequal push_notice.end_minute item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+
+    </td>
+  </tr>
+  <tr>
+    <td>
+    </td>
+    <td>
+      <input type="hidden"name="id"value="{{push_notice.id}}"type="txt"/>
+      <input type="submit"value="đệ trình"/>
+    </td>
+  </tr>
+</table>
+</form>
+
+
+{% endblock %}

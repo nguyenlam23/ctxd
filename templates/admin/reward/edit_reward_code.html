@@ -1,0 +1,231 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js"type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet"href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css"type="text/css"/>
+<script type='text/javascript' src='{{settings.MEDIA_URL}}/js/reward_content.js?v=22'></script>
+<script type='text/javascript'>
+
+  function check_one_pf(pid){
+    var ack = $("#"+pid).is(":checked");
+    if(ack) $('#pf_'+pid).css('color', 'red');
+    else  $('#pf_'+pid).css('color', 'black');
+  }
+
+  function check_all_pf(){
+    var ack = $("#pf_all").is(":checked");
+    var inputs = document.getElementsByName('pfs');
+    for (var i = 0; i <inputs.length; i++) { 
+        var cid = (inputs[i].id);
+        inputs[i].checked = ack;
+        if(ack) $('#pf_'+cid).css('color', 'red');
+        else  $('#pf_'+cid).css('color', 'black');
+      }
+    } 
+
+
+
+
+$(function() {
+		var dates = $('#end_date').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"",
+      //minDate:"2010-04-15",
+      minDate:"-0",
+			onSelect: function(selectedDate) {
+        //statistic();
+			}
+		});
+
+	});
+
+  function chk(){ 
+    if($('#id').val()==''){ 
+      if($('#code_num').val()!=''){ 
+        if(parseInt($('#code_num').val())!= $('#code_num').val()){
+          alert(' thỉnh chính xác điền đổi tặng phẩm mã số lượng ');
+        $('#code_num').focus();
+        return false;
+        }
+        if(parseInt($('#code_num').val())>200000){
+        alert(' đổi tặng phẩm mã số lượng bất năng vượt lên trước 20w');
+        $('#code_num').focus();
+        return false;
+        }
+      }else{
+        alert(' đổi tặng phẩm mã số lượng bất năng vi Trống ');
+        $('#code_num').focus();
+        return false;
+      }
+    }
+    if ($('#name_{{nafo_list.0.0}}').val() == ''){
+      alert('{{nafo_list.0.0}} tiêu đề bất năng vi Trống ');
+      $('#name_{{nafo_list.0.0}}').focus();
+      return false;
+    }
+    if ($('#info_{{nafo_list.0.0}}').val() == ''){
+      alert('{{nafo_list.0.0}} chính văn miêu tả bất năng vi Trống ');
+      $('#info_{{nafo_list.0.0}}').focus();
+      return false;
+    }
+    {%for item in input_list%}
+    if($('#{{item.0}}').val()!=''){ 
+      flag = false;
+      if(parseInt($('#{{item.0}}').val())!= $('#{{item.0}}').val()){
+        alert(' thỉnh chính xác điền {{item.1}} số lượng ');
+        $('#{{item.0}}').focus();
+      return false;
+      }
+      if(parseInt($('#{{item.0}}').val())>parseInt({{item.2}})){
+        alert('{{item.1}} số lượng bất năng vượt lên trước {{item.2}}');
+        $('#{{item.0}}').focus();
+      return false;
+      }
+    }
+    {%endfor%}
+    var inputs = document.getElementsByName('pfs');
+    var chk_pf = false;
+    for (var i = 0; i <inputs.length; i++) { 
+      if (inputs[i].checked){
+        chk_pf = true;
+      }
+      }
+    if (!chk_pf){
+      alert(' thỉnh câu chọn pf ');
+      return false;
+    }
+
+
+    if ($('#end_date').val() == ''){
+      alert(' thỉnh tuyển trạch thời hạn có hiệu lực ');
+      $('#end_date').focus();
+      return false;
+    }
+
+
+    return true;
+    
+  }
+
+
+
+
+
+
+</script>
+<h2>{%if reward %}
+   biên tập  ({{nafo_list.0.1}}) 
+  {%else%}
+   tăng thêm 
+  {%endif%}
+   đổi tặng phẩm con ngựa phát thưởng 
+</h2>
+<br/>
+<form action="{{settings.BASE_URL}}/admin/reward/edit_reward_code_p/"method="post"enctype="multipart/form-data"onsubmit="return chk();">
+<table width="100%">
+  <tr>
+    <td width="10%">
+       tiêu đề chính văn 
+    </td>
+    <td>
+     {%for item in nafo_list%}
+     <tr>
+       <td>
+         name-{{item.0}}
+       </td>
+       <td>
+         <input type="txt"name="name_{{item.0}}"id="name_{{item.0}}"value="{{item.1}}"/><br/>
+       </td>
+     </tr>
+     <tr>
+       <td>
+         info-{{item.0}}
+       </td>
+       <td>
+         <textarea id="info_{{item.0}}"name="info_{{item.0}}"style="width: 90%; height: 30px">{{item.2}}</textarea>
+       </td>
+     </tr>
+     {%endfor%}
+
+    </td>
+  </tr> 
+
+
+  <tr>
+    <td>
+       phát thưởng đối tượng 
+    </td>
+    <td>
+<p>
+      <input type="checkbox"name="pf_all"id="pf_all"value=""onclick="check_all_pf()"/>
+      <font color="red">pf toàn bộ chọn </font>
+      <br />
+      {%for item in pf_list%}
+      <input type="checkbox"name="pfs"id="{{item.0}}"value="{{item.0}}"{%if item.1 %}checked=checked{%endif%} onclick="check_one_pf('{{item.0}}')"/>
+            <font{%if item.1%} color="red"{%endif%} id='pf_{{item.0}}'>{{item.0}}</font>
+      {%endfor%}
+    </td>
+    </tr>
+
+
+
+  <tr>
+    <td>
+       phân tổ 
+    </td>
+    <td>
+      <input type="txt"name="group"id="group"value="{{reward.obj_content.group|default:-1}}"/> lớn hơn 0 đích chữ số biểu thị phân tổ, -1 biểu thị không phân tổ 
+
+    </td>
+  </tr> 
+  <tr>
+    <td>
+       đổi tặng phẩm con ngựa 
+    </td>
+    <td>
+      <input name="code_num"id="code_num"size=5 value="{{reward.obj_content.code_num}}"/> (đổi tặng phẩm mã số lượng)
+      <input type='checkbox' {%ifequal reward.obj_content.repeat_use '1'%}checked=checked{%endifequal%} name='repeat_use' value='1' id='repeat_use'/> nhưng tha cho sử dụng (đổi tặng phẩm mã số lượng số lần)
+      
+    <td/>
+  </tr>
+
+  {%include 'admin/reward/reward_content.html'%}
+
+
+
+  <tr>
+    <td>
+       thời hạn có hiệu lực 
+    </td>
+    <td>
+      <input readonly size="7"name="end_date"id="end_date"value="{{reward.end_date}}"/> 
+  <select name="end_hour">
+    {% for item in hours %}
+    <option {%ifequal reward.end_hour item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+ :
+  <select name="end_minute">
+    {% for item in minutes %}
+    <option {%ifequal reward.end_minute item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+
+    </td>
+  </tr>
+  <tr>
+    <td>
+    </td>
+    <td>
+      <input type="hidden"name="id"id="id"value="{{reward.id}}"type="txt"/>
+      <input type="submit"value="đệ trình"/>
+    </td>
+  </tr>
+</table>
+</form>
+
+
+{% endblock %}

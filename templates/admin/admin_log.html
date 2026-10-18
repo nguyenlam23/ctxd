@@ -1,0 +1,24 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<h2> tài khoản thao tác nhật ký </h2>
+
+<table border='1'>
+  <tr>
+    <th> thao tác người sử dụng </th>
+    <th> thao tác loại hình </th>
+    <th> thao tác thời gian </th>
+    <th> thao tác số liệu </th>
+  </tr>
+  {% for log in logs %}
+  <tr>
+    <td>{{ log.op_user }}</td>
+    <td><font color="blue">{{ log.op_type}}</font></td>
+    <td>{{ log.subtime}}</td>
+    <td><pre>{{ log.data}}</pre></td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+

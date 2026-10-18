@@ -1,0 +1,286 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<style type="text/css">
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+</style>
+
+<script type='text/javascript'>
+  var insertR = false;
+  function timeout(ms, serverPort) {
+   return new Promise((resolve, reject) => {
+    setTimeout(resolve, ms, serverPort);
+   });
+  }
+  $(document).ready(async function () {
+    var openServer = {{ open_server|safe }};
+    if (openServer.port) {
+      open_server_modal(openServer.name, openServer.port);
+    }
+    var serverList = {{ server_list|safe }}
+    if (serverList.length> 0) {
+      var openDate = {{ search_open_date }}
+      $.get('{{ settings.BASE_URL }}/admin/app_user/duplicate_status_cache_data/', {open_date: openDate}, async function (data) {
+        var duplicateCacheData = data.duplicate_status;
+        for (var i = 0; i <serverList.length; i++) {
+          var port = serverList[i]
+          var status = duplicateCacheData[port]
+          if (status) {
+            if (status.color) {
+              $('#dsi_' + port).css('color', status.color)
+              $('#dsi_' + port).css('font-weight', 'bold')
+            }
+            if (status.background_color) {
+              $('#dsi_' + port).css('background-color', status.background_color)
+            }
+          } else {
+            if (insertR) {
+              await timeout(1000)
+            }
+            await get_server_status(serverList[i])
+          }
+        }
+      }, 'json')
+    }
+  });
+  // When the user clicks the button, open the modal
+  function open_user_modal (level, level_name, order_by) {
+    insertR = true;
+    var title = '{{ search_open_date }} kỳ (' + level_name + ') báo danh người sử dụng liệt biểu '
+    var search_group_list = '{{ search_group_list }}'
+    $("#join_user_title").text(title);
+    $('#join_user_modal').show();
+    var params = {
+      open_date: {{ search_open_date }},
+      level: level,
+      search_group_list: search_group_list
+    };
+    if (order_by) {
+     params.order_by = order_by
+    };
+    $.get('{{ settings.BASE_URL}}/admin/app_user/get_duplicate_join_user/', params, function (data) {
+      $('#join_user_list').html(data.duplicate_join_user);
+      insertR = false;
+    }, 'json')
+  }
+
+  function close_user_modal () {
+    $('#join_user_modal').hide();
+    $('#join_user_list').html('');
+  }
+
+    // When the user clicks the button, open the modal
+  function open_server_modal (title, server_port, order_by) {
+    insertR = true;
+    $("#server_info_title").text(title);
+    $('#server_info_modal').show();
+    var params = {
+      open_date: {{ search_open_date }},
+      server_port: server_port,
+      server_name: title
+    };
+    if (order_by) {
+     params.order_by = order_by
+    };
+    $.get('{{ settings.BASE_URL}}/admin/app_user/get_duplicate_server_info/', params, function (data) {
+      if (data.state =="error") {
+        alert(' xuất hiện lệch lạc: ' + data.msg)
+      } else {
+        $('#server_info').html(data.duplicate_server_info);
+        $("#server_info_title").text(title);
+        $('#server_info_modal').show();
+      }
+      insertR = false;
+    }, 'json')
+  }
+
+  function close_server_modal () {
+    $('#server_info_modal').hide();
+    $('#server_info').html('');
+  }
+
+  function clear_duplicate_join_user() {
+    $.post('{{ settings.BASE_URL }}/admin/app_user/duplication_operate/', {action: 'clear_duplicate_join_user', open_date: {{ search_open_date }}}, function (data) {
+      if (data.state == 'success') {
+        $('#search_duplicate').submit()
+      }
+    }, 'json')
+  }
+
+  function refresh_duplicate() {
+    $.post('{{ settings.BASE_URL }}/admin/app_user/duplication_operate/', {action: 'refresh_duplicate', open_date: {{ search_open_date }}}, function (data) {
+      if (data.state == 'success') {
+        $('#search_duplicate').submit()
+      }
+    }, 'json')
+  }
+
+  function get_server_status(serverPort) {
+    return new Promise((resolve, reject) => {
+      var params = {
+        open_date: {{ search_open_date }},
+        server_port: serverPort
+      }
+      $.get('{{ settings.BASE_URL }}/admin/app_user/get_duplicate_server_status/', params, function (data) {
+        if (data.color) {
+          $('#dsi_' + serverPort).css('color', data.color)
+          $('#dsi_' + serverPort).css('font-weight', 'bold')
+        }
+        if (data.background_color) {
+          $('#dsi_' + serverPort).css('background-color', data.background_color)
+        }
+        if (!data.opened) {
+          $('#dsi_' + serverPort).attr('disabled', true);
+        }
+        resolve();
+      }, 'json')
+    });
+  }
+
+  // đương điểm kích khuông thái khuông bên ngoài đích ý khu vực thì đóng khuông thái khuông 
+  window.onclick = function(event) {
+    if (event.target == $('#join_user_modal')[0]) {
+      close_user_modal();
+    } else if (event.target == $('#server_info_modal')[0]) {
+      close_server_modal();
+    }
+  }
+</script>
+
+
+<form id="search_duplicate"action="{{settings.BASE_URL}}/admin/app_user/view_duplicate/"method="post">
+  <div style="display: inline-block;height: 200px">
+     tuyển trạch phân khu (đè lại ctrl đa chọn):
+    <br/>
+    <select name='search_group_list' multiple='true' style="width: 200px;height: 160px"size="10">
+      {% for z in duplicate_groups%}
+      <option value='{{ z.0 }}' {%ifequal z.2 'checked'%}selected="true"{%endifequal%}>{{ z.1 }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div style="display: inline-block;height: 200px">
+     tuyển trạch ngày:
+    <br/>
+    <select name='search_open_date' style="width: 200px;height: 160px"size="10">
+      {% for z in open_dates%}
+      <option value='{{ z.0 }}' {%ifequal z.1 'checked'%}selected="true"{%endifequal%}>{{ z.0 }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div style="display: inline-block;">
+    <p>
+       tuần tra UID：
+      <br/>
+      <input type="text"name="uid"value="{{ search_uid }}"/>
+    </p>
+    <input type='submit' value='&nbsp;&nbsp; tra &nbsp; tuân &nbsp;&nbsp;'/>
+  </div>
+</form>
+<hr>
+{% if duplicate_data %}
+  <div>
+  <p><font style="font-weight: bold"> tổng thi đấu tràng ：</font><font style="color: {{ server_count.color }}">{{ server_count.open }}/{{ server_count.total }}</font> </p>
+  <p><font style="font-weight: bold"> báo danh nhân số ：</font>{{ join_user_count }}</p>
+  <p><font style="font-weight: bold"> trạng thái ：</font>{{ duplicate_data.duplicate_state }}</p>
+  </div>
+  <div>
+    <table id="table_c"border=1>
+      <tr>
+        <td> bảng giờ giấc </td>
+        <td> hết hạn báo danh </td>
+        <td> nhưng nhập chiến trường </td>
+        <td> bắt đầu đối chiến </td>
+        <td> hết hạn chỉ lệnh </td>
+        <td> nhập khẩu tiêu thất </td>
+      </tr>
+      <tr>
+        <td>{{duplicate_data.duplicate_time.open_date}}</td>
+        <td>{{duplicate_data.duplicate_time.join_end_time}}</td>
+        <td>{{duplicate_data.duplicate_time.enter_time}}</td>
+        <td>{{duplicate_data.duplicate_time.fight_start_time}}</td>
+        <td>{{duplicate_data.duplicate_time.fight_end_time}}</td>
+        <td>{{duplicate_data.duplicate_time.close_time}}</td>
+      </tr>
+    </table>
+  </div>
+  <div>
+  {% if settings.SUBTEST %}
+  <p><button onclick="clear_duplicate_join_user()"> thanh lý báo danh số liệu </button>
+  &nbsp;
+  &nbsp;
+  &nbsp;
+  <button onclick="refresh_duplicate()"> nặng đưa chiến trường </button></p>
+  {% endif %}
+  <table id="table_c"border=1>
+    <tr>
+      <td> đẳng cấp </td>
+      <td> báo danh nhân số </td>
+      <td> phân tổ sổ </td>
+      <td> chiến trường </td>
+    </tr>
+    {% for i in duplicate_data.sign_up_data %}
+    <tr>
+      <td>{{i.level.1}}</td>
+      <td><a onclick="open_user_modal('{{ i.level.0 }}', '{{ i.level.1 }}')"href="#">{{i.join_count}}</a></td>
+      <td>{{i.group_count}}</td>
+      <td>
+        {% for item in i.server_list %}
+          <button id="dsi_{{ item.port }}"onclick="open_server_modal('{{ item.name }}', '{{ item.port }}')">{{ item.name }}</button>
+{#          <script type='text/javascript'>#}
+{#            get_server_status('{{ item.port }}');#}
+{#          </script>#}
+        {% endfor %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  </div>
+{% endif %}
+
+
+
+<div id="join_user_modal"class="modal">
+ <!-- Modal content -->
+ <div class="modal-content">
+  <div class="modal-header">
+   <span class="modal-close"onclick="close_user_modal()">x</span>
+   <h2 id="join_user_title"></h2>
+  </div>
+  <div id="join_user_list"class="modal-body"style="height: 600px;overflow:hidden">
+    <img src="{{ settings.BASE_URL}}/static/images/loading.gif"/>
+    <font color="gray"> số liệu gia chở trung......</font>
+  </div>
+ </div>
+</div>
+
+<div id="server_info_modal"class="modal">
+ <!-- Modal content -->
+ <div class="modal-content">
+  <div class="modal-header">
+   <span class="modal-close"onclick="close_server_modal()">x</span>
+   <h2 id="server_info_title"></h2>
+  </div>
+  <div id="server_info"class="modal-body"style="height: 600px;overflow-y:scroll">
+    <img src="{{ settings.BASE_URL}}/static/images/loading.gif"/>
+    <font color="gray"> số liệu gia chở trung......</font>
+  </div>
+ </div>
+</div>
+
+{% endblock %}

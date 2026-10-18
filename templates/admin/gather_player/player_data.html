@@ -1,0 +1,82 @@
+<div class="row">
+  <div class="col-md-3">
+    <table class="table table-bordered table-hover"style="margin:0 auto">
+      {% for item in mod_user.0%}
+        <tr>
+          <td style="width: 100px">
+            {{item.1}}
+          </td>
+          <td style="width: 150px">
+            {{ item.2 }}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="col-md-3">
+    <table class="table table-bordered table-hover"style="margin:0 auto">
+      {% for item in mod_user.1%}
+        <tr>
+          <td style="width: 100px">
+            {{item.1}}
+          </td>
+          <td style="width: 150px">
+            {{ item.2 }}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class="col-md-3">
+    <table class="table table-bordered table-hover"style="margin:0 auto">
+      {% for item in mod_user.2%}
+        <tr>
+          <td style="width: 100px">
+            {{item.1}}
+          </td>
+          <td style="width: 150px">
+            {{ item.2 }}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table table-bordered table-hover">
+      {% for item in mod_user.3%}
+      <tr>
+        <td style="width: 100px">
+          {{item.1}}
+        </td>
+        <td>
+          {%for h in item.2%}
+          <a onclick="window.open('{{settings.BASE_URL}}/admin/gather_player/get_player_hero_dict/?data_id={{data_id}}&hid={{h.0}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{h.2}}{{h.1}},</a>
+          {%endfor%}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-3">
+         chi tiết cặn kẽ ：
+        <button class="btn btn-primary btn-sm"type="button"
+          onclick="save_player_data({{data_id}})"style="margin-left: 5px"> đệ trình </button>
+        <button class="btn btn-primary btn-sm"type="button"
+          onclick="get_player_data({{data_id}})"style="margin-left: 5px"> nảy sinh cái mới </button>
+      </div>
+      <div class="col-md-5">
+        <div id='desc' name="desc"style="color:red; display:none"><font
+            size=4> sửa chữa thành công...</font></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel-body">
+    <textarea id="app_user"name="app_user"style="width: 100%; height: 500px">{{app_user}}</textarea>
+  </div>
+</div>

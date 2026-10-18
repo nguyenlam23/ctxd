@@ -1,0 +1,31 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+
+</script>
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/view_user_fight/"method="post">
+     người sử dụng ID：<input id="uid"name="uid"value="{%if uid%}{{uid}}{%endif%}"/>
+  <br />
+  <input type="submit"value="đệ trình"/>
+  <input type="hidden"name="zone"id="zone"value=""/>
+  </form>
+</div>
+{%if zone_list%}
+<br/>
+Uid: <font color="red">{{uid}}</font>
+<br/>
+{%for k,v in zone_list%}
+<input style="{%ifequal k last_zone%}color:red;{%endifequal%}{%ifequal k zone%}font-weight:bold;{%endifequal%}"value='{{v}}' type="button"onclick="view_user('{{k}}');"/>
+{%endfor%}
+
+<br/>
+{%endif%}
+<br/>
+
+{% for item in data %} 
+<textarea id="app_user"name="app_user"style="width: 90%; height: 200px">{{item}}</textarea>
+<br />
+{% endfor %}
+
+{% endblock %}

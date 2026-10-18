@@ -1,0 +1,70 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+     trước mặt khu ：<font color="green">{{zone_name}}</font>&nbsp;&nbsp;{% if open_days %} khai phục thứ <font color="red">{{open_days}}</font> thiên {% endif %}
+  </div>
+  <div class="panel-body">
+    <table class="table table-bordered table-hover">
+      <tr>
+        <td>
+           tổng ngoạn gia sổ 
+        </td>
+        <td>
+           gỗ cốp pha một sổ 
+        </td>
+        <td>
+           vị thải mãn 
+        </td>
+        <td>
+           nhưng đăng dùng 
+        </td>
+        <td>
+           dĩ đăng dùng 
+        </td>
+        <td>
+           dĩ vứt đi 
+        </td>
+        <td>
+           dĩ cắt bỏ 
+        </td>
+        <td>
+           bồi ngoạn ví dụ thực tế sổ 
+        </td>
+      </tr>
+      <tr>
+        <td>{{ mod_data.user_num }}</td>
+        <td>
+          {{ mod_data.gather_num }}
+        </td>
+        <td>
+          {{ mod_data.status_0_0}}
+        </td>
+        <td>
+          {{ mod_data.status_0_1}}
+        </td>
+        <td>
+          {{ mod_data.status_1}}
+        </td>
+        <td>
+          {{ mod_data.status_2}}
+        </td>
+        <td>
+          {{ mod_data.status_3}}
+        </td>
+        <td>{{ mod_data.join_num }}</td>
+      </tr>
+    </table>
+    <div class="row">
+      <button class="btn btn-default btn-sm"type="button"id="status_all"onclick="screen_by_status('all')"> toàn bộ </button>
+      <button class="btn btn-default btn-sm"type="button"id="status_0_0"
+        onclick="screen_by_status('0_0')"> vị thải mãn </button>
+      <button class="btn btn-default btn-sm"type="button"id="status_0_1"
+        onclick="screen_by_status('0_1')"> nhưng đăng dùng </button>
+      <button class="btn btn-default btn-sm"type="button"id="status_1"
+        onclick="screen_by_status(1)"> dĩ đăng dùng </button>
+      <button class="btn btn-default btn-sm"type="button"id="status_2"
+        onclick="screen_by_status(2)"> dĩ vứt đi </button>
+      <button class="btn btn-default btn-sm"type="button"id="status_3"
+                                 onclick="screen_by_status(3)"> dĩ cắt bỏ </button>
+    </div>
+  </div>
+</div>

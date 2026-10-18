@@ -1,0 +1,18 @@
+<table class="table table-hover">
+  <tr>
+    <td> khu phục </td>
+    <td> trạng thái </td>
+  </tr>
+  {% for item in merge_progress %}
+  <tr {% ifequal item.2 1%}style="color: green"{% else %}style="color: red"{% endifequal %}>
+    <td>{{ item.0 }}({{ item.1 }})</td>
+    <td>
+      {% ifequal item.2 1 %}
+       hoàn thành 
+      {% else %}
+       đợi 
+      {% endifequal %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>

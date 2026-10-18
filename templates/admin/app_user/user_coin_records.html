@@ -1,0 +1,39 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+  <h2> người sử dụng tiêu phí ghi lại - {{ uname }}({{ uid }}|{{ zone }})</h2>
+
+<table border="1"cellpadding="0"cellspacing="0">
+  <tr>
+    <td>
+      CoinType
+    </td>
+    <td>
+      CoinNum
+    </td>
+    <td>
+      UserCoin
+    </td>
+    <td>
+      Time
+    </td>
+  </tr>
+{%for item in coin_records%}
+  <tr>
+    <td>
+      {{item.0}}
+    </td>
+    <td>
+      {{item.1}}
+    </td>
+    <td>
+      {{item.2}}
+    </td>
+    <td>
+      {{item.3}}
+    </td>
+  </tr>
+{%endfor%}
+</table>
+
+{% endblock %}

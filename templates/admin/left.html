@@ -1,0 +1,379 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+</script>
+<style type="text/css">
+
+body {
+  background-color: {{settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_BG}};
+/*font-family: arial, tống thể, serif;*/
+/*font-size:12px;*/
+
+}
+
+*{margin:0px; padding:0px;}
+
+#nav {
+
+width:174px;
+
+  line-height: 24px; 
+
+list-style-type: none;
+
+text-align:left;
+
+  /* định nghĩa toàn bộ ul thái đơn đích đi cao và bối cảnh mầu */
+
+}
+
+/*================== nhất cấp mục lục ===================*/
+
+#nav a {
+
+width: 174px; 
+
+display: block;
+
+padding-left:10px;
+
+/*Width(nhất định phải)， bằng không phía dưới Li hội biến hình */
+
+}
+
+#nav li {
+
+border-bottom:#FFF 1px solid; /* phía dưới một cái bạch biên */
+
+float:left;
+
+background-color: #FECFD6;
+
+color:{{settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_MENU}};
+
+font-weight:bold;
+
+/*background: url(../images/dot_o.gif) no-repeat 8px 8px;*/
+background:#FFFFFF; /* nhất cấp mục lục onMouseOver biểu hiện đích bối cảnh mầu */
+
+}
+
+#nav li a:hover{
+
+background:#F85B78; /* nhất cấp mục lục onMouseOver biểu hiện đích bối cảnh mầu */
+
+}
+
+#nav a:link {
+
+color:{{settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_MENU}}; text-decoration:none;
+
+}
+
+#nav a:visited {
+
+/*color:#DD1336;text-decoration:none;*/
+color:{{settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_MENU}};text-decoration:none;
+}
+
+#nav a:hover {
+
+color:#FFF;text-decoration:none;font-weight:bold;
+
+}
+
+/*================== nhị cấp mục lục ===================*/
+
+#nav li ul {
+
+list-style:none;
+
+text-align:left;
+
+}
+
+#nav li ul li{
+
+background: #F5F5F5; /* nhị cấp mục lục bối cảnh mầu */
+
+font-weight:normal;
+
+}
+
+#nav li ul a{
+
+     padding-left:30px;
+
+     width:174px;
+
+/* padding-left nhị cấp trong mục lục văn tự hướng bên phải di động ， nhưng Width phải thiết trí cái mới =(tổng độ rộng -padding-left)*/
+
+}
+
+/* phía dưới là nhị cấp mục lục liên tiếp hình thức */
+
+#nav li ul a:link {
+
+color:#666; text-decoration:none;
+
+}
+
+#nav li ul a:visited {
+
+color:#666;text-decoration:none;
+
+}
+
+#nav li ul a:hover {
+
+color:#F3F3F3;
+
+text-decoration:none;
+
+font-weight:normal;
+
+background:#FFAA1C;
+
+/* nhị cấp onmouseover đích tự thể nhan sắc 、 bối cảnh mầu */
+
+}
+
+/*==============================*/
+
+#nav li:hover ul {
+
+left: auto;
+
+}
+
+#nav li.sfhover ul {
+
+left: auto;
+
+}
+
+#content {
+
+clear: left; 
+
+}
+
+#nav ul.collapsed {
+
+display: none;
+
+}
+
+#PARENT{
+
+width:174px;
+
+}
+
+</style>
+
+
+
+
+
+<div id="PARENT"style="color:#CC0000"></div>
+<p style="font-size: 400%; color: {{ settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_TITLE }}">{{ settings.ADMIN_STYLE_CONFIG.TITLE }}</p>
+
+<div style="line-height: 40px; text-align: center; background-color: {{settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_MENU}}">
+<span id="config_type"style="font-size: large"><font color="#ffff00"></font></span>
+</div>
+
+<ul id="nav">
+{% for item in menus%}
+<li><a href="#"onClick="DoMenu('{{item.per}}')">{{item.desc}}</a>
+
+  <ul id="{{item.per}}"class="collapsed">
+	{% for m in item.menus %}
+		<p>
+      <a href='{{ settings.BASE_URL}}/admin/{{ m.2 }}' target='mainFrame' {% if m.3 %}id="{{ m.3 }}"{% endif %}>
+        {{ m.0 }}
+      </a></p>
+	{% endfor %}
+  </ul>
+
+</li>
+{% endfor %}
+
+
+
+
+
+</ul>
+
+</div>
+<br/>
+  <p> <font>{{ username }}</font></p>
+		<p><a href='{{settings.BASE_URL}}/admin/logout/' target='_top'> rời khỏi </a></p>
+
+    <font color="{{settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_TITLE}}"size="10">
+      <b>{{settings.ADMIN_STYLE_CONFIG.APP_NAME}}</b>
+      {%for item in settings.ADMIN_STYLE_CONFIG.APP_NAME_CN%}
+      <b>{{item}}</b>
+      <br/>
+      {%endfor%}
+    </font> 
+
+
+  <script type=text/javascript><!--
+
+var LastLeftID ="";
+
+function menuFix() {
+
+var obj = document.getElementById("nav").getElementsByTagName("li");
+
+for (var i=0; i<obj.length; i++) {
+
+  obj[i].onmouseover=function() {
+
+  this.className+=(this.className.length>0?"":"") +"sfhover";
+
+  }
+
+  obj[i].onMouseDown=function() {
+
+  this.className+=(this.className.length>0?"":"") +"sfhover";
+
+  }
+
+  obj[i].onMouseUp=function() {
+
+  this.className+=(this.className.length>0?"":"") +"sfhover";
+
+  }
+
+  obj[i].onmouseout=function() {
+
+  this.className=this.className.replace(new RegExp("(?|^)sfhover\\b"),"");
+
+  }
+
+}
+
+}
+
+function DoMenu(emid)
+
+{
+
+var obj = document.getElementById(emid); 
+
+obj.className = (obj.className.toLowerCase() =="expanded"?"collapsed":"expanded");
+
+if((LastLeftID!="")&&(emid!=LastLeftID)) // đóng thượng một Menu
+
+{
+
+  document.getElementById(LastLeftID).className ="collapsed";
+
+}
+
+LastLeftID = emid;
+
+}
+
+function GetMenuID()
+
+{
+
+var MenuID="";
+
+var _paramStr = new String(window.location.href);
+
+var _sharpPos = _paramStr.indexOf("#");
+
+if (_sharpPos>= 0 && _sharpPos <_paramStr.length - 1)
+
+{
+
+  _paramStr = _paramStr.substring(_sharpPos + 1, _paramStr.length);
+
+}
+
+else
+
+{
+
+  _paramStr ="";
+
+}
+
+if (_paramStr.length> 0)
+
+{
+
+  var _paramArr = _paramStr.split("&");
+
+  if (_paramArr.length>0)
+
+  {
+
+  var _paramKeyVal = _paramArr[0].split("=");
+
+  if (_paramKeyVal.length>0)
+
+  {
+
+   MenuID = _paramKeyVal[1];
+
+  }
+
+  }
+
+  /*
+
+  if (_paramArr.length>0)
+
+  {
+
+  var _arr = new Array(_paramArr.length);
+
+  }
+
+ 
+
+  // thủ sở hữu # phía sau ， thái đơn chỉ cần dùng đến Menu
+
+  //for (var i = 0; i <_paramArr.length; i++)
+
+  {
+
+  var _paramKeyVal = _paramArr[i].split('=');
+
+  
+
+  if (_paramKeyVal.length>0)
+
+  {
+
+   _arr[_paramKeyVal[0]] = _paramKeyVal[1];
+
+  } 
+
+  }
+
+  */
+
+}
+
+if(MenuID!="")
+
+{
+
+  DoMenu(MenuID)
+
+}
+
+}
+
+GetMenuID(); //* hai cái này function đích trình tự yếu chú ý một chút ， không phải ở Firefox lý GetMenuID() không dậy nổi hiệu quả 
+
+menuFix();
+
+--></script>
+{% endblock %}

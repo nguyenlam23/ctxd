@@ -1,0 +1,387 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  $(document).ready(function () {
+    $("#config_value").bind("input propertychange", function () {
+      $('#desc').show();
+      $("#desc font").text(' vị đệ trình ');
+    });
+
+    $("input[type=radio][name=take_config_type]").change(function () {
+      var take_config_type = $('input:radio[name="take_config_type"]:checked').val();
+      $.post('{{ settings.base_url }}/admin/system/change_take_config_type/', {
+            'take_config_type': take_config_type,
+          }, function(data){
+          if(data.state=='success'){
+            if (take_config_type == 'setting') {
+              var config_type = ' chính thức phối trí ';
+              $(window.parent.frames["leftFrame"].document).find('#test_setting').css('color', '#cccccc');
+              $(window.parent.frames["leftFrame"].document).find('#setting').css('color', '');
+            } else {
+              var config_type = ' trắc thí phối trí ';
+              $(window.parent.frames["leftFrame"].document).find('#setting').css('color', '#cccccc');
+              $(window.parent.frames["leftFrame"].document).find('#test_setting').css('color', '');
+            }
+            $(window.parent.frames["leftFrame"].document).find('#config_type font').text(config_type);
+            if (confirm(' dĩ cắt tới (' + config_type + '), có hay không khiêu chuyển đồng bộ phối trí ！')) {
+              window.location.href ="{{ settings.base_url }}/admin/publish/publish/"
+            }
+          } else{
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }
+        }, 'json')
+    })
+  });
+  function setting(){
+    $('#desc').show();
+    $("#desc font").text(' dĩ đệ trình ');
+    var config_name = $("#config_name").val();
+    var config_value = $("#config_value").val();
+    var ch_version = $("#ch_version").val()
+    if ('{{ config_type }}' == 'setting') {
+      var postUrl = '{{ settings.base_url }}/admin/{{where}}/setting_p/';
+    } else {
+      var postUrl = '{{ settings.base_url }}/admin/{{where}}/test_setting_p/';
+    }
+    $.post(postUrl, {
+          'config_value': config_value,
+          'config_name': config_name,
+          'ch_version': ch_version
+        }, function(data){
+        if(data.state=='success'){
+            document.getElementById('ch_version').value = data.ch_version;
+            succ();
+            } else{
+            $("#desc font").text(' vị đệ trình ');
+            alert(' xuất hiện lệch lạc: '+data.msg)
+            }
+          }, 'json')
+  }
+  function public_notice() {
+    $.post('{{ settings.base_url }}/admin/publish/publish_notice/', {
+
+    }, function(data){
+          if(data.state=='success')
+            alert(' canh tân thông cáo tuyên bố thành công ！')
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+function succ(){
+$('#desc').show();
+$("#desc font").text(' đệ trình thành công ');
+{#setTimeout("$('#desc').hide()",4000);#}
+}
+function get_config_log(cid){
+  $('#config_log').val('');
+
+  var last_cid = $('#button_color').val();
+  if(last_cid){
+    $('#button_'+last_cid).css('color', '');
+  }
+  $('#button_'+cid).css('color', 'red');
+  $('#button_color').val(cid);
+  $.post('{{ settings.base_url }}/admin/system/get_config_log/', {
+        'cid': cid,
+        'config_type': '{{ config_type }}'
+      }, function(data){
+        $('#config_log').show();
+        $('#config_log').val(data.config_value);
+        if (data.config_type === 'test_setting') {
+          $('#config_log').css('background-color', 'black')
+          $('#config_log').css('color', 'white')
+        } else {
+          $('#config_log').css('background-color', '')
+          $('#config_log').css('color', '')
+        }
+      }, 'json')
+}
+function get_config_value(config_name, config_type){
+  window.open('{{ settings.base_url }}/admin/system/' + config_type + '/?config_name=' + config_name);
+}
+</script>
+{% ifnotequal where 'notice' %}
+<div {% ifequal config_type 'test_setting' %}style="background-color: black; color: white"{% endifequal %}>
+  {% ifequal config_type 'setting' %}
+    <b>
+      {%ifequal where 'system'%} chính thức phối trí {%endifequal%}
+      {%ifequal where 'flash'%}flash phối trí {%endifequal%}
+    </b>
+  {% else %}
+    <b>
+       trắc thí phối trí 
+    </b>
+  {% endifequal %}
+  &nbsp;&nbsp;<a target="_blank"href="{{settings.BASE_URL}}/admin/system/download_configs/"style="color: inherit"><font> kế tiếp chính thức phối trí </font></a>
+  &nbsp;&nbsp;<a target="_blank"href="{{settings.BASE_URL}}/admin/system/download_configs/?config_type=test_setting"style="color: inherit"><font> kế tiếp trắc thí phối trí </font></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  {% ifequal config_type 'setting' %}
+  <strong><font color="#c71585"> cắt sử dụng phối trí ：</font></strong>
+    {% if can_switch_setting %}
+      <input type="radio"name="take_config_type"value="setting"{% ifequal take_config_type 'setting' %}checked{% endifequal %}> chính thức phối trí 
+      <input type="radio"name="take_config_type"value="test_setting"{% ifequal take_config_type 'test_setting' %}checked{% endifequal %}> trắc thí phối trí 
+    {% else %}
+      <input type="radio"name="take_config_type"value="setting"{% ifequal take_config_type 'setting' %}checked{% endifequal %} disabled> chính thức phối trí 
+      <input type="radio"name="take_config_type"value="test_setting"{% ifequal take_config_type 'test_setting' %}checked{% endifequal %} disabled> trắc thí phối trí 
+    {% endif %}
+  {% endifequal %}
+</div>
+<div style="height: 20px; background-color: {{settings.ADMIN_STYLE_CONFIG.ADMIN_COLOR_MENU}}"></div>
+{% endifnotequal %}
+<table width="100%">
+  <tr>
+  {% ifnotequal where 'notice' %}
+    <td width="10%"valign="top">
+      {% for item in config_name_list1%}
+        {% for i in item%}
+          {%ifnotequal i.0 'disp'%}
+            <div>
+            {% ifequal where 'notice'%}
+              <a href="{{settings.BASE_URL}}/admin/system/setting_notice/?config_name={{i.0}}"target="mainFrame"> <font color="red"> {{i.1}} </font> </a>
+            {% else %}
+              {%ifequal i.2 0%}
+                {% ifequal i.4 'no' %}
+                  <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame"> <font color="red"> {{i.1}} </font> </a>
+                  {% ifequal i.3 1 %}
+                    <font color="green">&radic;</font>
+                  {% else %}
+                    <font color="#8b0000">&Chi;</font>
+                  {% endifequal %}
+                {% else %}
+                  <div>
+                    <div>
+                    <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame"> <font color="red"> {{i.1}} </font> </a>
+                    {% ifequal i.3 1 %}
+                      <font color="green">&radic;</font>
+                    {% else %}
+                      <font color="#8b0000">&Chi;</font>
+                    {% endifequal %}
+                    </div>
+                    {% for a in i.4 %}
+                      <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{a.0}}"target="mainFrame"> <font color="red"> {{a.1}} </font> </a>|
+                    {% endfor %}
+                  </div>
+                {% endifequal %}
+              {%else%}
+                {% ifequal i.4 'no' %}
+                  <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame">{{i.1}}</a>
+                  {% ifequal i.3 1 %}
+                    <font color="green">&radic;</font>
+                  {% else %}
+                    <font color="#8b0000">&Chi;</font>
+                  {% endifequal %}
+                {% else %}
+                  <div>
+                    <div>
+                      <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame">{{i.1}}</a>
+                      {% ifequal i.3 1 %}
+                        <font color="green">&radic;</font>
+                      {% else %}
+                        <font color="#8b0000">&Chi;</font>
+                      {% endifequal %}
+                    </div>
+                    {% for a in i.4 %}
+                      <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{a.0}}"target="mainFrame">{{a.1}}</a>|
+                    {% endfor %}
+                  </div>
+                {% endifequal %}
+              {%endifequal%}
+            {%endifequal%}
+            </div>
+          {%endifnotequal%}
+        {% endfor %}
+
+        <br/>
+      {% endfor %}
+    </td>
+    <td width="10%"valign="top">
+      {% for item in config_name_list2%}
+        {% for i in item%}
+          {%ifnotequal i.0 'disp'%}
+            <div>
+            {% ifequal where 'notice'%}
+              <a href="{{settings.BASE_URL}}/admin/system/setting_notice/?config_name={{i.0}}"target="mainFrame"> <font color="red"> {{i.1}} </font> </a>
+            {% else %}
+              {%ifequal i.2 0%}
+                {% ifequal i.4 'no' %}
+                  <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame"> <font color="red"> {{i.1}} </font> </a>
+                  {% ifequal i.3 1 %}
+                    <font color="green">&radic;</font>
+                  {% else %}
+                    <font color="#8b0000">&Chi;</font>
+                  {% endifequal %}
+                {% else %}
+                  <div>
+                    <div>
+                    <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame"> <font color="red"> {{i.1}} </font> </a>
+                    {% ifequal i.3 1 %}
+                      <font color="green">&radic;</font>
+                    {% else %}
+                      <font color="#8b0000">&Chi;</font>
+                    {% endifequal %}
+                    </div>
+                    {% for a in i.4 %}
+                      <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{a.0}}"target="mainFrame"> <font color="red"> {{a.1}} </font> </a>|
+                    {% endfor %}
+                  </div>
+                {% endifequal %}
+              {%else%}
+                {% ifequal i.4 'no' %}
+                  <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame">{{i.1}}</a>
+                  {% ifequal i.3 1 %}
+                    <font color="green">&radic;</font>
+                  {% else %}
+                    <font color="#8b0000">&Chi;</font>
+                  {% endifequal %}
+                {% else %}
+                  <div>
+                    <div>
+                      <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame">{{i.1}}</a>
+                      {% ifequal i.3 1 %}
+                        <font color="green">&radic;</font>
+                      {% else %}
+                        <font color="#8b0000">&Chi;</font>
+                      {% endifequal %}
+                    </div>
+                    {% for a in i.4 %}
+                      <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{a.0}}"target="mainFrame">{{a.1}}</a>|
+                    {% endfor %}
+                  </div>
+                {% endifequal %}
+              {%endifequal%}
+            {%endifequal%}
+            </div>
+          {%endifnotequal%}
+        {% endfor %}
+      <br/>
+      {% endfor %}
+    </td><td width="10%"valign="top">
+      {% for item in config_name_list3%}
+        {% for i in item%}
+          {%ifnotequal i.0 'disp'%}
+            <div>
+            {% ifequal where 'notice'%}
+              <a href="{{settings.BASE_URL}}/admin/system/setting_notice/?config_name={{i.0}}"target="mainFrame"> <font color="red"> {{i.1}} </font> </a>
+            {% else %}
+              {%ifequal i.2 0%}
+                {% ifequal i.4 'no' %}
+                  <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame"> <font color="red"> {{i.1}} </font> </a>
+                  {% ifequal i.3 1 %}
+                    <font color="green">&radic;</font>
+                  {% else %}
+                    <font color="#8b0000">&Chi;</font>
+                  {% endifequal %}
+                {% else %}
+                  <div>
+                    <div>
+                    <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame"> <font color="red"> {{i.1}} </font> </a>
+                    {% ifequal i.3 1 %}
+                      <font color="green">&radic;</font>
+                    {% else %}
+                      <font color="#8b0000">&Chi;</font>
+                    {% endifequal %}
+                    </div>
+                    {% for a in i.4 %}
+                      <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{a.0}}"target="mainFrame"> <font color="red"> {{a.1}} </font> </a>|
+                    {% endfor %}
+                  </div>
+                {% endifequal %}
+              {%else%}
+                {% ifequal i.4 'no' %}
+                  <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame">{{i.1}}</a>
+                  {% ifequal i.3 1 %}
+                    <font color="green">&radic;</font>
+                  {% else %}
+                    <font color="#8b0000">&Chi;</font>
+                  {% endifequal %}
+                {% else %}
+                  <div>
+                    <div>
+                      <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{i.0}}"target="mainFrame">{{i.1}}</a>
+                      {% ifequal i.3 1 %}
+                        <font color="green">&radic;</font>
+                      {% else %}
+                        <font color="#8b0000">&Chi;</font>
+                      {% endifequal %}
+                    </div>
+                    {% for a in i.4 %}
+                      <a href="{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{a.0}}"target="mainFrame">{{a.1}}</a>|
+                    {% endfor %}
+                  </div>
+                {% endifequal %}
+              {%endifequal%}
+            {%endifequal%}
+            </div>
+          {%endifnotequal%}
+        {% endfor %}
+      <br/>
+      {% endfor %}
+    </td>
+  {% endifnotequal %}
+    <td valign="top">
+{% if config%}
+<p> đang ở sửa chữa (<font color="red">{{config.desc}}</font>) {%if config.sub_time%} lần trước sửa chữa (<font color="blue">{{config.sub_time}}</font>) (<font color="green">{{config.admin_user}}</font>) {%endif%}</p>
+<div id='desc' name="desc"style="color:red; display:none"><font size="5"> vị đệ trình </font></div>
+<input type="hidden"id="config_name"name="config_name"value="{{config.config_name}}"/>
+ phối trí trường độ ：{{config_len}}
+<br/>
+<textarea spellcheck="false"id="config_value"name="config_value"{% ifequal config_type 'setting' %}style="width: 90%; height: 650px;"{% else %}style="width: 90%; height: 650px; background-color: black; color: white"{% endifequal %}>{{config.config_value}}</textarea>
+<br/>
+
+<input type="button"onclick="setting()"value="đệ trình"/> 
+<input type="button"onclick="window.open('{{settings.BASE_URL}}/admin/{{where}}/{{config_type}}/?config_name={{config.config_name}}&to_json=1','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"value="kiểm tra"/>
+{% ifequal where 'notice' %}
+  <input type="button"onclick="public_notice()"value="tuyên bố phối trí"/>
+{% else %}
+  {% ifequal config_type 'test_setting' %}
+  <input type="button"onclick="get_config_value('{{config.config_name}}', 'setting')"value="chính thức phối trí"/>
+  {% else %}
+  <input type="button"onclick="get_config_value('{{config.config_name}}', 'test_setting')"value="trắc thí phối trí"/>
+  {% endifequal %}
+{% endifequal %}
+<br/>
+
+<span>
+<input type="hidden"id="ch_version"value="{{ch_version}}"/>
+<input type="hidden"id="button_color"value=""/>
+ lịch sử phiên bản ：
+{%for item in log_list%}
+<input type="button"id="button_{{item.id}}"value="{{item.version}}"onclick="get_config_log({{item.id}});"/>
+{%endfor%}
+<a href="{{settings.BASE_URL}}/admin/system/{{config_type}}/?config_name={{ config.config_name }}&log_limit={{ log_limit }}"target="mainFrame">
+  <input type="button"value="more..."/>
+</a>
+</span>
+<br/>
+<textarea id="config_log"name="config_log"style="width: 90%; height: 500px; display:none"></textarea>
+    </td>
+  {% if admin_logs %}
+  <td valign="top"width="20%">
+    <div style="float: left; max-height: 500px; overflow: auto; margin-top: 20px; max-width: 650px">
+      <table border="1"cellpadding="0"cellspacing="0">
+        <tr>
+          <td> tuyên bố nhân </td>
+          <td> tuyên bố thời gian </td>
+        </tr>
+        {% for item in admin_logs %}
+          <tr>
+            <td>
+              {{ item.admin_user }}
+            </td>
+            <td>
+              {{ item.subtime }}
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </td>
+  {% endif %}
+    </tr>
+
+</table>
+{% endif %}
+
+
+
+{% endblock %}

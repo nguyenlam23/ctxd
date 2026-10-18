@@ -1,0 +1,249 @@
+<script type='text/javascript'>
+  $("input[type=radio][name=include_ai]").change(function () {
+    var include_ai= $('input:radio[name="include_ai"]:checked').val();
+    var params = {
+      zone: activeZone,
+      include_ai: include_ai
+    };
+    $nx.request.postfs('app_user/user_power_rank/', params, function (data) {
+      $('#power_rank_body').html(data.power_rank_body)
+      current_content_open = data.content_open;
+      refresh_content_open_state();
+    })
+  });
+  function view_player_data(uid, uname, zone) {
+    var params = {
+      uid: uid,
+      zone: zone
+    }
+    $nx.request.getfs('gather_player/view_player_data/', params, function(data){
+      open_view_player_modal(uid, uname, data.data);
+    })
+  };
+
+</script>
+{%if is_refresh_rank%}
+<p>
+  <input id="refresh_rank"type="button"value="nảy sinh cái mới bảng xếp hạng"onclick="refresh_power_rank();"/>
+</p>
+{%endif%}
+{% if open_days %}
+<p>
+  <input id="content_open"type="button"value=""onclick="change_content_open()">&nbsp;
+   trước mặt khu ：<font color='blue'>{{ zone }}</font>&nbsp;&nbsp;
+   khai phục thứ <font color="red">{{ open_days }}</font> thiên &nbsp;&nbsp;
+   dành trước thời gian ：<font color="{{backup_status.1}}"><strong>{{backup_status.0}}</strong></font>&nbsp;&nbsp;
+  <a
+    href="{{settings.BASE_URL}}/admin/app_user/chat_log/?zone={{zone}}"> thế giới nói chuyện phiếm </a>&nbsp;&nbsp;
+
+  <input type="radio"name="include_ai"value=0 {% ifequal include_ai 0 %}checked{% endifequal %}> bài trừ AI
+  <input type="radio"name="include_ai"value=1 {% ifequal include_ai 1 %}checked{% endifequal %}> bao hàm AI
+  <input type="radio"name="include_ai"value=2 {% ifequal include_ai 2 %}checked{% endifequal %}> chỉ nhìn AI
+  &nbsp;&nbsp;
+  {% ifnotequal player_data.user_check.0 0 %}
+   sắp tới sinh động nhân số ：<font color="{{backup_status.1}}"><strong>{{player_data.user_check.0}}</strong></font>&nbsp;&nbsp;
+  {% endifnotequal %}
+</p>
+{% endif %}
+
+{% if country_res %}
+<table border=1>
+  <tr>
+    <td></td>
+    <td align="right"> đô thành sổ </td>
+    <td align="right"> thành trì tổng số </td>
+    <td align="right"> sinh động cao chiến ngoạn gia sổ </td>
+    <td align="right"> sinh động trung kiên ngoạn gia sổ </td>
+    <td align="right"> sinh động thấp chiến ngoạn gia sổ </td>
+    <td align="right"> bài danh vi tích phân </td>
+    <td align="right"> sinh động mũi nhọn chiến lực </td>
+    <td align="right"> sinh động tổng chiến lực </td>
+    <td align="right">30 thiên sinh động sung trị </td>
+    <td align="right"> sinh động thực tế sung trị </td>
+    <td align="right"> sinh động giả thuyết sung trị </td>
+    <td align="right"> sinh động Coin</td>
+    <td align="right"> tổng hợp lại thực lực của một nước </td>
+    <td align="right"> tiền 20 chiến công cầu hoà </td>
+    <td align="right"> quốc gia sinh động </td>
+    <td align="right"> đan tương tối cao chiến lực </td>
+  </tr>
+  {%for item in country_res%}
+  <tr>
+    <td align="right">
+      {{ item.country }}
+    </td>
+    <td align="right">
+      {{ item.capital_num }}
+    </td>
+    <td align="right">
+      {{ item.city_num }}
+    </td>
+    <td align="right">
+      {{ item.powerful_num }}
+    </td>
+    <td align="right">
+      {{ item.active_num }}
+    </td>
+    <td align="right">
+      {{ item.normal_num }}
+    </td>
+    <td align="right">
+      {{ item.rank_score }}
+    </td>
+    <td align="right">
+      {{ item.top_power }}
+    </td>
+    <td align="right">
+      {{ item.active_power_sum }}
+    </td>
+    <td align="right">
+      {{ item.thirty_pay_money }}
+    </td>
+    <td align="right">
+      {{ item.active_pay }}
+    </td>
+    <td align="right">
+      {{ item.active_pay_fake }}
+    </td>
+    <td align="right">
+      {{ item.active_coin }}
+    </td>
+    <td align="right">
+      {{ item.multiple_power }}
+    </td>
+    <td align="right">
+      {{ item.top20_country_credit }}
+    </td>
+    <td align="right">
+      {{ item.country_active }}
+    </td>
+    <td align="right">
+      {{ item.best_hero_power }}
+    </td>
+  </tr>
+  {%endfor%}
+</table>
+{% endif %}
+<br/>
+
+<br/>
+<table border=1>
+  <tr>
+    <td> thứ tự </td>
+    <td>PF</td>
+    <td>Uid</td>
+    <td>Uname</td>
+    <td> quốc gia </td>
+    <td> chức quan </td>
+    <td> biệt thự đẳng cấp </td>
+    <td> tước vị đẳng cấp </td>
+    <td> ở hình đường thẳng thái </td>
+    <td>IP</td>
+    <td><font color="red">30 thiên thực tế sung trị </font></td>
+    <td><font color="red"> thực tế sung trị </font></td>
+    <td><font color="red"> giả thuyết sung trị </font></td>
+    <!--td><font color="red"> để trừ kim ngạch </font></td-->
+    <td>Coin</td>
+    <td> công huân </td>
+    <td> tiễn </td>
+    <td> lương </td>
+    <td> Mộc </td>
+    <td> thiết </td>
+    <td> đánh chết </td>
+    <td> kiến thiết </td>
+    <td> chiến lực </td>
+    <td> tối cao chiến lực </td>
+    <td> đan tương tối cao chiến lực </td>
+    <td class="dynamic-display"style="background-color: #CACCCF"> ngoạn gia đạo cụ </td>
+    <td class="dynamic-display"style="background-color: #CACCCF"> cực mạnh Anh Hùng </td>
+    <td class="dynamic-display"style="background-color: #CACCCF"> Anh Hùng da </td>
+  </tr>
+  {%for item in power_list%}
+  <tr>
+    <td>{{item.rank}}</td>
+    <td>
+      {% ifequal item.pf 'auto_player' %}
+      <a href="javascript: void(0);"onclick="view_player_data({{item.uid}}, '{{item.uname}}', '{{zone}}')">{{item.pf}}</a>
+      {% else %}
+        {{ item.pf }}
+      {% endifequal %}
+    </td>
+    <td>
+      <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.uid_zone}}">{{item.uid_zone}}</a>
+    </td>
+    <td>{{item.uname}}</td>
+    <td>{{item.country}}</td>
+    <td>{{item.official}}</td>
+    <td>{{item.building_lv}}</td>
+    <td>{{item.office}}</td>
+    <td>{%if item.is_online%}
+      <font color="green"> ở tuyến </font>
+      {%else%}
+      <font color="red"> ly tuyến </font>
+      {%endif%}
+      {{item.t}}
+    </td>
+    <td>{{item.user_ip}}</td>
+    <td><font color="red">{{item.thirty_pay_money}}</font></td>
+    <td><font color="red">{{item.pay_money}}</font></td>
+    <td><font color="red">{{item.admin_pay}}</font></td>
+    <!--td><font color="red">{{item.sale_money}}</font></td-->
+    <td>{{item.coin}}</td>
+    <td>{{item.merit}}</td>
+    <td>{{item.gold}}</td>
+    <td>{{item.food}}</td>
+    <td>{{item.wood}}</td>
+    <td>{{item.iron}}</td>
+    <td>{{item.kill_num}}</td>
+    <td>{{item.build_count}}</td>
+    <td>{{item.power}}</td>
+    <td>{{item.best_power}}</td>
+    <td>{{item.best_hero_power}}</td>
+    <td class="dynamic-display"style="background-color: #CACCCF">
+      {% for prop in item.prop %}
+        <p>{{ prop.1 }}: {{ prop.2 }}</p>
+      {% endfor %}
+    </td>
+    <td class="dynamic-display"style="background-color: #CACCCF">
+      {%for h in item.hero%}
+      <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_user_hero_dict/?uid_zone={{item.uid_zone}}&hid={{h.0}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{h.1}},</a>
+      {%endfor%}
+    </td>
+    <td class="dynamic-display"style="background-color: #CACCCF">{{item.skin}}</td>
+  </tr>
+  {%endfor%}
+</table>
+<br/>
+
+<table border="1"cellpadding="0"cellspacing="0">
+  <tr>
+    <td>
+      Uid
+    </td>
+    <td>
+      Coin
+    </td>
+    <td>
+      Hero/God
+    </td>
+    <td>
+      Time
+    </td>
+  </tr>
+  {%for item in auction_records%}
+  <tr>
+    <td>
+      <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.0}}">{{item.0}}</a>
+    </td>
+    <td>
+      {{item.2}}
+    </td>
+    <td>
+      {{item.1}}
+    </td>
+    <td>
+      {{item.3}}
+    </td>
+  </tr>
+  {%endfor%}
+</table>

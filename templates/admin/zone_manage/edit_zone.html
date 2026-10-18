@@ -1,0 +1,130 @@
+<div class="modal-dialog"role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button"class="close"data-dismiss="modal"aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <h4 class="modal-title"id="editZoneTitle">
+        {% ifequal action 'edit' %}
+         biên tập khu phục 
+        {% endifequal %}
+        {% ifequal action 'add' %}
+         tăng thêm tân phục 
+        {% endifequal %}
+        {% ifequal action 'active' %}
+         khai khu 
+        {% endifequal %}
+      </h4>
+    </div>
+    <div class="modal-body">
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label class="col-md-3 control-label"> tương ứng phân tổ </label>
+          <div class="col-md-9">
+            <select id="zone_group"class="form-control">
+              {% for item in zone_group_select %}
+                <option value="{{ item.id }}"{% ifequal item.id zone.zone_group %}selected=true{% endifequal %}>{{ item.text }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> khu phục ID</label>
+          <div class="col-md-9">
+            <input type="text"class="form-control"id="edit_zone_id"{% ifnotequal action 'add' %}disabled{% endifnotequal %} value="{{ zone.zone_id }}">
+            <input type="hidden"value="{{ action }}"id="edit_action">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> khu phục danh </label>
+          <div class="col-md-9">
+            <input type="text"class="form-control"id="edit_zone_name"value="{{ zone.zone_name }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> trưởng máy IP/ vực danh </label>
+          <div class="col-md-9">
+            <input type="text"class="form-control"id="edit_host"value="{{ zone.host }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> cảng hào </label>
+          <div class="col-md-9">
+            <input type="text"class="form-control"id="edit_port"value="{{ zone.port }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> khai phục thời gian </label>
+          <div class="col-md-9">
+            <input type="text"class="form-control"id="edit_open_time"value="{{ zone.open_time }}"autocomplete="off">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> hợp phục trạng thái </label>
+          <div class="col-md-9">
+            <select id="edit_merge_times"class="form-control"{% ifnotequal action 'add' %}disabled{% endifnotequal %}>
+              {% for item in merge_times_select %}
+                <option value="{{ item.id }}"{% ifequal item.id zone.merge_times %}selected=true{% endifequal %}>{{ item.text }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> bị hợp số lần </label>
+          <div class="col-md-9">
+            <input type="text"class="form-control"id="edit_op_merge_times"value="{{ zone.op_merge_times }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> đăng kí hạn chế </label>
+          <div class="col-md-9">
+            <label class="radio-inline col-md-2">
+              <input type="radio"name="edit_register_limit"value="0"{% ifequal zone.register_limit 0 %}checked{% endifequal %}>
+              <span class="label label-danger"> hạn chế </span>
+            </label>
+            <label class="radio-inline col-md-2">
+              <input type="radio"name="edit_register_limit"value="1"{% ifequal zone.register_limit 1 %}checked{% endifequal %}>
+              <span class="label label-success"> đóng </span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> mạnh mẽ đề cử </label>
+          <div class="col-md-9">
+            <label class="radio-inline col-md-2">
+              <input type="radio"name="edit_recommend"value="0"{% ifequal zone.recommend 0 %}checked{% endifequal %}>
+              <span class="label label-default"> bình thường </span>
+            </label>
+            <label class="radio-inline col-md-2">
+              <input type="radio"name="edit_recommend"value="1"{% ifequal zone.recommend 1 %}checked{% endifequal %}>
+              <span class="label label-success"> đề cử </span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 control-label"> khu phục nhãn </label>
+          <div class="col-md-9">
+            <label class="radio-inline col-md-2">
+              <input type="radio"name="edit_state"value="0"{% ifequal zone.state 0 %}checked{% endifequal %}>
+              <span class="label label-default"> vô </span>
+            </label>
+            <label class="radio-inline col-md-2">
+              <input type="radio"name="edit_state"value="1"{% ifequal zone.state 1 %}checked{% endifequal %}>
+              <span class="label label-danger"> bạo </span>
+            </label>
+            <label class="radio-inline col-md-2">
+              <input type="radio"name="edit_state"value="2"{% ifequal zone.state 2 %}checked{% endifequal %}>
+              <span class="label label-success"> tân </span>
+            </label>
+            <label class="radio-inline col-md-2">
+              <input type="radio"name="edit_state"value="3"{% ifequal zone.state 3 %}checked{% endifequal %}>
+              <span class="label label-warning"> trắc </span>
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button"class="btn btn-primary"onclick="submit_edit_zone()"> đệ trình </button>
+    </div>
+  </div>
+</div>
+

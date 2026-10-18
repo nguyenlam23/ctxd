@@ -1,0 +1,274 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js"type="text/javascript"></script>
+<link REL="stylesheet"href="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/css/bootstrap.min.css"TYPE="text/css">
+
+<script src="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/js/bootstrap.min.js"type="text/javascript"></script>
+
+<script type='text/javascript'>
+  var inputIndex = 0;
+
+  $(document).ready(function () {
+    load_merge_record();
+  });
+
+  function load_merge_record() {
+    $nx.request.getfs('merge_zone/get_merge_records/', {}, function (data) {
+      $("#mergeRecords").html(data.merge_record_html);
+      if (data.set_timeout) {
+        setTimeout(function () {
+          load_merge_record()
+        }, 10000)
+      }
+    })
+  }
+
+  function reload_merge_config(_this) {
+    var selectIndex = _this.options.selectedIndex;
+    var merge_times = _this.options[selectIndex].value;
+    $.get('{{ settings.base_url }}/admin/merge_zone/get_merge_config/', {
+      'merge_times': merge_times
+    }, function(data){
+      $('#merge_config_value').val(data.config_value);
+    }, 'json')
+  }
+
+  function save_merge_config() {
+    var merge_times = $('#merge_times').val();
+    var merge_config_value = $('#merge_config_value').val()
+    $.post('{{ settings.base_url }}/admin/merge_zone/modify_merge_config/', {
+      'merge_times': merge_times,
+      'config_value': merge_config_value
+    }, function(data){
+      if(data.state=='success'){
+        $('#modify_error').hide();
+        $('#modify_success').show();
+        setTimeout("$('#modify_success').hide()",5000)
+      } else{
+        $('#modify_config_error_msg').text(data.msg)
+        $('#modify_error').show();
+        $('#modify_success').hide();
+        setTimeout("$('#modify_error').hide()",5000)
+      }
+    },
+    'json')
+  }
+
+  function add_zone_range() {
+    inputIndex += 1;
+    var inputGroup = $(`<div class='form-group' name='merge_zone_range' id='input_group_${inputIndex}'></div>`);
+    var input1 = $("<div class='col-md-4'><input type='text' class='form-control' placeholder=' lúc đầu ID'></div>");
+    var input2 = $("<div class='col-md-4'><input type='text' class='form-control' placeholder=' kết thúc ID'></div>");
+    var button = $(`<div class='col-md-2'><button type='button' class='btn btn-danger' onclick='remove_zone_range(${inputIndex})'>-</button>`);
+    inputGroup.append(input1).append(input2).append(button);
+    $('#merge_zone_range').append(inputGroup);
+  }
+
+  function remove_zone_range(_inputIndex) {
+    var removeGroup = $(`#input_group_${_inputIndex}`);
+    removeGroup.remove();
+  }
+
+  function get_merge_zone_ranges() {
+    var inputGroups = $("#merge_zone_range [name='merge_zone_range']");
+    var zone_ranges = [];
+    $.each(inputGroups, function (i, item) {
+      var start_zone = $($(item).find('input')[0]).val();
+      var end_zone = $($(item).find('input')[1]).val();
+      if (start_zone && end_zone) {
+        zone_ranges.push([start_zone, end_zone]);
+      }
+    })
+    return zone_ranges;
+  }
+  
+  function calculate_merge_zone() {
+    var zone_ranges = get_merge_zone_ranges();
+    var tempForm = document.createElement("form");
+    tempForm.action = '{{ settings.base_url }}/admin/merge_zone/calculate_merge_zone/';
+    tempForm.method = 'post';
+    tempForm.style.display ="none";
+    var paramsInput = document.createElement("input");
+    paramsInput.name = 'zone_ranges';
+    paramsInput.value = JSON.stringify(zone_ranges);
+    tempForm.appendChild(paramsInput);
+    document.body.appendChild(tempForm);
+    tempForm.submit();
+  }
+
+  function view_merge_result(recordID) {
+    var tempForm = document.createElement("form");
+    tempForm.action = '{{ settings.base_url }}/admin/merge_zone/view_merge_result/';
+    tempForm.method = 'post';
+    tempForm.style.display ="none";
+    var paramsInput = document.createElement("input");
+    paramsInput.name = 'record_id';
+    paramsInput.value = recordID;
+    tempForm.appendChild(paramsInput);
+    document.body.appendChild(tempForm);
+    tempForm.submit();
+  }
+
+  function download_merge_config(recordID) {
+    window.location.href = '{{ settings.base_url }}/admin/merge_zone/download_merge_config/?record_id=' + recordID;
+  }
+
+  function del_merge_record(recordID) {
+    if (confirm(' có hay không cắt bỏ thử hợp phục phối trí ？')) {
+      $nx.request.postfs('merge_zone/del_merge_record/', {
+        record_id: recordID
+      }, function (data) {
+        load_merge_record();
+      })
+    }
+  }
+
+  function start_merge(recordID) {
+    if (confirm(' gần bắt đầu hợp phục ， xin xác nhận đãi hợp phục khu có hay không đã quải thượng giữ gìn ！！！')) {
+      $nx.request.postfs('merge_zone/start_merge/', {
+        record_id: recordID
+      }, function (data) {
+        load_merge_record();
+      })
+    }
+
+  }
+
+  function get_maintain_zones(recordID) {
+    $nx.request.postfs('merge_zone/get_maintain_zones/', {
+      record_id: recordID
+    }, function (data) {
+      $("#maintainZoneList").text(data.maiantain_zones);
+      $("#viewMaintainZones").modal('show');
+    })
+
+  }
+  function view_merge_progress(recordID) {
+    $nx.request.postfs('merge_zone/view_merge_progress/', {
+      record_id: recordID
+    }, function (data) {
+      $("#mergeProgressBody").html(data.merge_progress_html);
+      $("#viewMergeProgress").modal('show');
+    })
+
+  }
+  function manual_merge_zone(recordID) {
+    $nx.request.postfs('merge_zone/manual_merge_zone/', {
+      record_id: recordID
+    }, function (data) {
+			if (confirm(' thủ động đồng bộ hợp phục dĩ hoàn thành ， xin điểm kích xác định nảy sinh cái mới ！')) {
+				load_merge_record();
+			}
+    })
+  }
+</script>
+
+<div class="container-fluid">
+  <h4> hợp phục thao tác </h4>
+  <hr/>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-primary">
+            <div class="panel-heading"style="text-align: center"> điền hợp chính là đang lúc </div>
+            <div class="panel-body">
+              <div class="form-horizontal"id="merge_zone_range">
+                <div class="form-group"id="input_group_0"name="merge_zone_range">
+                  <div class="col-md-4">
+                    <input type="text"class="form-control"placeholder="lúc đầu ID">
+                  </div>
+                  <div class="col-md-4">
+                    <input type="text"class="form-control"placeholder="kết thúc ID">
+                  </div>
+                  <div class="col-md-2">
+                    <button type="button"class="btn btn-success"onclick="add_zone_range()">+</button>
+                  </div>
+                </div>
+              </div>
+              <button type="button"class="btn btn-primary"onclick="calculate_merge_zone()"> đệ trình </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-primary">
+            <div class="panel-heading"style="text-align: center"> hợp phục phối trí </div>
+            <div class="panel-body">
+              <form class="form">
+                <div id="modify_error"class="form-group"style="display: none">
+                  <div class="alert alert-danger fade in">
+                    <button type="button"class="close"data-dismiss="alert">&times;</button>
+                    <strong> hợp phục phối trí sửa chữa thất bại ：</strong><span id="modify_config_error_msg"></span>
+                  </div>
+                </div>
+                <div id="modify_success"class="form-group"style="display:none;">
+                  <div class="alert alert-success fade in">
+                    <button type="button"class="close"data-dismiss="alert">&times;</button>
+                    <strong> hợp phục phối trí </strong> sửa chữa thành công ！
+                  </div>
+                </div>
+                <div class="form-group">
+                  <select id="merge_times"name="merge_times"class="form-control"onchange="reload_merge_config(this)">
+                    <option value=1> một lần hợp phục </option>
+                    <option value=2> lần thứ hai hợp phục </option>
+                    <option value=3> ba lần hợp phục </option>
+                    <option value=4> bốn lần hợp phục </option>
+                    <option value=5> năm lần hợp phục </option>
+                    <option value=6> sáu lần hợp phục </option>
+                    <option value=7> bảy lần hợp phục </option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <textarea class="form-control"id="merge_config_value"rows="20">{{ merge_config_value }}</textarea>
+                </div>
+                <div class="form-group">
+                  <button type="button"class="btn btn-primary"onclick="save_merge_config()"> bảo tồn sửa chữa </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="mergeRecords"class="col-md-8"style="text-align: center;">
+    </div>
+  </div>
+</div>
+<div class="modal fade"id="viewMaintainZones"tableindex="-1"role="dialog">
+  <div class="modal-dialog"role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button"class="close"data-dismiss="modal"aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"id="editZoneTitle">
+           giữ gìn khu phục liệt biểu 
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="well well-lg"id="maintainZoneList"style="word-wrap:break-word; overflow:hidden;"></div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade"id="viewMergeProgress"tableindex="-1"role="dialog">
+  <div class="modal-dialog"role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button"class="close"data-dismiss="modal"aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"id="editZoneTitle">
+           hợp phục tiến độ 
+        </h4>
+      </div>
+      <div class="modal-body"id="mergeProgressBody">
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

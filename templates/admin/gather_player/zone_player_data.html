@@ -1,0 +1,124 @@
+<table class="table table-bordered table-hover"style="margin-top: 1px; text-align: center">
+  <tr>
+    <td>
+       gỗ cốp pha ID/UID
+    </td>
+    <td>
+      Uname
+    </td>
+    <td>
+       tài khoản đăng kí thời gian 
+    </td>
+    <td>
+       tối hậu thu thập thời gian 
+      <span class="sort-wrapper">
+        <i class="sort-caret ascending"onclick="do_sort('last_time')"></i>
+        <i class="sort-caret descending"onclick="do_sort('-last_time')"></i>
+      </span>
+    </td>
+    <td>
+       tối hậu đăng ký thời gian 
+    </td>
+    <td>
+       biệt thự đẳng cấp 
+    </td>
+    <td>
+       tước vị đẳng cấp 
+    </td>
+    <td>
+       sung trị kim ngạch 
+    </td>
+    {% comment %} <td>
+       giả thuyết sung trị 
+    </td>
+    <td>
+       để trừ kim ngạch 
+    </td> {% endcomment %}
+    <td>
+       đánh chết 
+    </td>
+    <td>
+       kiến thiết 
+    </td>
+    <td>
+       chiến lực 
+    </td>
+    <td>
+       đan tương tối cao chiến lực 
+    </td>
+    <td>
+       cực mạnh Anh Hùng 
+    </td>
+    <td>
+       gỗ cốp pha cho điểm 
+      <span class="sort-wrapper">
+        <i class="sort-caret ascending"onclick="do_sort('score')"></i>
+        <i class="sort-caret descending"onclick="do_sort('-score')"></i>
+      </span>
+    </td>
+    <td>
+       thu thập số trời 
+      <span class="sort-wrapper">
+        <i class="sort-caret ascending"onclick="do_sort('days')"></i>
+        <i class="sort-caret descending"onclick="do_sort('-days')"></i>
+      </span>
+    </td>
+    <td>
+       thu thập số lần 
+      <span class="sort-wrapper">
+        <i class="sort-caret ascending"onclick="do_sort('times')"></i>
+        <i class="sort-caret descending"onclick="do_sort('-times')"></i>
+      </span>
+    </td>
+    <td>
+       bồi ngoạn ví dụ thực tế sổ 
+    </td>
+    <td style="width: 60px">
+       trạng thái 
+    </td>
+    <td style="width: 160px">
+       thao tác 
+    </td>
+  </tr>
+  {% for item in zone_player_data %}
+    <tr>
+      <td>
+        <a
+          href="{{settings.BASE_URL}}/admin/gather_player/?uid={{item.uid}}"
+          target="_blank">{{item.uid}}</a>
+      </td>
+      <td>
+        <a
+          href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid={{item.uid}}"
+          target="_blank">{{item.uname}}</a>
+      </td>
+      <td>{{ item.add_time }}</td>
+      <td>{{ item.last_time }}</td>
+      <td>{{ item.login_time }}</td>
+      <td>{{ item.building_lv }}</td>
+      <td>{{ item.office_lv }}</td>
+      <td>{{ item.pay_money }}</td>
+      {% comment %} <td>{{ item.admin_money }}</td>
+      <td>{{ item.sale_money }}</td> {% endcomment %}
+      <td>{{ item.kill_num }}</td>
+      <td>{{ item.build_count }}</td>
+      <td>{{ item.power }}</td>
+      <td>{{ item.best_hero_power }}</td>
+      <td>
+        {%for h in item.hero_list%}
+        <a onclick="window.open('{{settings.BASE_URL}}/admin/gather_player/get_player_hero_dict/?data_id={{item.last_did}}&hid={{h.0}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;"href="javascript:void(0);">{{h.2}}{{h.1}},</a>
+        {%endfor%}
+      </td>
+      <td>{{ item.score }}</td>
+      <td>{{ item.days }}</td>
+      <td>{{ item.times }}</td>
+      <td>{{ item.join_num }}</td>
+      <td><font color="{{ item.status_cn.1 }}">{{ item.status_cn.0 }}</font></td>
+      <td>
+        {% for m in item.menu %}
+        <button type="button"class="btn btn-primary btn-xs"{% ifequal m.2 0 %}disabled="disabled"{% endifequal %} onclick="modify_player_status({{item.uid}}, {{m.1}})">{{m.0}}</button>
+        {% endfor %}
+      </td>
+    </tr>
+  {% endfor %}
+</table>

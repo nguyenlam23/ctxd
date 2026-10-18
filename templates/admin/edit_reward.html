@@ -1,0 +1,426 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js"type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet"href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css"type="text/css"/>
+<script type='text/javascript'>
+$(function() {
+		var dates = $('#valid_date').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"",
+      //minDate:"2010-04-15",
+      minDate:"-0",
+			onSelect: function(selectedDate) {
+        //statistic();
+			}
+		});
+
+	});
+
+
+/*
+$(function() {
+		var dates = $('#begin_valid_date').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"",
+      //minDate:"2010-04-15",
+      minDate:"-0",
+			onSelect: function(selectedDate) {
+        //statistic();
+			}
+		});
+
+	});
+*/
+
+
+$(function() {
+		var dates = $('#begin_valid_date').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"+0",
+      minDate:"2010-04-15",
+			onSelect: function(selectedDate) {
+        statistic();
+			}
+		});
+
+	});
+
+
+
+
+function chk_reward_obj(v){
+  if (v=='all'){
+    $('#user_content').hide();
+    $('#condition_centent').hide();
+    $('#activecode_centent').hide();
+  }else if(v=='user'){
+    $('#user_content').show();
+    $('#condition_centent').hide(); 
+    $('#activecode_centent').hide();
+  }else if (v=='condition'){
+    $('#user_content').hide();
+    $('#condition_centent').show(); 
+    $('#activecode_centent').hide();
+   }else if (v=='activecode'){ 
+    $('#user_content').hide();
+    $('#condition_centent').hide(); 
+    $('#activecode_centent').show();
+  }
+}
+
+
+
+
+  function chk(){ 
+    var sns_id = '{{settings.SNS_ID}}';
+    if ($('#name').val() == ''){
+      alert(' tên gọi bất năng vi Trống ');
+      $('#name').focus();
+      return false;
+    }
+    if (document.getElementById('user').checked){
+      if ($('#user_file').val() == '' && $('#uids').val() == ''){
+        alert(' đạo nhập văn kiện và người sử dụng id bất năng đồng thời vi Trống ');
+        $('#uids').focus();
+        return false;
+      }
+    }else if (document.getElementById('condition').checked){
+      if (document.getElementById('condition_type_level').checked){
+        if (parseInt($('#condition_f').val())> parseInt($('#condition_t').val())){
+        alert(' thỉnh chính xác tuyển trạch đẳng cấp phạm vi ');
+        return false;}
+        }else if(document.getElementById('condition_type_login_time').checked){
+            if ($('#begin_valid_date').val() == ''){
+              alert(' thỉnh tuyển trạch lần trước đăng ký thời gian ');
+              $('#begin_valid_date').focus();
+              return false;
+            }
+
+        }else{
+          alert(' thỉnh tuyển trạch điều kiện loại hình ');
+          return false;
+        }
+    }
+    if ($('#info').val() == ''){
+      alert(' nhật ký miêu tả bất năng vi Trống ');
+      $('#info').focus();
+      return false;
+    }
+
+
+
+    if (($('#pf_name').val() == 'cn' || $('#pf_name').val() == 'all') && sns_id == 'qq' && $('#coin').val()!= ''){ 
+      alert(' đằng tin ngôi cao không ủng hộ phát Dê tiền ')
+      $('#pf_name').focus();
+      return false;
+    }
+
+    if ($('#icon').val() == ''){
+      alert(' tư liệu sống bất năng vi Trống ');
+      $('#icon').focus();
+      return false;
+    }
+    if ($('#valid_date').val() == ''){
+      alert(' thỉnh tuyển trạch thời hạn có hiệu lực ');
+      $('#valid_date').focus();
+      return false;
+    }
+    
+
+
+
+
+    var chkObj = document.getElementsByName("kind"); 
+    var flag = true;
+    var n = 0
+    for (var i = 0; i <chkObj.length; i++) { 
+      if(chkObj[i].checked){
+        flag = false; 
+        chkValue = chkObj[i].value; 
+        var txtValue = document.getElementById(chkValue).value;
+        if (parseInt(txtValue)!= txtValue) {
+          alert("xin điền vào chính xác con số ！"); 
+          document.getElementById(chkValue).focus();
+          return false; 
+        }    
+        if (parseInt(txtValue)> 9){
+          alert("đạo cụ số lượng bất năng vượt lên trước 9"); 
+          document.getElementById(chkValue).focus();
+          return false;
+        }
+        n+= 1
+      }    
+    } 
+    if($('#task_id').val()!=''){
+      flag = false;
+    }
+    if($('#gold').val()!=''){ 
+      flag = false;
+      if(parseInt($('#gold').val())!= $('#gold').val()){
+      alert(' thỉnh chính xác điền tiền bạc số lượng ');
+      return false;
+      }
+      if(parseInt($('#gold').val())>99999){
+      alert(' tiền bạc số lượng bất năng vượt lên trước 99999');
+      return false;
+      }
+      n+=1
+    }
+    if($('#invite_score').val()!=''){ 
+      flag = false;
+      if(parseInt($('#invite_score').val())!= $('#invite_score').val()){
+      alert(' thỉnh chính xác điền vi tích phân số lượng ');
+      return false;
+      }
+      if(parseInt($('#invite_score').val())>99){
+      alert(' vi tích phân số lượng bất năng vượt lên trước 99');
+      return false;
+      }
+      n+=1
+    }
+    if($('#coin').val()!=''){
+      flag = false;
+      if(parseInt($('#coin').val())!= $('#coin').val()){
+      alert(' thỉnh chính xác điền Dê tiền số lượng ');
+      return false;
+      }
+      if(parseInt($('#coin').val())>99){
+      alert(' Dê tiền số lượng bất năng vượt lên trước 99');
+      return false;
+      }
+      n+=1
+    }
+    if (n>4){
+      alert(' gữi đi phần thưởng tổng số bất năng vượt lên trước 4');
+      return false;
+    }
+
+    if(flag){
+      alert(' thỉnh tuyển trạch phần thưởng ');
+      return false;
+    }
+  }
+
+</script>
+<h2>{%if reward %}
+   biên tập  ({{reward.name}}) 
+  {%else%}
+   tăng thêm thưởng cho 
+  {%endif%}
+</h2>
+<br/>
+<form action="{{settings.BASE_URL}}/admin/reward/edit_reward_p/"method="post"enctype="multipart/form-data"onsubmit="return chk();">
+<table width="100%">
+  <tr>
+    <td>
+       tên gọi 
+    </td>
+    <td>
+      <input type="txt"name="name"id="name"value="{{reward.name}}"/>
+    </td>
+  </tr> 
+  <tr>
+    <td>
+       ngôi cao 
+    </td>
+    <td> 
+      <select name="pf_name"id="pf_name"> 
+        <option value="all"{%ifequal reward.pf_name 'all'%}selected=selected{%endifequal%}> sở hữu ngôi cao </option> 
+        <option value="cn"{%ifequal reward.pf_name 'cn'%}selected=selected{%endifequal%}> cn </option> 
+        <option value="facebook"{%ifequal reward.pf_name 'facebook'%}selected=selected{%endifequal%}> facebook </option> 
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>
+       phát thưởng đối tượng 
+    </td>
+    <td>
+<p>
+<input type="radio"name="reward_obj"id="all"value="all"{%if reward %}{%ifequal reward.reward_obj 'all'%}checked=checked{%endifequal%}{%else%}checked=checked{%endif%} onclick="chk_reward_obj(this.value)"/> toàn bộ phục 
+<input type="radio"name="reward_obj"id="user"value="user"onclick="chk_reward_obj(this.value)"{%ifequal reward.reward_obj 'user'%}checked=checked{%endifequal%} /> chỉ định người sử dụng 
+<input type="radio"name="reward_obj"id='condition' value="condition"onclick="chk_reward_obj(this.value)"{%ifequal reward.reward_obj 'condition'%}checked=checked{%endifequal%} /> điều kiện 
+<input type="radio"name="reward_obj"id='activecode' value="activecode"onclick="chk_reward_obj(this.value)"{%ifequal reward.reward_obj 'activecode'%}checked=checked{%endifequal%} /> án con ngựa phát thưởng 
+</p>
+<span {%ifequal reward.reward_obj 'user'%} {%else%} style="display:none"{%endifequal%} id="user_content">
+<input name="user_file"id="user_file"type="file"/>(đạo nhập xls văn kiện ， còn có thể nhiều người dùng tiếng Anh dấu phẩy ngăn điền tại hạ phương)
+<br />
+<textarea id="uids"name="uids"style="width: 50%; height: 100px">{{reward.obj_content.uids}}</textarea>
+(cộng {{reward.obj_content.uids_len}})
+<br />
+<br />
+
+</span>
+<span {%ifequal reward.reward_obj 'condition'%} {%else%} style="display:none"{%endifequal%} id="condition_centent">
+  <input type="radio"name="condition_type"id="condition_type_level"value="level"{%if reward.obj_content.condition.level.condition_f%}checked = checked{%else%}{%endif%}/> đẳng cấp phạm vi:
+  <select name="condition_f"id="condition_f">
+    {% for item in levels%}
+    <option value="{{item}}"{%ifequal reward.obj_content.condition.level.condition_f item %}selected=selected{%endifequal%}>{{item}}</option>
+    {% endfor %}
+  </select>
+  <=User.level<=
+  <select name="condition_t"id="condition_t">
+    {% for item in levels%}
+    <option value="{{item}}"{%ifequal reward.obj_content.condition.level.condition_t item %}selected=selected{%endifequal%}>{{item}}</option>
+    {% endfor %}
+  </select> 
+  <br/><br/>
+  <input type="radio"name="condition_type"id="condition_type_login_time"value="login_time"{%if reward.begin_valid_date%}checked = checked{%else%}{%endif%}/> lần trước đăng ký thời gian sớm hơn: 
+  <input readonly size="7"name="begin_valid_date"id="begin_valid_date"value="{{reward.begin_valid_date}}"/> 
+  <select name="begin_valid_hour">
+    {% for item in hours %}
+    <option {%ifequal reward.begin_valid_hour item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+ :
+  <select name="begin_valid_minute">
+    {% for item in minutes %}
+    <option {%ifequal reward.begin_valid_minute item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+</span>
+
+
+<span {%ifequal reward.reward_obj 'activecode'%} {%else%} style="display:none"{%endifequal%} id="activecode_centent"> 
+  {%if reward.codeid%}
+  {%ifnotequal reward.codeid '0'%}
+  &nbsp;&nbsp;&nbsp;&nbsp; lĩnh tưởng con ngựa:{{reward.codeid}} 
+  {%endifnotequal%}
+  {%else%}
+  {%endif%}
+  <br />
+  &nbsp;&nbsp;&nbsp;&nbsp; con ngựa thặng dư sử dụng số lần ：<input type="text"name="usetimes"id="usetimes"value="{{reward.usetimes}}"/>
+</span>
+<br />
+<br /> 
+
+    </td>
+  </tr>
+  <tr>
+    <td>
+       nhật ký miêu tả 
+    </td>
+    <td>
+  <textarea id="info"name="info"style="width: 90%; height: 100px">{{reward.info}}</textarea>
+    </td>
+  </tr>
+  <tr>
+    <td>
+       nhiệm vụ Id
+    </td>
+    <td>
+      <select id="task_id"name="task_id">
+  		<option value=''> không tăng thêm </option>
+  	{%for task_id in task_list%}
+  		<option value='{{task_id}}'>{{task_id}}</option>
+  	{%endfor%}</select>
+    </td>
+  </tr>
+  <tr>
+    <td>
+       thưởng cho nội dung 
+    </td>
+    <td>
+      <table>
+        <tr>
+      {%for item in properties_list%}
+          <td width="250px;"valign="top">
+            <table>
+              <tr><h4>{{item.1}}</h4></tr>
+              {%for p in item.2%}
+              <tr>
+                <td>
+                  <input type="checkbox"{%if p.checked %}checked="checked"{%endif%} name="kind"value="{{item.0}}|{{p.id}}">{{p.name}}
+                </td>
+                <td>
+                  <input type="text"name="{{item.0}}|{{p.id}}"id="{{item.0}}|{{p.id}}"style="width:60px;"value="{{p.vv}}">
+              </td>
+              </tr>
+              {%endfor%}
+            </table>
+
+          </td>
+      {%endfor%}
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>
+       tư liệu sống 
+    </td>
+    <td>
+      <select name="icon">
+        {% for item in icons %}
+        <option {%ifequal reward.icon item.source%}selected=selected{%endifequal%} value="{{item.source}}">{{item.name}}</option>
+        {% endfor %}
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>
+       Dê tiền 
+    </td>
+    <td>
+      <input name="coin"id="coin"type="txt"value="{{reward.rewards_dict.coin}}"/>
+    </td>
+  </tr>
+  <tr>
+    <td>
+       vi tích phân 
+    </td>
+    <td>
+      <input name="invite_score"id="invite_score"type="txt"value="{{reward.rewards_dict.invite_score}}"/>
+    </td>
+  </tr>
+  <tr>
+    <td>
+       tiền bạc 
+    </td>
+    <td>
+      <input name="gold"id="gold"type="txt"value="{{reward.rewards_dict.gold}}"/>
+    </td>
+  </tr>
+  <tr>
+    <td>
+       thời hạn có hiệu lực 
+    </td>
+    <td>
+      <input readonly size="7"name="valid_date"id="valid_date"value="{{reward.valid_date}}"/> 
+  <select name="valid_hour">
+    {% for item in hours %}
+    <option {%ifequal reward.valid_hour item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+ :
+  <select name="valid_minute">
+    {% for item in minutes %}
+    <option {%ifequal reward.valid_minute item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+    {% endfor %}
+  </select>
+
+    </td>
+  </tr>
+  <tr>
+    <td>
+    </td>
+    <td>
+      <input type="hidden"name="id"value="{{reward.id}}"type="txt"/>
+      <input type="submit"value="đệ trình"/>
+    </td>
+  </tr>
+</table>
+</form>
+
+
+{% endblock %}

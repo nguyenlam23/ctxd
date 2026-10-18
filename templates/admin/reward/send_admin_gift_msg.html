@@ -1,0 +1,226 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js"type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet"href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css"type="text/css"/>
+<script type='text/javascript'>
+  function check_all(){
+    var ack = $("#ack").is(":checked");
+    var inputs = document.getElementsByTagName('input');
+    var value = document.getElementById('all_value').value;
+    if(ack && parseInt(value)!= value) {
+      alert(' thỉnh chính xác điền đan con số lượng ');
+      document.getElementById('all_value').value = '';
+      return;
+    }
+    for (var i = 0; i <inputs.length; i++) { 
+      if(inputs[i].name.indexOf('A_')!=-1){
+        if(ack) inputs[i].value = value;
+        else inputs[i].value = '';
+        
+      }
+    } 
+
+  }
+  function check_all_equip(){
+    var ack = $("#ack_equip").is(":checked");
+    var inputs = document.getElementsByTagName('input');
+    var value = document.getElementById('all_value_equip').value;
+    if(ack && parseInt(value)!= value) {
+      alert(' thỉnh chính xác điền trang bị số lượng ');
+      document.getElementById('all_value_equip').value = '';
+      return;
+    }
+    for (var i = 0; i <inputs.length; i++) { 
+      if(inputs[i].name.indexOf('E_')!=-1){
+        if(ack) inputs[i].value = value;
+        else inputs[i].value = '';
+        
+      }
+    } 
+  }
+  function chk(){
+    var userObj = document.getElementById('uids');
+    if (userObj.value.length == 0){
+      alert(' thỉnh điền người sử dụng Id');
+      userObj.focus();
+      return false;
+    }
+    var chkObj = document.getElementsByName("aid"); 
+    var flag = true;
+    for (var i = 0; i <chkObj.length; i++) { 
+      if(chkObj[i].checked){
+        flag = false; 
+      }    
+    } 
+    var chkObj2 = document.getElementsByName("eid"); 
+    for (var i = 0; i <chkObj2.length; i++) { 
+      if(chkObj2[i].checked){
+        flag = false; 
+      }    
+    } 
+    if($('#gold').val()!=''){ 
+      flag = false;
+      if(parseInt($('#gold').val())!= $('#gold').val()){
+      alert(' thỉnh chính xác điền LB số lượng ');
+      return false;
+      }
+      if(parseInt($('#gold').val())>50000000){
+      alert('LB số lượng bất năng vượt lên trước 5000w');
+      return false;
+      }
+    }
+    if($('#energy').val()!=''){ 
+      flag = false;
+      if(parseInt($('#energy').val())!= $('#energy').val()){
+      alert(' thỉnh chính xác điền thể lực số lượng ');
+      return false;
+      }
+      if(parseInt($('#energy').val())> 120){
+      alert(' thể lực số lượng bất năng vượt lên trước 120');
+      return false;
+      }
+    }
+    if($('#coin').val()!=''){
+      flag = false;
+      if(parseInt($('#coin').val())!= $('#coin').val()){
+      alert(' thỉnh chính xác điền Coin số lượng ');
+      return false;
+      }
+      if(parseInt($('#coin').val())>10000){
+      alert('Coin số lượng bất năng vượt lên trước 10000');
+      return false;
+      }
+    }
+    if($('#score').val()!=''){
+      flag = false;
+      if(parseInt($('#score').val())!= $('#score').val()){
+      alert(' thỉnh chính xác điền Coin số lượng ');
+      return false;
+      }
+      if(parseInt($('#score').val())>10000){
+      alert(' trung tâm số lượng bất năng vượt lên trước 10000');
+      return false;
+      }
+    }
+    if($('#medal').val()!=''){ 
+      flag = false;
+      if(parseInt($('#medal').val())!= $('#medal').val()){
+      alert(' thỉnh chính xác điền huân chương số lượng ');
+      return false;
+      }
+      if(parseInt($('#medal').val())> 10000){
+      alert(' huân chương số lượng bất năng vượt lên trước 10000');
+      return false;
+      }
+    }
+    if($('#mark').val()!=''){ 
+      flag = false;
+      if(parseInt($('#mark').val())!= $('#mark').val()){
+      alert(' thỉnh chính xác điền chiến tích số lượng ');
+      return false;
+      }
+      if(parseInt($('#mark').val())> 100000){
+      alert(' chiến tích số lượng bất năng vượt lên trước 100000');
+      return false;
+      }
+    }
+    if(flag){
+      alert(' thỉnh tuyển trạch quà tặng ');
+      return false;
+    }
+
+
+    return true;
+  }
+$(function() {
+		var dates = $('#valid_date').datepicker({
+      dateFormat:"yy-mm-dd",
+			defaultDate:"-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+      maxDate:"",
+      //minDate:"2010-04-15",
+      minDate:"-0",
+			onSelect: function(selectedDate) {
+        //statistic();
+			}
+		});
+
+	});
+
+function show_zz(t){
+  //var zz = jQuery("#zone").val();
+  var zz = $("select option:selected").val();
+  if (t==1){
+    $('#zz_' + zz).show();
+  }else{
+    $('#uids_' + zz).val('')
+    $('#zz_' + zz).hide()
+  }
+
+}
+</script>
+<h2> bưu kiện phát thưởng  gữi đi </h2>
+<br/>
+  <font color="red"> thưởng cho dĩ gữi đi </font>
+  <input id="send"name="send"type="hidden"value="send"/>
+<table width="100%">
+  {%for item in zone_uids%}
+  <tr>
+    <td width="10%">
+      <a href="{{settings.BASE_URL}}/admin/app_user/user_power_rank/?zone={{ item.0 }}"target="_blank">{{item.0}}({{ item.1 }})</a>
+    </td>
+    <td>
+      {% for u in item.2 %}
+        <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid={{u.0}}"target="_blank">{{u.0}}({{ u.1 }})</a>
+      {% endfor %}
+    </td>
+  </tr>
+  {%endfor%}
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+
+  <tr>
+    <td>
+       tiêu đề chính văn 
+    </td>
+    <td>
+     {%for item in nafo_list%}
+     <tr>
+       <td>
+         name-{{item.0}}
+       </td>
+       <td>
+         {{item.1}}
+       </td>
+     </tr>
+     <tr>
+       <td>
+         info-{{item.0}}
+       </td>
+       <td>
+         {{item.2}}
+       </td>
+     </tr>
+     {%endfor%}
+
+    </td>
+  </tr> 
+
+
+  <tr>
+    <td>
+       thưởng cho nội dung 
+    </td>
+    <td>
+      {{reward_content.rewards_dict_info}}
+    </td>
+
+  </tr>
+</table>
+{% endblock %}

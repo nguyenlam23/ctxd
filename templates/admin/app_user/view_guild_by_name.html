@@ -1,0 +1,88 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  function change_sessionid(){
+    var args = {}
+    var new_sessionid = $("#new_sessionid").val();
+    if (new_sessionid == ''){
+      alert(' mật mã bất năng vi Trống ');
+      return false;
+    }
+    args['new_sessionid'] = $("#new_sessionid").val();
+    args['session_key'] = '{{udict.uid}}';
+    $.post('{{ settings.BASE_URL}}/admin/app_user/change_sessionid/', args,
+         function(data){
+          if(data.state=='success')
+            alert(' nặng đưa thành công ');
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+function succ(){
+$('#desc').show();
+setTimeout("$('#desc').hide()",4000)
+}
+
+function view_user(zone){
+$('#zone').val(zone);
+$('#uid').val('{{uid}}');
+$('#frm').submit();
+}
+
+
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<div>
+  <form id="frm"action="{{settings.BASE_URL}}/admin/app_user/view_guild_by_name/"method="post">
+     quân đoàn tên gọi ：<input id="guild_name"name="guild_name"value="{%if guild_name%}{{guild_name}}{%endif%}"/>
+    <input type="radio"{%ifequal exact 1%}checked="checked"{%endifequal%} id="exact"name="exact"value="1"/> chính xác tuần tra 
+    <input type="radio"{%ifequal exact 0%}checked="checked"{%endifequal%} id="exact"name="exact"value="0"/> không rõ tuần tra 
+    <select name="zone"id="zone">
+      {%for item in zone_list%}
+      <option {%ifequal item.0 zone%}selected=selected{%endifequal%} value="{{item.0}}">{{item.1}}</option>
+      {%endfor%}
+    </select>
+  <br />
+  <input type="submit"value="đệ trình"/>
+  </form>
+</div>
+{%if guild_list%}
+<table border="1"cellpadding="0"cellspacing="0">
+{%for item in guild_list%}
+<tr>
+<td>
+  Guild_id: <a href="{{settings.BASE_URL}}/admin/app_user/view_guild/?guild_id={{item.0}}&zone={{zone}}">{{item.0}}</a>
+</td>
+<td>
+Guild_name: <font color="red">{{item.1}}</font>
+</td>
+<tr>
+{%endfor%}
+</table>
+
+{%endif%}
+<br/>
+
+{% endblock %}

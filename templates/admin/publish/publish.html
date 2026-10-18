@@ -1,0 +1,356 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  $(document).ready(function () {
+    get_server_list({{kick}});
+    get_publish_log('{{ take_config_type }}');
+
+    $("input[type=radio][name=publish_log_type]").change(function () {
+      var publish_log_type = $('input:radio[name="publish_log_type"]:checked').val();
+      get_publish_log(publish_log_type)
+    })
+  });
+
+  function get_publish_log(configType) {
+    $.get('{{ settings.BASE_URL}}/admin/publish/get_publish_log/', {'publish_log_type': configType}, function (data) {
+      $('#publish_log_body').html(data.publish_log_body);
+    }, 'json')
+
+  }
+  function force_update_config(){
+    if(confirm(' có hay không xác định?')){
+    $('#desc1').show();
+    $.post('{{ settings.BASE_URL}}/admin/publish/force_update_config/', {
+        }, function(data){
+          if(data.state=='success')
+            succ();
+          else
+            $('#desc1').hide();
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+    }
+  }
+  function jump_config_version(){
+    if(confirm(' có hay không xác định?')){
+    $('#desc1').show();
+
+    $.post('{{ settings.BASE_URL}}/admin/publish/jump_config_version/', {
+        }, function(data){
+          if (data.state === 'success') {
+            succ();
+          } else {
+            $('#desc1').hide();
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }
+          }, 'json')
+    }
+  }
+
+  function push_server_config(zone){
+    //$.post('{{ settings.BASE_URL}}/admin/publish/publish/', {
+    var url = '{{ settings.BASE_URL}}/admin/publish/push_server_config/';
+    $.post(url, {
+        'zone': zone
+        }, function(data){
+        if(data.state=='success'){
+          $("#inp_"+zone).css("color","green");
+        }
+        //alert($("#inp_h1_1").val());
+          }, 'json')
+  }
+
+  function get_server_status(zone) {
+    var url = '{{ settings.BASE_URL}}/admin/publish/get_server_status/'
+    $.get(url, {zone: zone}, function (data) {
+      $("#inp_"+zone).css("color", data[0]);
+      $("#lnp_"+zone).css("color", data[1]);
+      if (data[0] === 'red') {
+        push_server_config(zone)
+      }
+    }, 'json')
+  }
+
+  function get_server_list(kick) {
+    $.get('{{ settings.BASE_URL}}/admin/publish/get_server_list/', {'kick': kick}, function (data) {
+      $('#server_list_body').html(data.server_list_body);
+      $('#publish_0').attr('disabled', false);
+      $('#publish_1').attr('disabled', false);
+      $('#publish_2').attr('disabled', false);
+      $('#jump_version').attr('disabled', false);
+    }, 'json')
+  }
+
+  function publish(kick){
+    //var notice = $("#notice").val();
+    //var wuids = $("#wuids").val();
+    //var status = 0;
+    //var ss = document.getElementsByName('status'); 
+    /*
+    for(var i=0;i<ss.length;i++){
+      if(ss[i].checked){
+        var status = ss[i].value;
+      }
+    }
+    */
+    var modify_config_list = $('input[name=modify_config_list]:checked').map(function () {return this.value;}).get().join(",")
+    $('#desc1').show();
+
+    $.post('{{ settings.BASE_URL}}/admin/publish/publish/', {
+        'publish': 'publish',
+        //'status': status,
+        'kick': kick,
+        //'notice': notice,
+        //'wuids': wuids,
+        'modify_config_list': modify_config_list
+        }, function(data){
+          if (data.state == 'success') {
+            succ(kick);
+          } else {
+            $('#desc1').hide();
+            alert(' xuất hiện lệch lạc: '+data.msg);
+          }
+          }, 'json')
+  }
+
+  function service_submit(){
+    var service_notice = $("#service_notice").val();
+    var service_status = 0;
+    var ss = document.getElementsByName('service_status'); 
+    for(var i=0;i<ss.length;i++){
+      if(ss[i].checked){
+        var service_status = ss[i].value;
+      }
+    }
+
+    $.post('{{ settings.BASE_URL}}/admin/publish/service_submit/', {
+        'service_status': service_status,
+        'service_notice': service_notice
+        }, function(data){
+          if(data.state=='success')
+            succ2();
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function dis_txt(){
+    var ss = document.getElementsByName('service_status'); 
+    for(var i=0;i<ss.length;i++){
+      if(ss[i].checked){
+        if(ss[i].value == 1){
+          document.getElementById("service_notice").disabled=false;
+          $("#service_notice").text('{{service_notice1}}');
+        }else if(ss[i].value == 2){
+          document.getElementById("service_notice").disabled=false;
+          $("#service_notice").text('{{service_notice2}}');
+        }else{
+          document.getElementById("service_notice").disabled=true;
+          $("#service_notice").text('');
+        }
+      }
+    }
+  }
+
+function succ(kick){
+$('#desc1').hide();
+$('#desc').show();
+if (kick!= undefined) {
+  setTimeout(`$('#desc').hide();location.href='{{ settings.BASE_URL}}/admin/publish/publish/?kick=${kick}'`,4000)
+} else {
+  setTimeout("$('#desc').hide();location.href='{{ settings.BASE_URL}}/admin/publish/publish/'",4000)
+}
+}
+function succ2(){
+$('#desc2').show();
+setTimeout("$('#desc').hide();location.href='{{ settings.BASE_URL}}/admin/publish/publish/'",4000)
+}
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<div style="width: 100%;">
+  <div style="width: 50%; float: left; max-width: 750px">
+    <div {% ifequal take_config_type 'test_setting' %}style="background-color: black; color: white"{% endifequal %}>
+      <h2> hậu trường tuyên bố - {% ifequal take_config_type 'test_setting' %} trắc thí phối trí {% else %} chính thức phối trí {% endifequal %}</h2>
+    </div>
+    <div id='desc' name="desc"style="color:red; display:none"><font color="red"> tuyên bố thành công 。。。</font></div>
+    <div id='desc1' name="desc1"style="color:blue; display:none"><font color="red"> đang ở tuyên bố 。。。</font></div>
+    <p>
+     lần trước tuyên bố nhân ：<font color="{{last_publish.color}}">{{last_publish.admin_user}}</font>
+    </p>
+    <p>
+     lần trước tuyên bố thời gian ：<font color="{{last_publish.color}}">{{last_publish.time}}</font>
+    </p>
+    <p>
+     phiên bản hào ：<font color="{{last_publish.color}}">{{last_publish.version}}</font>
+    </p>
+    <p>
+     lần trước sửa chữa đích phối trí ：<font color="{{last_publish.color}}">{{last_publish.modify_config_list}}</font>
+    </p>
+    <p>
+     tốt nhất thứ phiên bản hào ：<font color="{{last_publish.color}}">{{last_publish.last_version}}</font>
+    </p>
+  </div>
+  <div style="float: left; margin-left: 5px; max-height: 200px; overflow: auto; margin-top: 20px; max-width: 650px">
+    <div>
+      <input type="radio"name="publish_log_type"value="setting"{% ifequal take_config_type 'setting' %}checked{% endifequal %}> chính thức phối trí nhật ký 
+      <input type="radio"name="publish_log_type"value="test_setting"{% ifequal take_config_type 'test_setting' %}checked{% endifequal %}> trắc thí phối trí nhật ký 
+    </div>
+    <div id="publish_log_body"></div>
+  </div>
+</div>
+<div style="display: inline-block;">
+<p>
+ lúc này đây tuyên bố sửa sửa đổi phối trí ：
+<br/>
+<div style='width: 69%'>
+{% for k, v in current_modify_config_dict%}
+  {% if v.1 %}
+    <input type='checkbox' checked disabled id='cb_{{k}}' name='modify_config_list' value='{{ k }}' />
+    <label style='color: red' for='cb_{{k}}'>
+      {% ifequal k 'zone' %}
+      <a href="{{settings.BASE_URL}}/admin/zone_manage/view_zone_op_logs/"target="_blank"style="color: red">{{ v.0 }}</a>
+      {% else %}
+      <a href="{{settings.BASE_URL}}/admin/system/{{take_config_type}}/?config_name={{ k }}"target="_blank"style="color: red">{{ v.0 }}</a>
+      {% endifequal %}
+    </label>
+  {% else %}
+    <input type='checkbox' disabled id='cb_{{k}}' name='modify_config_list' value='{{ k }}' />
+    <label for='cb_{{k}}'>
+      {% ifequal k 'zone' %}
+      <a href="{{settings.BASE_URL}}/admin/zone_manage/view_zone_op_logs/"target="_blank"style="color: black">{{ v.0 }}</a>
+      {% else %}
+      <a href="{{settings.BASE_URL}}/admin/system/{{take_config_type}}/?config_name={{ k }}"target="_blank"style="color: black">{{ v.0 }}</a>
+      {% endifequal %}
+    </label>
+  {% endif %}
+{% endfor %}
+</div>
+<p/>
+<p>
+<input id="publish_1"type="button"name=""onclick="publish(1);"value="nhất kiện tuyên bố"disabled/>
+<input id="publish_0"type="button"name=""onclick="publish(0);"value="lặng im tuyên bố"disabled/>
+<!--<input type="button"name=""onclick="force_update_config();"
+  value="nảy sinh cái mới phục vụ khí phối trí chậm tồn"/>-->
+<input id="jump_version"type="button"name=""onclick="jump_config_version();"value="khiêu phối trí phiên bản, biệt Loạn điểm"disabled/>
+{% if settings.SUBTEST %}
+  <input id="publish_2"type="button"name=""onclick="publish(2);"value="ngắn liên tuyên bố"disabled/>
+{% endif %}
+</p>
+</div>
+
+
+
+
+<p>
+=====================================================================================
+</p>
+
+
+<!---
+<div id='desc2' name="desc"style="color:red; display:none"><font color="red"> giữ gìn trạng thái tuyên bố thành công 。。。</font></div>
+<p>
+ lần trước tuyên bố nhân ：<font>{{service_dict.service_admin_user}}</font>
+</p>
+<p>
+ lần trước tuyên bố thời gian ：<font>{{service_dict.service_time}}</font>
+</p>
+
+<p>
+ giữ gìn thông cáo ：
+<br/>
+<textarea {%ifequal service_dict.service_status 0%}disabled="true"{%endifequal%} id="service_notice"name="service_notice"style="width: 70%; height: 100px">{{service_dict.service_notice}}</textarea>
+<p/>
+<p>
+ đưa vào hoạt động giữ gìn ：<input onclick="dis_txt();"type="radio"name="service_status"id="service_status"value="1"{%ifequal service_dict.service_status 1%}checked="checked"{%endifequal%}/> giữ gìn 
+<input onclick="dis_txt();"type="radio"name="service_status"id="service_status"value="2"{%ifequal service_dict.service_status 2%}checked="checked"{%endifequal%}/> gần giữ gìn 
+<input onclick="dis_txt();"type="radio"name="service_status"id="service_status"value="0"{%ifequal service_dict.service_status 0%}checked="checked"{%endifequal%}/> bình thường đưa vào hoạt động &nbsp;
+<input type="button"name=""onclick="service_submit();"value="đệ trình đưa vào hoạt động giữ gìn"/>
+</p>
+--->
+
+<p>
+ phân khu trạng thái 
+<br/>
+<p/>
+<div id="server_list_body">
+<img src="{{ settings.BASE_URL}}/static/images/loading.gif"/>
+<font color="gray"> phân khu trạng thái gia chở trung......</font>
+</div>
+{#<p>#}
+{##}
+{#  <table>#}
+{#    {%for item in server_list%}#}
+{#    <tr>#}
+{#      {%for xx in item%}#}
+{#        <td align="center">#}
+{#          {{xx.1}}#}
+{#          <br/>#}
+{#          <input id="inp_{{ xx.0 }}"style="color:{{xx.3}};font-weight:bold;"value=' phối trí ' type="button"/>#}
+{#          <input id="lnp_{{ xx.0 }}"style="color:{{xx.4}};font-weight:bold;"value=' lên đất liền ' type="button"/>#}
+{#          {%ifequal xx.3 'red'%}#}
+{#            <script type='text/javascript'>#}
+{#              push_server_config('{{xx.0}}');#}
+{#            </script>#}
+{#          {%endifequal%}#}
+{#          <script type="text/javascript">#}
+{#            get_server_status('{{ xx.0 }}');#}
+{#          </script>#}
+{##}
+{#        </td>#}
+{#      {%endfor%}#}
+{#    </tr>#}
+{#    {%endfor%}#}
+{#  <table>#}
+{##}
+{#</p>#}
+
+
+
+<p>
+
+js phục vụ khí trạng thái <br/>
+
+{%ifequal t g%}
+<font color='green'>
+ tổng số ： {{t}}, Good: {{g}}
+</font>
+{%else%}
+<font color='red'>
+ tổng số ： {{t}}, Good: {{g}}
+</font>
+{%endifequal%}
+
+</p>
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+

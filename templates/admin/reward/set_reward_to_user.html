@@ -1,0 +1,140 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js"type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet"href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css"type="text/css"/>
+<script type='text/javascript' src='{{settings.MEDIA_URL}}/js/reward_content.js?v=22'></script>
+<script type='text/javascript'>
+
+  function chk(){
+    var userObj = document.getElementById('uids');
+    if (userObj.value.length == 0){
+      alert(' thỉnh điền người sử dụng Id');
+      userObj.focus();
+      return false;
+    }
+    /*
+    var chkObj = document.getElementsByName("aid"); 
+    var flag = true;
+    for (var i = 0; i <chkObj.length; i++) { 
+      if(chkObj[i].checked){
+        flag = false; 
+      }    
+    } 
+    var chkObj2 = document.getElementsByName("eid"); 
+    for (var i = 0; i <chkObj2.length; i++) { 
+      if(chkObj2[i].checked){
+        flag = false; 
+      }    
+    } 
+    */
+    if ($('#name_{{nafo_list.0.0}}').val() == ''){
+      alert('{{nafo_list.0.0}} tiêu đề bất năng vi Trống ');
+      $('#name_{{nafo_list.0.0}}').focus();
+      return false;
+    }
+    if ($('#info_{{nafo_list.0.0}}').val() == ''){
+      alert('{{nafo_list.0.0}} chính văn miêu tả bất năng vi Trống ');
+      $('#info_{{nafo_list.0.0}}').focus();
+      return false;
+    }
+
+    {%for item in input_list%}
+    if($('#{{item.0}}').val()!=''){ 
+      flag = false;
+      if(parseInt($('#{{item.0}}').val())!= $('#{{item.0}}').val()){
+        alert(' thỉnh chính xác điền {{item.1}} số lượng ');
+        $('#{{item.0}}').focus();
+      return false;
+      }
+      if(parseInt($('#{{item.0}}').val())>parseInt({{item.2}})){
+        alert('{{item.1}} số lượng bất năng vượt lên trước {{item.2}}');
+        $('#{{item.0}}').focus();
+      return false;
+      }
+    }
+    {%endfor%}
+
+
+
+
+
+
+    return true;
+  }
+function show_zz(t){
+  //var zz = jQuery("#zone").val();
+  var zz = $("select option:selected").val();
+  if (t==1){
+    $('#zz_' + zz).show();
+  }else{
+    $('#uids_' + zz).val('')
+    $('#zz_' + zz).hide()
+  }
+}
+
+</script>
+<h2> bưu kiện phát thưởng {%if reward_content.id%} biên tập {%else%} tăng thêm {%endif%}</h2>
+<br/>
+<form action="{{settings.BASE_URL}}/admin/reward/set_reward_to_user_p/"
+  method="post"onsubmit="return chk();">
+      <input type="submit"value="gữi đi"/>
+      <input id="rid"name="rid"type="hidden"value="{{reward_content.id}}"/>
+
+
+      <input id="rid"name="rid"type="hidden"value="{{reward_content.id}}"/>
+<table width="100%">
+  <tr>
+    <td width="10%"> người sử dụng UID</td>
+    <td>
+      <textarea id="uids"name="uids"style="width: 70%; height: 50px">{{ uids }}</textarea>
+      (nhiều người dùng dùng tiếng Anh dấu phẩy phân cách ，<font color="red"> điền người sử dụng trường uid</font>)
+    </td>
+  </tr>
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+  <tr></tr>
+  <tr>
+    <td>
+       tiêu đề chính văn 
+    </td>
+    <td>
+     {%for item in nafo_list%}
+     <tr>
+       <td>
+         name-{{item.0}}
+       </td>
+       <td>
+         <input type="txt"name="name_{{item.0}}"id="name_{{item.0}}"value="{{item.1}}"/><br/>
+       </td>
+     </tr>
+     <tr>
+       <td>
+         info-{{item.0}}
+       </td>
+       <td>
+         <textarea id="info_{{item.0}}"name="info_{{item.0}}"style="width: 90%; height: 30px">{{item.2}}</textarea>
+       </td>
+     </tr>
+     {%endfor%}
+
+    </td>
+  </tr> 
+  <tr>
+    <td>
+    <td/>
+    <td>
+    <td/>
+  <tr/>
+    {%include 'admin/reward/reward_content.html'%}
+
+
+</table>
+</form>
+
+{% endblock %}

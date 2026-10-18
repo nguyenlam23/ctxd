@@ -1,0 +1,138 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+
+<h3>{{day}}  sung trị ghi lại 
+</h3>
+<table border="1"cellpadding="0"cellspacing="0">
+  <tr>
+    <td>
+      ID
+    </td>
+    <td>
+       người sử dụng ID
+    </td>
+    <td>
+      Zone
+    </td>
+    <td>
+      Old Zone
+    </td>
+    <td>
+      Country
+    </td>
+    <td>
+       thương phẩm ID
+    </td>
+    <td>
+       đơn đặt hàng Id
+    </td>
+    <td>
+       sung trị kim ngạch ({{settings.CURRENCY|default:"nhân dân tệ"}})
+    </td>
+    <td>
+      Pf Pay Money
+    </td>
+    <td>
+       sung trị kim ngạch (Coin)
+    </td>
+    <td>
+       sung trị thời gian 
+    </td>
+    <td>
+       sung trị ngôi cao 
+    </td>
+    <td>
+      pf_other
+    </td>
+    <td>
+      pf_order_id
+    </td>
+    <td>
+       trạng thái 
+    </td>
+  </tr>
+  {%for item in record_list%}
+  <tr>
+    <td>
+        {{item.id}}
+    </td>
+    <td>
+      {%if item.uid%}
+      <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.uid}}|{{item.old_zone}}">{{item.uid}}|{{item.old_zone}}</a>
+      {%endif%}
+    </td>
+    <td>
+      {{item.zone}}
+    </td>
+    <td>
+      {{item.old_zone}}
+    </td>
+    <td>
+      {{item.country}}
+    </td>
+    <td>
+      {{item.goods_id}}
+    </td>
+    <td> 
+      {{item.order_id}}
+    </td>
+    <td>
+      {{item.pay_money}}
+    </td>
+    <td>
+      {{item.pf_pay_money}}
+    </td>
+    <td>
+      {{item.pay_coin}}
+    </td>
+    <td> 
+      {{item.pay_time}} 
+    </td> 
+    <td> 
+      {{item.pf}} 
+    </td>
+    <td>
+      {{item.pf_other}}
+    </td>
+    <td>
+      {{item.pf_order_id}}
+    </td>
+    <td>
+      {%ifequal item.status 0%}
+        <font color="red"> vị lĩnh </font>
+      {%endifequal%}
+      {%ifequal item.status 1%}
+        <font color="green"> dĩ lĩnh </font>
+      {%endifequal%}
+      {%ifequal item.status 2%}
+        <font color="orange"> đã lui khoản </font>
+      {%endifequal%}
+    </td>
+  </tr>
+  {%endfor%}
+</table>
+
+
+{% endblock %}

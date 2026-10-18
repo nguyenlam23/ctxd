@@ -1,0 +1,221 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+  function admin_pay(pid,pay_money){
+    var args = {}
+    args['waiter_id'] = 'wt{{uid}}';
+    args['zone'] = '{{zone}}';
+    args['pid'] = pid;
+    $.post('{{ settings.BASE_URL}}/admin/waiter/waiter_pay/', args,
+         function(data){
+          if(data.state=='success')
+            succ_pay(data.pay_ids);
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+
+  function admin_waiter(method){
+    var args = {}
+    args['method'] = method;
+    args['waiter_id'] = 'wt{{uid}}';
+    args['zone'] = '{{zone}}';
+    $.post('{{ settings.BASE_URL}}/admin/waiter/admin_waiter/', args,
+         function(data){
+          if(data.state=='success')
+            succ_pay(data.pay_ids);
+          else
+            alert(' xuất hiện lệch lạc: '+data.msg)
+          }, 'json')
+  }
+  
+
+
+function succ_pay(pay_ids){
+window.location.href='{{settings.BASE_URL}}/admin/waiter/waiter_game/?waiter_id=wt{{uid}}&zone={{zone}}';
+//$('#pay_succ').show();
+//setTimeout("$('#pay_succ').hide();window.location.href='{{settings.BASE_URL}}/admin/waiter/waiter_game/?waiter_id=wt{{uid}}&zone={{zone}}'",4000)
+//$('#pay_ids').val(pay_ids);
+}
+
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<br/>
+<table border=1 style="margin-top:1px;">
+  <tr>
+    <td>
+       trò chơi số trương mục 
+    </td>
+    <td>
+      Uid
+    </td>
+    <td>
+      Pwd
+    </td>
+    <td>
+      Waiter đẳng cấp 
+    </td>
+    <td>
+       bảng định nhân viên quản lý 
+    </td>
+    <td>
+       khu phục phạm vi 
+    </td>
+  </tr>
+  {%for item in waiter_list%}
+  <tr>
+    <td>
+      wt{{item.waiter_id}}
+    </td>
+    <td>
+      {{item.waiter_id}}
+    </td>
+    <td>
+      {{item.waiter_pwd}}
+    </td>
+    <td>
+      {{item.waiter_lv}}
+    </td>
+    <td>
+      {{item.admin_user}}
+    </td>
+    <td>
+      <table>
+        {%for z in item.zone_list%}
+        <tr>
+          <td>
+            <input onclick="window.location.href='{{settings.BASE_URL}}/admin/waiter/waiter_game/?waiter_id=wt{{item.waiter_id}}&zone={{z.0}}'"style="
+          {%ifequal uid item.waiter_id%}
+          {%ifequal z.0 zone%}
+          color:red;font-weight:bold;
+          {%endifequal%}
+          {%endifequal%}
+         "value='{{z.1}}' type="submit"/>
+          </td>
+          <td>
+          </td>
+        </tr>
+        {%endfor%}
+      </table>
+
+    </td>
+  </tr>
+  {%endfor%}
+
+</table>
+{% if mod_user %} 
+
+<table>
+  <tr>
+    <td>
+
+<table border="1"cellpadding="0"cellspacing="0">
+  {% for item in mod_user%}
+  {% if item.1%}
+  <tr>
+    <td>
+      {{item.1}}
+    </td>
+    <td>
+      {{item.2}}
+    </td>
+  </tr>
+  {%endif%}
+  {% endfor %}
+
+</table>
+
+    </td>
+    <td>
+      <p style="margin-left:55px;">
+       hôm nay sung trị phối ngạch: {{limit_dict.pay.0}}/{{limit_dict.pay.1}}
+      <br/>
+       hôm nay Coin phối ngạch: {{limit_dict.coin.0}}/{{limit_dict.coin.1}}
+      <br/>
+       luy kế sung trị phối ngạch: {{limit_dict.pay_all.0}}/{{limit_dict.pay_all.1}}
+      </p>
+<table style="margin-left:55px;"cellpadding="0"cellspacing="0">
+  <tr>
+    <td>
+      <table>
+  {% for item in pay_config%}
+  <tr>
+    <td> <input type="button"value="sung trị {{item.0}}--{{item.1}}"onclick="admin_pay('{{item.0}}','{{item.1}}');"/>
+    </td>
+  </tr>
+  {% endfor %}
+      </table>
+    </td>
+    <td>
+      <table>
+  <tr>
+    <td> 
+      <input type="button"value="lĩnh hôm nay Coin"onclick="admin_waiter('coin');"/>
+    </td>
+  </tr>
+  <tr>
+    <td> 
+      <input type="button"value="khiêu quá tay mới dẫn đạo"onclick="admin_waiter('building');"/>
+    </td>
+  </tr>
+  <tr>
+    <td> 
+      <input type="button"value="mở ra đặc quyền"onclick="admin_waiter('office');"/>
+    </td>
+  </tr>
+  <tr>
+    <td> 
+      <input type="button"value="hoàn thành chính vụ"onclick="admin_waiter('gtask');"/>
+    </td>
+  </tr>
+  <tr>
+    <td> 
+      <input type="button"value="hoàn thành sa bàn diễn nghĩa"onclick="admin_waiter('pve');"/>
+    </td>
+  </tr>
+  <tr>
+    <td> 
+      <input type="button"value="bổ túc bộ phận sử sách"onclick="admin_waiter('effort');"/>
+    </td>
+  </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+      <p style="margin-left:55px;">
+      Pay_ids:
+      <textarea id="pay_ids"name="pay_ids"style="width: 100%; height: 100px">{{admin_pay_list}}</textarea>
+      </p>
+    </td>
+  <tr>
+</table>
+
+
+
+<br/>
+<br/>
+
+{% endif %}
+
+{% endblock %}
