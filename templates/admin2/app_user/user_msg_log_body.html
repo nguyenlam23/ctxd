@@ -1,0 +1,34 @@
+{% if log_list%}
+{%for log in log_list%}
+<table border=1>
+    <tr>
+        <td>时间</td>
+        <td>From</td>
+        <td></td>
+        <td></td>
+        <td>To</td>
+        <td></td>
+        <td></td>
+        <td>Msg</td>
+    </tr>
+    {%for item in log%}
+    <tr>
+        <td>{{item.0}}</td>
+        <td>
+            <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.1}}|{{item.8}}">{{item.1}}|{{item.8}}</a>
+        </td>
+        <td>{{item.2}}</td>
+        <td>{{item.3}}</td>
+        <td>
+            <a
+                href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.4}}|{{item.9}}">{{item.4}}|{{item.9}}</a>
+        </td>
+        <td>{{item.5}}</td>
+        <td>{{item.6}}</td>
+        <td>{{item.7}}</td>
+    </tr>
+    {%endfor%}
+</table>
+<br/>
+{%endfor%}
+{% endif %}

@@ -1,0 +1,79 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <a
+            href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid={{player.uid}}"
+            target="_blank" style="margin-left: 15px">{{player.uid}}</a>
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-hover" style="margin:0 auto">
+            <tr>
+                <td style="vertical-align:middle;">
+                    账号注册时间
+                </td>
+                <td style="vertical-align:middle;">
+                    最后采集时间
+                </td>
+                <td  style="vertical-align:middle;">
+                    最后登录时间
+                </td>
+                <td  style="vertical-align:middle;">
+                    模板评分
+                </td>
+                <td  style="vertical-align:middle;">
+                    采集天数
+                </td>
+                <td  style="vertical-align:middle;">
+                    采集次数
+                </td>
+                <td  style="vertical-align:middle;">
+                    陪玩实例数
+                </td>
+                <td  style="vertical-align:middle;">
+                    状态
+                </td>
+                <td  style="vertical-align:middle; width: 260px">
+                    修改状态
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{ player.add_time }}
+                </td>
+                <td>
+                    {{ player.last_time }}
+                </td>
+                <td>
+                    {{ player.login_time }}
+                </td>
+                <td>
+                    {{ player.score }}
+                </td>
+                <td>
+                    {{ player.days }}
+                </td>
+                <td>
+                    {{ player.times }}
+                </td>
+                <td>
+                    {{ player.join_num }}
+                </td>
+                <td>
+                    <font color="{{ player.status_cn.1 }}">{{ player.status_cn.0 }}</font>
+                </td>
+                <td>
+                    {% for item in player.menu %}
+                    <button type="button" class="btn btn-primary" {% ifequal item.2 0 %}disabled="disabled"{% endifequal %} onclick="modify_player_status({{player.uid}}, {{item.1}})">{{item.0}}</button>
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+        <div class="row" style="margin-top: 20px; padding: 15px">
+            {% for item in player_data %}
+            <button class="btn btn-default" type="button"
+                                            id="player_did_{{item.0}}"
+                                            onclick="get_player_data({{item.0}})">{{item.1}}</button>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+

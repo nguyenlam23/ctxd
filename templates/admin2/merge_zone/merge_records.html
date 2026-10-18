@@ -1,0 +1,85 @@
+<div class="panel panel-primary">
+    <div class="panel-heading" style="text-align: center">合服任务</div>
+    <div class="panel-body">
+        <table class="table table-bordered table-hover">
+            <tr>
+                <td style="vertical-align:middle; width: 150px">
+                    ID
+                </td>
+                <td style="vertical-align:middle; width: 150px">
+                    提交时间
+                </td>
+                <td  style="vertical-align:middle; width: 100px">
+                    操作用户
+                </td>
+                <td  style="vertical-align:middle; width: 100px">
+                    状态
+                </td>
+                <td  style="vertical-align:middle; width: 80px">
+                    合服进度
+                </td>
+                <td  style="vertical-align:middle; width: 150px">
+                    合服开始时间
+                </td>
+                <td  style="vertical-align:middle; width: 150px">
+                    合服结束时间
+                </td>
+                <td  style="vertical-align:middle; width: 260px">
+                    操作
+                </td>
+            </tr>
+            {% for item in merge_records %}
+            <tr>
+                <td>
+                    {{ item.id }}
+                </td>
+                <td>
+                    {{ item.sub_time }}
+                </td>
+                <td>{{ item.admin_user }}</td>
+                <td>
+                    {% ifequal item.status.0 0 %}
+                        <font color="red">{{ item.status.1 }}</font>
+                    {% endifequal %}
+                    {% ifequal item.status.0 1 %}
+                        <font color="blue">{{ item.status.1 }}</font>
+                    {% endifequal %}
+                    {% ifequal item.status.0 2 %}
+                        <font color="green">{{ item.status.1 }}</font>
+                    {% endifequal %}
+                </td>
+                <td><button id="cbtn_{{item.id}}" type="button"
+                        class="btn-xs btn-link"
+                        onclick="view_merge_progress({{item.id}})">{{item.progress}} %</button></td>
+                <td>{{ item.start_time }}</td>
+                <td>{{ item.end_time }}</td>
+                <td>
+                    {% ifequal item.status.0 1 %}
+                    <div class="btn-group btn-group-xs" role="group">
+                        <button type="button" class="btn btn-success" onclick="manual_merge_zone({{ item.id }})">同步</button>
+                    </div>
+                    {% endifequal %}
+                    <div class="btn-group btn-group-xs" role="group">
+                        <button type="button" class="btn btn-info" onclick="view_merge_result({{ item.id }})">查看</button>
+                    </div>
+                    <div class="btn-group btn-group-xs" role="group">
+                        <button type="button" class="btn btn-info" onclick="download_merge_config({{ item.id }})">下载</button>
+                    </div>
+                    {% ifequal item.status.0 0 %}
+                    <div class="btn-group btn-group-xs" role="group">
+                        <button type="button" class="btn btn-success" onclick="start_merge({{ item.id }})">合服</button>
+                    </div>
+                    <div class="btn-group btn-group-xs" role="group">
+                        <button type="button" class="btn btn-danger" onclick="del_merge_record({{ item.id }})">删除</button>
+                    </div>
+                    {% endifequal %}
+                    <div class="btn-group btn-group-xs" role="group">
+                        <button type="button" class="btn btn-danger" onclick="get_maintain_zones({{ item.id }})">维护</button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+

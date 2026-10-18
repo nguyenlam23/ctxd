@@ -1,0 +1,142 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js" type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet" href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css" type="text/css"/>
+<script type='text/javascript'>
+$(function() {
+		var dates = $('#valid_date').datepicker({
+            dateFormat: "yy-mm-dd",
+			defaultDate: "-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+            maxDate: "",
+            //minDate: "2010-04-15",
+            minDate: "-0",
+			onSelect: function(selectedDate) {
+                //statistic();
+			}
+		});
+
+	});
+    function do_push_notice(id,status){
+        $.post('{{ settings.BASE_URL}}/admin/reward/do_push_notice/', {
+                    'id': id, 
+                    'status': status
+                }, function(data){
+                    if(data.state=='success'){
+                        if (status==1){
+                            $('#f_'+id).hide();
+                            $('#z_'+id).text('已发布');
+                            }else if(status==2){
+                            $('#c_'+id).hide();
+                            }
+                    }else{
+                        alert('出现错误: '+data.msg)
+                    }
+                    }, 'json');
+    }
+
+    function setting(){
+        var config_name = $("#config_name").val();
+        var config_value = $("#config_value").val();
+        $.post('{{ settings.BASE_URL}}/admin/{{where}}/setting/', {
+                    'config_value': config_value, 
+                    'config_name': config_name
+                }, function(data){
+                    if(data.state=='success')
+                        succ()
+                    else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+    }
+function succ(){
+$('#desc').show();
+setTimeout("$('#desc').hide()",2000)
+}
+</script>
+<h2>走马灯列表</h2>
+    <form id="frm" action="{{settings.BASE_URL}}/admin/reward/push_notice/" method="post">
+        <select 'id'='pf' name='pf'>
+            <option value='all' {%ifequal pf 'all'%}selected='selected' style="color:red"{%endifequal%}>所有pf</option>
+            {%for item in pf_list%}
+            <option value='{{item.0}}' {%ifequal pf item.0%}selected='selected' style="color:red"{%endifequal%}>{{item.0}}</option>
+            {%endfor%}
+            </select>
+    <input type="submit" value="查询" />
+    </form>
+<br/>
+<table border="1" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td>
+            Id
+        </td> 
+        <td>
+            pf
+        </td>
+        <td>
+            正文
+        </td>
+        <td>
+            有效期
+        </td>
+        <td>
+            管理员
+        </td>
+        <td width="100px">
+            状态
+        </td>
+        <td>
+        </td>
+    </tr>
+    {%for item in push_notice_list%}
+    <tr id="c_{{item.id}}">
+        <td>
+            {{item.id}}
+        </td> 
+        <td>
+            {%ifequal item.pf 'all'%}
+            所有pf
+            {%else%}
+                {%for pf in item.pfs%}
+                    {{pf}},
+                {%endfor%}
+            {%endifequal%}
+        </td>
+        <td>
+            {{item.content}}
+        </td>
+        <td>
+            {{item.start_time}} -- {{item.end_time}}
+        </td>
+        <td>
+            {{item.admin_user}}
+        </td>
+        <td id="z_{{item.id}}">
+            {%ifequal item.status 0%}
+            未发布
+            {%endifequal%}
+            {%ifequal item.status 1%}
+            已发布
+            {%endifequal%}
+        </td>
+        <td>
+            <span>
+            <a href="{{settings.BASE_URL}}/admin/reward/edit_push_notice/?id={{item.id}}">编辑</a>
+            </span>
+            {%ifequal item.status 0%}
+            <span id='f_{{item.id}}'>
+                <a href="javascript:void(0);" onclick="do_push_notice('{{item.id}}',1);return false;">发布</a>
+            </span>
+            {%endifequal%}
+            <span>
+                <a href="javascript:void(0);" onclick="do_push_notice('{{item.id}}',2);return false;">删除</a>
+            </span>
+        </td>
+    </tr>
+
+    {%endfor%}
+</table>
+
+
+{% endblock %}

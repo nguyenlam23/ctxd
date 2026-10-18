@@ -1,0 +1,82 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+</script>
+<form id="frm" action="{{settings.BASE_URL}}/admin/waiter/edit_waiter_p/" method="post">
+<table>
+    <tr>
+    <tr>
+        <td>
+            游戏帐号
+        </td>
+        <td>
+            {%if waiter%}
+                wt{{waiter.waiter_id}}
+                <input type="hidden" name="waiter_id" id="waiter_id" value="wt{{waiter.waiter_id}}"/>
+            {%else%}
+                <input type="text" name="waiter_id" id="waiter_id" />
+                <input type="hidden" name="new_waiter" value="1" />
+            {%endif%}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            游戏密码
+        </td>
+        <td>
+            <input type="text" name="waiter_pwd" id="waiter_pwd" value="{{waiter.waiter_pwd}}" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Waiter等级
+        </td>
+        <td>
+            <input type="text" name="waiter_lv" id="waiter_lv" value="{{waiter.waiter_lv}}" />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            绑定管理员
+        </td>
+        <td>
+    <select name="admin_user" id="admin_user">
+        {% for item in admin_user_list %}
+        <option {%ifequal waiter.admin_user item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            服务区服
+        </td>
+        <td>
+            <table>
+                        {%for item in zone_list%}
+                <tr>
+                    <td>
+                        <input {%if item.2%}checked=checked{%endif%} type="checkbox" name="zone_id" id="zone_id" value="{{item.0}}" />
+                    </td>
+                    <td>
+                        {{item.1}}
+                    </td>
+                </tr>
+                        {%endfor%}
+            </table>
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <input type="submit" value="提交" />
+        </td>
+        <td>
+        </td>
+    </tr>
+</table>
+</form>
+
+
+
+{% endblock %}

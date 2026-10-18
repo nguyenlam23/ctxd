@@ -1,0 +1,76 @@
+<script>
+    var obj=document.getElementById("join_user_body");
+    if (obj.scrollHeight > obj.clientHeight || obj.offsetHeight > obj.clientHeight) {
+        document.getElementById("join_user_head").style.paddingRight = "17px";
+    }
+
+
+
+    function join_user_sort(order_by) {
+        open_user_modal({{ level }}, '{{ level_name }}', order_by)
+    };
+</script>
+<div>
+    <button onclick="join_user_sort()">刷新页面</button>
+</div>
+<div id="join_user_head" style="background-color:#999;color:#000;">
+    <table border=1 style="text-align: center; width: 100%;border-collapse:collapse;">
+        <colgroup><col span="2" style="width: 100px;" /><col /></colgroup>
+        <thead style="width: calc(100% - 1em)">
+            <tr>
+                <th style="width: 15%">玩家ID</th>
+                <th style="width: 10%">Uname</th>
+                <th style="width: 10%">报名大区</th>
+                <th style="width: 10%">信誉分</th>
+                <th style="width: 10%">
+                    总充值
+                    <span class="sort-wrapper">
+                        <i class="sort-caret ascending" onclick="join_user_sort('pay_money')"></i>
+                        <i class="sort-caret descending" onclick="join_user_sort('-pay_money')"></i>
+                    </span>
+                </th>
+                <th style="width: 10%">
+                    总虚拟充值
+                    <span class="sort-wrapper">
+                        <i class="sort-caret ascending" onclick="join_user_sort('admin_pay')"></i>
+                        <i class="sort-caret descending" onclick="join_user_sort('-admin_pay')"></i>
+                    </span>
+                </th>
+                <th style="width: 10%">
+                    参赛战力
+                    <span class="sort-wrapper">
+                        <i class="sort-caret ascending" onclick="join_user_sort('power')"></i>
+                        <i class="sort-caret descending" onclick="join_user_sort('-power')"></i>
+                    </span>
+                </th>
+                <th style="width: 40%">参赛队伍</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div id="join_user_body" style="width:100%; height:85%;overflow-y:auto;">
+    <table border=1 style="text-align: center; width: 100%;border-collapse:collapse;">
+        <colgroup><col span="2" style="width: 100px;" /><col /></colgroup>
+        <tbody style="overflow-y: scroll">
+            {% for i in duplicate_join_users %}
+            <tr>
+                <td style="width: 15%">
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{i.uid}}|{{ i.zone }}">{{i.uid}}|{{ i.zone }}</a>
+                    <button onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_db_user_dict/?uid_zone={{i.uid}}|{{i.zone}}&open_date={{ i.open_date }}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;">JSON数据</button></a>
+                </td>
+                <td style="width: 10%">{{ i.uname }}</td>
+                <td style="width: 10%">{{ i.group }}</td>
+                <td style="width: 10%">{{ i.prestige }}</td>
+                <td style="width: 10%">{{i.pay_money}}</td>
+                <td style="width: 10%">{{i.admin_pay}}</td>
+                <td style="width: 10%">{{i.power}}</td>
+                <td style="width: 40%">
+                    {%for h in i.heros%}
+                    <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_duplicate_user_hero_dict/?uid_zone={{i.uid}}|{{i.zone}}&hid={{h.0}}&open_date={{ i.open_date }}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{h.1}}{{h.2}},</a>
+                    {%endfor%}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

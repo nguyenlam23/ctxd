@@ -1,0 +1,84 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+    function admin_pay(pid,pay_money){
+        var args = {}
+        args['uid'] = '{{uid}}';
+        args['zone'] = '{{zone}}';
+        args['pid'] = pid;
+        if (confirm('确定充值'+pid+'--'+pay_money+'元?')){
+        $.post('{{ settings.BASE_URL}}/admin/app_user/admin_pay/', args,
+                 function(data){
+                    if(data.state=='success')
+                        succ_pay(data.pay_ids);
+                    else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+        }
+    }
+    
+
+
+function succ_pay(pay_ids){
+$('#pay_succ').show();
+setTimeout("$('#pay_succ').hide()",4000)
+$('#pay_ids').val(pay_ids);
+}
+
+function view_user(zone){
+$('#zone').val(zone);
+$('#uid').val('{{uid}}');
+$('#frm').submit();
+}
+
+</script>
+<br/>
+{% if app_user and mod_user %} 
+<table>
+    <tr>
+        <td>
+
+<table border="1" cellpadding="0" cellspacing="0">
+    {% for item in mod_user%}
+    {% if item.1%}
+    <tr>
+        <td>
+            {{item.1}}
+        </td>
+        <td>
+            {{item.2}}
+        </td>
+    </tr>
+    {%endif%}
+    {% endfor %}
+
+</table>
+
+        </td>
+        <td>
+<table style="margin-left:55px;"  cellpadding="0" cellspacing="0">
+    {% for item in pay_config%}
+    <tr>
+        <td> <input type="button" value="充值{{item.0}}--{{item.1}}" onclick="admin_pay('{{item.0}}','{{item.1}}');" />
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+            <p style="margin-left:55px;">
+            Pay_ids:
+            <textarea id="pay_ids" name="pay_ids" style="width: 100%; height: 100px">{{admin_pay_list}}</textarea>
+            </p>
+        </td>
+    <tr>
+</table>
+
+
+
+<div id='desc' name="desc" style="color:red; display:none"><font size="22">修改成功。。。</font></div>
+<div id='pay_succ' name="pay_succ" style="color:red; display:none"><font size="22">充值成功。。。</font></div>
+<br/>
+<br/>
+
+{% endif %}
+
+{% endblock %}

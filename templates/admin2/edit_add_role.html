@@ -1,0 +1,43 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<h2>添加或修改角色</h2>
+
+<p>
+</p>
+<form action="{{settings.BASE_URL}}/admin/edit_add_role_p/" method="post">
+    <div class="form-item">
+        <label>ID：</label>
+        <input name="name" {% if role %}value="{{ role.name }}"{% endif %} />
+    </div>
+    <div class="form-item">
+        <label>角色名：</label>
+        <input name="cname" {% if role %}value="{{ role.cname }}"{% endif %} />
+    </div>
+    <div class="form-item">
+        <label>备注：</label>
+        <input name="info" {% if role %}value="{{ role.info }}"{% endif %} style="width: 500px"/>
+    </div>
+    <div class="form-item">
+        <label>权重：</label>
+        <input name="priority" {% if role %}value="{{ role.priority }}"{% endif %} />
+    </div>
+
+    <div class="form-item">
+        <label>选择权限(按住ctrl多选):</label>
+        <br/>
+        <select name='permissions' multiple='true' style="width: 300px" size="20">
+            {% for p in permissions %}
+            <option value='{{ p.0 }}' {%ifequal p.2 'checked'%}selected="true"{%endifequal%}>{{ p.1 }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-item">
+        <input type="hidden" name="action" {% if role %}value="modify"{% else %}value="create"{% endif %}/>
+        {% if role %}
+        <input type="hidden" name="role_name" value="{{ role.name }}"/>
+        {% endif %}
+        <input type='submit' value='提交' />
+    </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,326 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+    function other_freeze_msg(){
+    fre_msg = $('#freeze_msg').val();
+    if(fre_msg == -1){
+    $('#other_msg').show();
+    }else{
+    $('#other_msg').val('');
+    $('#other_msg').hide();
+    }
+
+    }
+    function add_fragment(){
+        $.post('{{ settings.BASE_URL}}/admin/app_user/add_fragment/', {
+                pay_record_uu: $('#pay_record_uu').val(),
+                eid: $('#eid').val()
+                },
+                 function(data){
+                    if(data.state=='success')
+                        succ()
+                    else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+    }
+    function admin_pay(pid,pay_money){
+        var args = {}
+        args['uid'] = '{{uid}}';
+        args['zone'] = '{{zone}}';
+        args['pid'] = pid;
+        if (confirm('确定充值'+pid+'--'+pay_money+'元?')){
+        $.post('{{ settings.BASE_URL}}/admin/app_user/admin_pay/', args,
+                 function(data){
+                    if(data.state=='success')
+                        succ_pay(data.pay_ids);
+                    else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+        }
+    }
+
+    function user_interim_pwd(){
+        var args = {}
+        args['uid'] = '{{uid}}';
+        $.post('{{ settings.BASE_URL}}/admin/app_user/user_interim_pwd/', args,
+                 function(data){
+                    if(data.state=='success')
+                        $("#interim_pwd").html(data.pwd);
+                    else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+    }
+    
+    function mod_user_tel(){
+        var args = {}
+        args['uid'] = '{{uid}}';
+        args['tel'] = $("#tel").val();
+        $.post('{{ settings.BASE_URL}}/admin/app_user/mod_user_tel/', args,
+                 function(data){
+                    if(data.state=='success')
+                        alert('修改成功');
+                    else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+    }
+    function save_user(){
+        var args = {}
+        args['uid'] = '{{uid}}';
+        args['app_user'] = $("#app_user").val();
+        args['app_user_extra'] = $("#app_user_extra").val();
+        args['zone'] = '{{zone}}';
+        $.post('{{ settings.BASE_URL}}/admin/app_user/save_user/', args,
+                 function(data){
+                    if(data.state=='success')
+                        succ()
+                    else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+    }
+
+    function show_table( table_num ){
+
+        if (table_num == 1){
+            $("#app_user").show()
+            $("#app_user_extra").hide()
+            $("#t1").css("color","blue")
+            $("#t2").css("color","black")
+
+        } else {
+            $("#app_user").hide()
+            $("#app_user_extra").show()
+            $("#t2").css("color","blue")
+            $("#t1").css("color","black")
+        }
+
+    }
+
+
+function succ(){
+$('#desc').show();
+setTimeout("$('#desc').hide()",4000)
+}
+
+function succ_pay(pay_ids){
+$('#pay_succ').show();
+setTimeout("$('#pay_succ').hide()",4000)
+$('#pay_ids').val(pay_ids);
+}
+
+function view_user(zone){
+$('#zone').val(zone);
+$('#uid').val('{{uid}}');
+$('#frm').submit();
+}
+
+function weixin_pid_add(pid){
+    var pid_num = $("#weixin_admin_pid_"+pid).val();
+    pid_num = parseInt(pid_num) + 1;
+    if (pid_num<=5){
+        $('#weixin_admin_pid_'+pid).val(pid_num);
+    }
+}
+
+function weixin_pid_reduce(pid){
+    var pid_num = $("#weixin_admin_pid_"+pid).val();
+    pid_num = parseInt(pid_num) - 1;
+    if (pid_num>=0){
+        $('#weixin_admin_pid_'+pid).val(pid_num);
+    }
+}
+
+function weixin_admin_pay(){
+        var args = {'uid': '{{uid}}', 'zone': '{{zone}}'}
+        {% for item in pay_config%}
+        args['{{item.0}}'] = $("#weixin_admin_pid_"+"{{item.0}}").val();
+        {%endfor%}
+        $.post('{{ settings.BASE_URL}}/admin/app_user/weixin_admin_pay/', args,
+                 function(data){
+                 if(data.state=='success'){
+                    $('#pay_img').show();
+                    $('#pay_img').attr('src','{{settings.BASE_URL}}/admin/app_user/pay_url_img/?pay_url='+data.pay_url);
+                    $('#pay_des').html('充值金额:'+data.pay_money+'&nbsp;&nbsp;&nbsp;&nbsp;折扣:'+ data.sale_num);
+                    $('#pay_des').show();
+                 }else{
+                    alert('出现错误: '+data.msg);
+                 }
+                    }, 'json')
+    }
+
+</script>
+<style type="text/css">
+input.text{text-align:center;width:40px;}
+</style>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<table>
+    <tr>
+        <td>
+<table border="1" cellpadding="0" cellspacing="0">
+    {% for item in mod_user%}
+    {% if item.1%}
+    <tr>
+        <td>
+            {{item.1}}
+        </td>
+        <td>
+            {{item.2}}
+        </td>
+    </tr>
+    {%endif%}
+    {% endfor %}
+    <tr>
+        <td>
+            在线状态
+        </td>
+        <td>{%if is_online%}
+            <font color="green">在线</font>
+            {%else%}
+            <font color="red">离线</font>
+            {%endif%}
+            {{online_t}}
+        </td>
+    </tr>
+<!--
+
+    <tr>
+        <td>
+            {% ifequal WHERE 'local-' %}
+              <input style="color:red" type="button" value="初始化用户(慎用)" onclick="init_user('user');" />
+            {% endifequal %}
+        </td>
+        <td>
+    <input type="button" value="保存修改" onclick="mod_user();" />
+        </td>
+    </tr>
+-->
+</table>
+</td>
+<td>
+    <form id="frm" action="{{settings.BASE_URL}}/admin/app_user/freeze_do/" method="post">
+<table border="1" cellpadding="0" cellspacing="0">
+    <tr>
+        <td>
+            冻结状态
+        </td>
+        <td>
+            {%ifequal  freeze_list.0 0%}
+            <font color="green">未冻结</font>
+            {%endifequal%}
+            {%ifequal  freeze_list.0 1%}
+            <font color="red">冻结登录</font>
+            {%endifequal%}
+            {%ifequal  freeze_list.0 2%}
+            <font color="red">禁止发言</font>
+            {%endifequal%}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            冻结截止时间
+        </td>
+        <td>
+            <font color="{{freeze_list.5}}">
+            {{freeze_list.1}}
+            </font>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            冻结原因
+        </td>
+        <td>
+            {{freeze_list.2}}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            操作管理员
+        </td>
+        <td>
+            {{freeze_list.3}}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            冻结操作时间
+        </td>
+        <td>
+            {{freeze_list.4}}
+        </td>
+    </tr>
+    <tr>
+        <td width="200">
+            冻结方式
+        </td>
+        <td width="200">
+        <select id='freeze' name='freeze'>
+            <option value='1' >冻结登录</option>
+            <option value='2' >禁止发言</option>
+            <option value='0' >解封</option>
+            </select>
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+            冻结时间
+        </td>
+        <td>
+        <input size="5" id="freeze_hours" name="freeze_hours" value="-1"/>(小时)(-1=2050年)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            冻结原因
+        </td>
+        <td>
+        <select id="freeze_msg" name="freeze_msg" onchange="other_freeze_msg();">
+            <option value='-1' >其他</option>
+            {%for item in freeze_msgs%}
+            <option value='{{item}}' >{{item}}</option>
+            {%endfor%}
+            </select>
+        <input id="other_msg" name="other_msg" value=""/>
+
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <input type="hidden" name="uid"  value="{{uid}}"/>
+            <input type="hidden" name="zone"  value="{{zone}}"/>
+            <input type="hidden" name="uname"  value="{{uname}}"/>
+        <input type="submit"  value="提交操作"/>
+        </td>
+        <td>
+        </td>
+    </tr>
+</table>
+</form>
+</td>
+    </tr>
+</table>
+
+
+{% endblock %}

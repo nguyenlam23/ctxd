@@ -1,0 +1,43 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+function delete_role(roleName) {
+    if (confirm('确认要删除角色【' + roleName + '】吗？')) {
+        $.post('{{ settings.BASE_URL }}/admin/delete_role/', {role_name: roleName}, function (data) {
+            window.location.reload()
+        })
+    }
+}
+</script>
+<h2>管理员管理</h2>
+
+<p>
+<a href='{{ settings.BASE_URL}}/admin/edit_add_role/'>添加角色</a>
+</p>
+
+<table border='1'>
+    <tr>
+        <th>ID</th>
+        <th>角色名</th>
+        <th>备注</th>
+        <th>权重</th>
+        <th>功能权限</th>
+        <th></th>
+    </tr>
+    {% for role in roles %}
+    <tr id="{{role.name}}">
+        <td>{{ role.name }}</td>
+        <td>{{ role.cname }}</td>
+        <td>{{ role.info }}</td>
+        <td>{{ role.priority }}</td>
+        <td>{{ role.permission_rate }}</td>
+        <td>
+            <a href='{{ settings.BASE_URL }}/admin/edit_add_role/?role_name={{ role.name }}'>编辑</a>
+            <a href='#' onclick="delete_role('{{ role.name }}')">删除</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
+

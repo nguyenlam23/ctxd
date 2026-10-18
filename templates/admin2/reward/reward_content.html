@@ -1,0 +1,496 @@
+    <script>
+    function check_all_sale_color(){
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) { 
+            if(inputs[i].id.indexOf('sale_')!=-1){
+                var cid = (inputs[i].id);
+                if(inputs[i].value != ''){
+                    if(parseInt(inputs[i].value) != inputs[i].value){
+                        alert('请正确填写星辰数量');
+                        inputs[i].value = '';
+                }else{
+                    $('#color_'+cid).css('color', 'red');
+                }
+                }else{
+                $('#color_'+cid).css('color', 'black');
+                };
+                
+            }
+        } 
+    }
+
+    function check_all_sale(){
+        var ack = $("#ack").is(":checked");
+        var inputs = document.getElementsByTagName('input');
+        var value = document.getElementById('all_value_sale').value;
+        if(ack && parseInt(value) != value) {
+            alert('请正确填写單位数量');
+            document.getElementById('all_value_sale').value = 1;
+            return;
+        }
+        for (var i = 0; i < inputs.length; i++) { 
+            if(inputs[i].id.indexOf('sale_')!=-1){
+                if (ack) {
+                    inputs[i].value = value;
+                } else {
+                    inputs[i].value = '';
+                }
+            }
+        } 
+    check_all_sale_color();
+    }
+
+
+
+
+    function check_all_star_color(){
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) { 
+            if(inputs[i].id.indexOf('star_')!=-1){
+                var cid = (inputs[i].id);
+                if(inputs[i].value != ''){
+                    if(parseInt(inputs[i].value) != inputs[i].value){
+                        alert('请正确填写星辰数量');
+                        inputs[i].value = '';
+                }else{
+                    $('#color_'+cid).css('color', 'red');
+                }
+                }else{
+                $('#color_'+cid).css('color', 'black');
+                };
+                
+            }
+        } 
+    }
+
+    function check_all_star(){
+        var ack = $("#ack_star").is(":checked");
+        var inputs = document.getElementsByTagName('input');
+        var value = document.getElementById('all_value_star').value;
+        if(ack && parseInt(value) != value) {
+            alert('请正确填写單位数量');
+            document.getElementById('all_value_star').value = 1;
+            return;
+        }
+        for (var i = 0; i < inputs.length; i++) { 
+            if(inputs[i].id.indexOf('star_')!=-1){
+                if(ack) inputs[i].value = value;
+                else  inputs[i].value = '';
+                
+            }
+        } 
+    check_all_star_color();
+    }
+
+
+    function check_all_prop_color(pt){
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) { 
+            if(inputs[i].id.indexOf('prop'+pt+'_')!=-1){
+                var cid = (inputs[i].id);
+                if(inputs[i].value != ''){
+                    if(parseInt(inputs[i].value) != inputs[i].value){
+                        alert('请正确填写道具--'+pt+'数量');
+                        inputs[i].value = '';
+                }else{
+                    $('#color_'+cid).css('color', 'red');
+                }
+                }else{
+                $('#color_'+cid).css('color', 'black');
+                };
+                
+            }
+        } 
+    }
+
+    function check_all_prop(pt){
+        var ack = $("#pr"+pt+"_ack").is(":checked");
+        var inputs = document.getElementsByTagName('input');
+        var value = document.getElementById('all_value_prop'+pt).value;
+        if(ack && parseInt(value) != value) {
+            alert('请正确填写單位数量');
+            document.getElementById('all_value_prop'+pt).value = 1;
+            return;
+        }
+        for (var i = 0; i < inputs.length; i++) { 
+            if(inputs[i].id.indexOf('prop'+pt+'_')!=-1){
+                if(ack) inputs[i].value = value;
+                else  inputs[i].value = '';
+                
+            }
+        } 
+    check_all_prop_color(pt);
+    }
+
+    function check_all_equip(){
+        var ack = $("#ack_equip").is(":checked");
+        var inputs = document.getElementsByName('equip');
+        for (var i = 0; i < inputs.length; i++) { 
+                var cid = (inputs[i].id);
+
+               inputs[i].checked = ack;
+                if(ack) $('#equip_'+cid).css('color', 'red');
+                else   $('#equip_'+cid).css('color', 'black');
+                
+            }
+        } 
+    function check_one_equip(bid){
+        var ack = $("#"+bid).is(":checked");
+        if(ack) $('#equip_'+bid).css('color', 'red');
+        else   $('#equip_'+bid).css('color', 'black');
+    }
+
+    function check_all_title(){
+        var ack = $("#ack_title").is(":checked");
+        var inputs = document.getElementsByName('title');
+        for (var i = 0; i < inputs.length; i++) { 
+                var cid = (inputs[i].id);
+
+               inputs[i].checked = ack;
+                if(ack) $('#title_'+cid).css('color', 'red');
+                else   $('#title_'+cid).css('color', 'black');
+                
+            }
+        } 
+    function check_one_title(bid){
+        var ack = $("#"+bid).is(":checked");
+        if(ack) $('#title_'+bid).css('color', 'red');
+        else   $('#title_'+bid).css('color', 'black');
+    }
+
+    function check_all_face(){
+        var ack = $("#ack_face").is(":checked");
+        var inputs = document.getElementsByName('face');
+        for (var i = 0; i < inputs.length; i++) {
+                var cid = (inputs[i].id);
+
+               inputs[i].checked = ack;
+                if(ack) $('#face_'+cid).css('color', 'red');
+                else   $('#face_'+cid).css('color', 'black');
+
+            }
+        }
+    function check_one_face(bid){
+        var ack = $("#"+bid).is(":checked");
+        if(ack) $('#face_'+bid).css('color', 'red');
+        else   $('#face_'+bid).css('color', 'black');
+    }
+
+
+
+    function check_all_soul() {
+        var ack = $("#ack_soul").is(":checked");
+        var inputs = document.getElementsByTagName('input');
+        var value = document.getElementById('all_value_soul').value;
+        if (ack && parseInt(value) != value) {
+            alert('请正确填写單位数量');
+            document.getElementById('all_value_soul').value = 1;
+            return;
+        }
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].id.indexOf('soul_') != -1) {
+                if (ack) {
+                    inputs[i].value = value;
+                    $('#color_'+inputs[i].id).css('color', 'red');
+                } else {
+                    inputs[i].value = '';
+                    $('#color_'+inputs[i].id).css('color', 'black');
+                }
+            }
+        }
+    }
+
+
+
+    function check_all_soul_color(){
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            if(inputs[i].id.indexOf('soul_')!=-1){
+                var cid = (inputs[i].id);
+                if(inputs[i].value != ''){
+                    if(parseInt(inputs[i].value) != inputs[i].value){
+                        alert('请正确填写魂玉数量');
+                        inputs[i].value = '';
+                }else{
+                    $('#color_'+cid).css('color', 'red');
+                }
+                }else{
+                $('#color_'+cid).css('color', 'black');
+                };
+
+            }
+        }
+    }
+
+
+
+    function check_all_native() {
+        var ack = $("#ack_native").is(":checked");
+        var inputs = document.getElementsByTagName('input');
+        var value = document.getElementById('all_value_native').value;
+        if (ack && parseInt(value) != value) {
+            alert('请正确填写單位数量');
+            document.getElementById('all_value_native').value = 1;
+            return;
+        }
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].id.indexOf('native_') != -1) {
+                if (ack) {
+                    inputs[i].value = value;
+                    $('#color_'+inputs[i].id).css('color', 'red');
+                } else {
+                    inputs[i].value = '';
+                    $('#color_'+inputs[i].id).css('color', 'black');
+                }
+            }
+        }
+    }
+
+
+
+    function check_all_native_color(){
+        var inputs = document.getElementsByTagName('input');
+        for (var i = 0; i < inputs.length; i++) {
+            if(inputs[i].id.indexOf('native_')!=-1){
+                var cid = (inputs[i].id);
+                if(inputs[i].value != ''){
+                    if(parseInt(inputs[i].value) != inputs[i].value){
+                        alert('请正确填写特产数量');
+                        inputs[i].value = '';
+                }else{
+                    $('#color_'+cid).css('color', 'red');
+                }
+                }else{
+                $('#color_'+cid).css('color', 'black');
+                };
+
+            }
+        }
+    }
+    </script>
+    {%for item in input_list%}
+    <tr>
+        <td>
+            {{item.1}}
+        </td>
+        <td>
+            <input name="{{item.0}}" id="{{item.0}}" type="txt" value="{{item.3}}"/>
+            <font color="red">(1~{{item.2}})</font>
+        </td>
+    </tr>
+    {%endfor%}
+    {% ifnotequal sale_list.0 0 %}
+    <tr>
+        <td>
+            <font color="red">【折扣卷】</font><font color="green">({{ sale_list.2.0 }}~{{ sale_list.2.1 }})</font>
+        </td>
+        <td>
+            所有折扣卷重置爲<input onclick='check_all_sale()' type='checkbox' id='ack' name='ack' /><input style='width: 40px' value='1' id='all_value_sale' name='all_value_sale' />
+        </td>
+    </tr>
+    <tr>
+        <td colspan=2>
+            <table>
+                {%for item in sale_list.1%}
+                <tr>
+                {%for v in item%}
+                    <td>
+                        <font{%if v.2%} color="red"{%endif%} id="color_sale_{{v.0}}">{{v.1}}</font>
+                        <input type="text" name="{{v.0}}" id="sale_{{v.0}}" value="{{v.2}}" style="width:40px;" onchange=check_all_sale_color();>
+                    </td>
+                {%endfor%}
+                </tr>
+                    {%endfor%}
+            </table>
+        </td>
+    </tr>
+    {% endifnotequal %}
+
+    {% ifnotequal star_list.0 0 %}
+    <tr>
+        <td>
+            <font color="red">【星辰】</font><font color="green">({{ star_list.2.0 }}~{{ star_list.2.1 }})</font>
+        </td>
+        <td>
+            所有星辰重置爲<input onclick='check_all_star()' type='checkbox' id='ack_star' name='ack_star' /><input style='width: 40px' value='1' id='all_value_star' name='all_value_star' />
+        </td>
+    </tr>
+    <tr>
+        <td colspan=2>
+            <table>
+                {%for item in star_list.1%}
+                <tr>
+                {%for v in item%}
+                    <td>
+                        <font{%if v.2%} color="red"{%endif%} id="color_star_{{v.0}}">{{v.1}}</font> <input type="text" name="{{v.0}}" id="star_{{v.0}}" value="{{v.2}}" style="width:40px;" onchange=check_all_star_color();>
+                    </td>
+                {%endfor%}
+                </tr>
+                    {%endfor%}
+            </table>
+        </td>
+    </tr>
+    {% endifnotequal %}
+
+    {%for pt,prop_list in all_prop_list.1%}
+    <tr>
+        <td>
+            <font color="red">【道具--{{pt}}】</font><font color="green">({{ all_prop_list.2.0 }}~{{ all_prop_list.2.1 }})</font>
+        </td>
+        <td>
+            所有道具重置爲<input onclick='check_all_prop({{pt}});' type='checkbox' id='pr{{pt}}_ack' name='pr{{pt}}_ack' /><input style='width: 40px' value='1' id='all_value_prop{{pt}}' name='all_value_prop{{pt}}' /> </td>
+    </tr>
+    <tr>
+        <td colspan=2>
+            <table>
+                {%for item in prop_list%}
+                <tr>
+                {%for v in item%}
+                    <td>
+                        <font{%if v.2%} color="red"{%endif%} id="color_prop{{pt}}_{{v.0}}">{{v.1}}</font> <input type="text" name="{{v.0}}" id="prop{{pt}}_{{v.0}}" value="{{v.2}}" style="width:40px;" onchange=check_all_prop_color({{pt}});>
+                    </td>
+                {%endfor%}
+                </tr>
+                    {%endfor%}
+            </table>
+        </td>
+    </tr>
+    {%endfor%}
+
+    {% ifnotequal equip_list.0 0 %}
+    <tr>
+        <td>
+            <font color="red">【宝物】</font>
+        </td>
+        <td>
+            宝物全选<input onclick='check_all_equip()' type='checkbox' id='ack_equip' name='ack_equip' />
+        </td>
+    </tr>
+    <tr>
+        <td colspan=2>
+            <table>
+                {%for item in equip_list.1%}
+                <tr>
+                {%for v in item%}
+                    <td>
+                        <font{%if v.2%} color="red"{%endif%} id='equip_{{v.0}}'>{{v.1}}</font> <input {%if v.2%}checked="checked"{%endif%} type="checkbox" name="equip" id="{{v.0}}" value="{{v.0}}" style="width:40px;" onclick=check_one_equip('{{v.0}}')>
+                    </td>
+
+
+                {%endfor%}
+                </tr>
+                    {%endfor%}
+            </table>
+        </td>
+    </tr>
+    {% endifnotequal %}
+
+    {% ifnotequal title_list.0 0 %}
+    <tr>
+        <td>
+            <font color="red">【称号】</font>
+        </td>
+        <td>
+            称号全选<input onclick='check_all_title()' type='checkbox' id='ack_title' name='ack_title' />
+        </td>
+    </tr>
+    <tr>
+        <td colspan=2>
+            <table>
+                {%for item in title_list.1%}
+                <tr>
+                {%for v in item%}
+                    <td>
+                        <font{%if v.2%} color="red"{%endif%} id='title_{{v.0}}'>{{v.1}}</font> <input {%if v.2%}checked="checked"{%endif%} type="checkbox" name="title" id="{{v.0}}" value="{{v.0}}" style="width:40px;" onclick=check_one_title('{{v.0}}')>
+                    </td>
+
+
+                {%endfor%}
+                </tr>
+                    {%endfor%}
+            </table>
+        </td>
+    </tr>
+    {% endifnotequal %}
+    {% ifnotequal soul_list.0 0 %}
+    <tr>
+        <td>
+            <font color="red">【魂玉】</font><font color="green">({{ soul_list.2.0 }}~{{ soul_list.2.1 }})</font>
+        </td>
+        <td>
+            所有魂玉重置爲<input onclick='check_all_soul()' type='checkbox' id='ack_soul' name='ack_soul' /><input style='width: 40px' value='1' id='all_value_soul' name='all_value_soul' />
+        </td>
+    </tr>
+    <tr>
+        <td colspan=2>
+            <table>
+                {%for item in soul_list.1%}
+                <tr>
+                {%for v in item%}
+                    <td>
+                        <font{%if v.2%} color="red"{%endif%} id="color_soul_{{v.0}}">{{v.1}}</font> <input type="text" name="{{v.0}}" id="soul_{{v.0}}" value="{{v.2}}" style="width:40px;" onchange=check_all_soul_color();>
+                    </td>
+                {%endfor%}
+                </tr>
+                {%endfor%}
+            </table>
+        </td>
+    </tr>
+    {% endifnotequal %}
+    {% ifnotequal title_list.0 0 %}
+    <tr>
+        <td>
+            <font color="red">【特殊表情】</font>
+        </td>
+        <td>
+            表情全选<input onclick='check_all_face()' type='checkbox' id='ack_face' name='ack_face' />
+        </td>
+    </tr>
+    <tr>
+        <td colspan=2>
+            <table>
+                {%for item in face_list.1%}
+                <tr>
+                {%for v in item%}
+                    <td>
+                        <font{%if v.2%} color="red"{%endif%} id='face_{{v.0}}'>{{v.1}}</font> <input {%if v.2%}checked="checked"{%endif%} type="checkbox" name="face" id="{{v.0}}" value="{{v.0}}" style="width:40px;" onclick=check_one_face('{{v.0}}')>
+                    </td>
+
+
+                {%endfor%}
+                </tr>
+                    {%endfor%}
+            </table>
+        </td>
+    </tr>
+    {% endifnotequal %}
+    {% ifnotequal native_list.0 0 %}
+    <tr>
+        <td>
+            <font color="red">【特产】</font><font color="green">({{ native_list.2.0 }}~{{ native_list.2.1 }})</font>
+        </td>
+        <td>
+            所有特产重置爲<input onclick='check_all_native()' type='checkbox' id='ack_native' name='ack_native' /><input style='width: 40px' value='1' id='all_value_native' name='all_value_native' />
+        </td>
+    </tr>
+    <tr>
+        <td colspan=2>
+            <table>
+                {%for item in native_list.1%}
+                <tr>
+                {%for v in item%}
+                    <td>
+                        <font{%if v.2%} color="red"{%endif%} id="color_native_{{v.0}}">{{v.1}}</font> <input type="text" name="{{v.0}}" id="native_{{v.0}}" value="{{v.2}}" style="width:40px;" onchange=check_all_native_color();>
+                    </td>
+                {%endfor%}
+                </tr>
+                {%endfor%}
+            </table>
+        </td>
+    </tr>
+    {% endifnotequal %}
+
+
+
+
+

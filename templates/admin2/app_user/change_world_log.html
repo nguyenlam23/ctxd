@@ -1,0 +1,11 @@
+
+{%for item in change_world_log%}
+<font>{{item.admin_user}} </font> 
+于
+<font>{{item.time}} </font> 
+使用了
+<font>【<font color="blue">{{item.change_key}}</font>】 操作 </font> 
+参数为<font color="blue">{{item.params}}</font>
+<br/>
+
+{%endfor%}

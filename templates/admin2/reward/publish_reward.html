@@ -1,0 +1,88 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+
+    function push_server_reward(zone){
+        var url = '{{ settings.BASE_URL}}/admin/reward/push_server_reward_config/';
+        $.post(url, {
+                'zone': zone
+                }, function(data){
+                if(data.state=='success'){
+                    $("#inp_"+zone).css("color","green");
+                }
+                //alert($("#inp_h1_1").val());
+                    }, 'json')
+    }
+
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<h2>同步Server奖励配置</h2>
+
+<p>
+=====================================================================================
+</p>
+
+
+<p>
+分区状态
+<br/>
+<p/>
+<p>
+
+    <table>
+        {%for item in server_list%}
+        <tr>
+            {%for xx in item%}
+                <td align="center">
+                    {{xx.1}}
+                    <br/>
+                    <input id="inp_{{xx.0}}" style="color:{{xx.3}};font-weight:bold;" value='奖励配置同步' type="button" />
+                    {%ifequal xx.3 'red'%}
+                        <script type='text/javascript'>
+                            push_server_reward('{{xx.0}}');
+                        </script>
+                    {%endifequal%}
+                </td>
+            {%endfor%}
+        </tr>
+        {%endfor%}
+    <table>
+
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% endblock %}
+

@@ -1,0 +1,24 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<h2>账号操作日志</h2>
+
+<table border='1'>
+    <tr>
+        <th>操作用户</th>
+        <th>操作类型</th>
+        <th>操作时间</th>
+        <th>操作数据</th>
+    </tr>
+    {% for log in logs %}
+    <tr>
+        <td>{{ log.op_user }}</td>
+        <td><font color="blue">{{ log.op_type}}</font></td>
+        <td>{{ log.subtime}}</td>
+        <td><pre>{{ log.data}}</pre></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
+

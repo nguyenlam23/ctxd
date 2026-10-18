@@ -1,0 +1,158 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<style type="text/css">
+/*分页*/
+div.page {
+	padding:5px;
+	font-family:Arial, Helvetica, sans-serif;
+	margin-left:10px;
+	background:#eee;
+	margin-top:20px;
+	text-align:center;
+	padding-top:6px;
+	color:#336699;
+}
+div.page a {
+	padding:0px 5px; margin:2px; color:#336699; background:#eee; text-decoration:none;
+}
+div.page a:hover {
+	color:#3399cc; background:#fff
+}
+div.page span.current {
+	padding:0px 5px; font-weight:bold; margin:2px; color:#336699; background:#fff;
+}
+div.page span.disabled {
+	padding:0px 5px; margin:2px; color:#797979;
+}
+/*分页结束*/
+
+
+</style>
+
+<h3>{{day}}  消费记录 (
+    {%ifequal zone 'all'%}
+    <font color='red'>所有区总览</font>
+    {%else%}
+    <font color='red'>{{zone_name}}</font>
+    {%endifequal%}
+    )</h3>
+<table border="1" cellpadding="0" cellspacing="0">
+    <tr>
+        <td>
+            ID
+        </td>
+        <td>
+            用户ID
+        </td>
+        <td>
+            用户等级
+        </td>
+        <td>
+            消费种类
+        </td>
+        <td>
+            物品名称
+        </td>
+        <td>
+            单价
+        </td>
+        <td>
+            消费物品数量
+        </td>
+        <td>
+            {% ifequal ptype 'score' %}
+            消费金额（友情点数）
+            {% else %}
+            消费金额（Coin）
+            {% endifequal %}
+        </td>
+        <td>
+            首次付费
+        </td>
+        <td>
+            消费时间
+        </td>
+        <td>
+            所在区
+        </td>
+        <td>
+            所在渠道
+        </td>
+    </tr>
+    {%for item  in record_list%}
+    <tr>
+        <td>
+            {{item.id}}
+        </td>
+        <td>
+            {{item.uid}}
+        </td>
+        <td>
+            {{item.user_lv}}
+        </td>
+        <td>
+            {{item.wp_type_cn}}
+        </td>
+        <td>
+            {{item.wpname_cn}}
+        </td>
+        <td>
+            {{item.wp_price}}
+        </td>
+        <td>
+            {{item.wp_num}}
+        </td>
+        <td>
+            {{item.coin_num}}
+        </td>
+        <td>
+            {%ifequal item.first 1 %}
+            是
+            {%else%}
+            否
+            {%endifequal%}
+        </td>
+        <td>
+            {{item.subtime}}
+        </td>
+        <td>
+            {{item.zone}}
+        </td>
+        <td>
+            {{item.pf}}
+        </td>
+    </tr>
+    {%endfor%}
+            <tr>
+                <td colspan="16">
+                 <div class="page" style="background:#fff; margin-left:0; font-size:12px;">
+        {{p.render|safe}}
+                </div>
+                </td>
+            </tr>
+</table>
+
+
+{% endblock %}

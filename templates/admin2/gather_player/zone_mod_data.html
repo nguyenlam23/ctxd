@@ -1,0 +1,70 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        当前区：<font color="green">{{zone_name}}</font>&nbsp;&nbsp;{% if open_days %}开服第 <font color="red">{{open_days}}</font> 天{% endif %}
+    </div>
+    <div class="panel-body">
+        <table class="table table-bordered table-hover">
+            <tr>
+                <td>
+                    总玩家数
+                </td>
+                <td>
+                    模板个数
+                </td>
+                <td>
+                    未采满
+                </td>
+                <td>
+                    可登用
+                </td>
+                <td>
+                    已登用
+                </td>
+                <td>
+                    已废弃
+                </td>
+                <td>
+                    已删除
+                </td>
+                <td>
+                    陪玩实例数
+                </td>
+            </tr>
+            <tr>
+                <td>{{ mod_data.user_num }}</td>
+                <td>
+                    {{ mod_data.gather_num }}
+                </td>
+                <td>
+                    {{ mod_data.status_0_0}}
+                </td>
+                <td>
+                    {{ mod_data.status_0_1}}
+                </td>
+                <td>
+                    {{ mod_data.status_1}}
+                </td>
+                <td>
+                    {{ mod_data.status_2}}
+                </td>
+                <td>
+                    {{ mod_data.status_3}}
+                </td>
+                <td>{{ mod_data.join_num }}</td>
+            </tr>
+        </table>
+        <div class="row">
+            <button class="btn btn-default btn-sm" type="button" id="status_all" onclick="screen_by_status('all')">全部</button>
+            <button class="btn btn-default btn-sm" type="button" id="status_0_0"
+                onclick="screen_by_status('0_0')">未采满</button>
+            <button class="btn btn-default btn-sm" type="button" id="status_0_1"
+                onclick="screen_by_status('0_1')">可登用</button>
+            <button class="btn btn-default btn-sm" type="button" id="status_1"
+                onclick="screen_by_status(1)">已登用</button>
+            <button class="btn btn-default btn-sm" type="button" id="status_2"
+                onclick="screen_by_status(2)">已废弃</button>
+            <button class="btn btn-default btn-sm" type="button" id="status_3"
+                                                                 onclick="screen_by_status(3)">已删除</button>
+        </div>
+    </div>
+</div>

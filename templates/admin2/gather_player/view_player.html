@@ -1,0 +1,96 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js" type="text/javascript"></script>
+<link REL="stylesheet" href="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/css/bootstrap.min.css" TYPE="text/css">
+
+<script src="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/js/bootstrap.min.js" type="text/javascript"></script>
+
+<script type='text/javascript'>
+
+    var activePlayerData = undefined;
+
+    $(document).ready(function () {
+        var uid = "{{uid}}";
+        if (uid) {
+            get_player_template();
+        }
+    });
+    function get_player_template() {
+        var playerID = $('#player_id').val();
+        $nx.request.getfs('gather_player/get_player_template/', {'uid': playerID}, function (data) {
+            $("#player_template").html(data.player_template_html);
+            if (data.open_data_id) {
+                get_player_data(data.open_data_id);
+            }
+        })
+    }
+    function get_player_data(dataID) {
+        if (activePlayerData != undefined) {
+            $('#player_did_'+activePlayerData).removeClass('btn-danger');
+            $('#player_did_'+activePlayerData).addClass('btn-default');
+        }
+        $nx.request.getfs('gather_player/get_player_data/', {'data_id': dataID}, function (data) {
+            $("#player_data").html(data.player_data_html);
+            $('#player_did_'+dataID).removeClass('btn-default');
+            $('#player_did_'+dataID).addClass('btn-danger');
+        })
+        activePlayerData = dataID;
+    }
+    function save_player_data(dataID) {
+        var args = {};
+        args['data_id'] = dataID;
+        args['app_user'] = $("#app_user").val();
+        $nx.request.postfs('gather_player/save_player_data/', args, function (data) {
+            if (data.state=='success') {
+                $('#desc').show();
+                setTimeout("$('#desc').hide()",4000)
+            } else {
+                alert('出现错误: '+data.msg)
+            }
+        }, 'json')
+    }
+    function modify_player_status(uid, status) {
+        var args = {
+            'uid': uid,
+            'status': status
+        };
+        $nx.request.postfs('gather_player/modify_player_status/', args, function (data) {
+            if (data.state=='success') {
+                get_player_template()
+            } else {
+                alert('出现错误: '+data.msg)
+            }
+        }, 'json')
+    }
+</script>
+
+<style type="text/css">
+
+.table > tbody > tr > td {
+    vertical-align: middle;
+}
+.row {
+    padding: 5px 5px 0px 5px;
+}
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="form-inline">
+            <div class="form-group">
+                <label for="player_id">模板ID：</label>
+                <input type="text" class="form-control" id="player_id"
+                                                        placeholder="用户长UID"
+                                                        value="{{uid}}">
+            </div>
+            <button type="submit" class="btn btn-success" onclick="get_player_template()">提交</button>
+        </div>
+    </div>
+    <div class="row" id="player_template">
+    </div>
+    <div class="row" id="player_data">
+    </div>
+</div>
+{% endblock %}
+

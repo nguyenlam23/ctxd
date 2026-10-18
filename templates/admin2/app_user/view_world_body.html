@@ -1,0 +1,350 @@
+{% if zone%}
+<table>
+    <tr>
+        <td width='50%' valign="top">
+<table id="table_c" border=1>
+    <tr>
+        <td width="50px">备份</td>
+        <td width>
+            <font color="{{backup_status.1}}"><strong>{{backup_status.0}}</strong></font>
+        </td>
+    </tr>
+    <tr>
+        <td width="50px">世界</td>
+        <td width>
+            开启天数 <font color="blue">{{open_days}},{{season}}</font>
+            <input style="color:red" type="button" value="刷新天气" onclick="refresh_weather();" />
+            世界最高政务数<input size=5 name="finish_gtask_max" id="finish_gtask_max" value="{{finish_gtask_max}}">
+            世界等级<input size=5 name="world_lv" id="world_lv" value="{{world_lv}}">
+            高玩等级<input size=5 name="pve_lv" id="pve_lv" value="{{pve_lv}}">
+            <input style="color:red" type="button" value="修改" onclick="change_world_lv();" />
+            世界地图索引 <font color="blue">{{merge_maps}}</font>
+            活动索引 <font color="blue">{{merge_ploys}}</font>
+        </td>
+    </tr>
+    <tr>
+        <td width="50px">国家</td>
+        <td width>
+            <input name="country_id" id="country_id" type="radio" value="0" checked=checked>
+            魏
+            &nbsp;
+            &nbsp;
+            <input name="country_id" id="country_id" type="radio" value="1">
+            蜀
+            &nbsp;
+            &nbsp;
+            <input name="country_id" id="country_id" type="radio" value="2">
+            吴
+            &nbsp;
+            &nbsp;
+            <input style="color:red" type="button" value="重置国家" onclick="init_country();" />
+            &nbsp;
+            &nbsp;
+            <input style="color:red" type="button" value="将襄阳归属该国" onclick="change_xiangyang_country();" />
+            &nbsp;
+            &nbsp;
+            <input style="color:red" type="button" value="清空失地数据" onclick="clean_land_lost();" />
+            &nbsp;
+            &nbsp;
+            <input style="color:red" type="button" value="上报国家数据" onclick="report_country_data();" />
+            <br/>
+            国家任务<input size=5 name="country_task" id="country_task" value="">
+            <input style="color:red" type="button" value="修改国家任务" onclick="change_country_task();" />
+            &nbsp;
+            Uid<input size=5 name="king_uid" id="king_uid" value=""> <input style="color:red" type="button" value="指定uid为王"
+            onclick="change_country_king();" />
+        </td>
+    </tr>
+    <tr>
+        <td width="50px">城市</td>
+        <td width>
+            <input name="city_id" id="city_id" type="radio" value="all">
+            所有城市
+            &nbsp;
+            &nbsp;
+            <input name="city_id" id="city_id" type="radio" value="city" checked=checked>
+            指定城市
+            <input name="cid" id="cid" value="" size=5>
+            <br/>
+            <input style="color:red" type="button" value="重置城市" onclick="init_city('init_city');" />
+            <input style="color:red" type="button" value="清理战斗和部队" onclick="init_city('init_troop');" />
+            <input style="color:red" type="button" value="补满城防军" onclick="init_city('full_des_army');" />
+            <input style="color:red" type="button" value="清空城防军" onclick="init_city('zero_des_army');" />
+            <input style="color:red" type="button" value="城防军置为1" onclick="init_city('one_des_army');" />
+            <input style="color:red" type="button" value="刷出黄巾1军" onclick="init_city('thief_one');" />
+            <input style="color:red" type="button" value="刷出黄巾2军" onclick="init_city('thief_two');" />
+        </td>
+    </tr>
+    <tr>
+        <td width="100px"></td>
+        <td width>
+            <input style="color:red" type="button" value="赛季结算" onclick="honour_done();" />
+        </td>
+    </tr>
+</table>
+</br>
+<table border=1>
+    <tr>
+        <td width="100px">国家</td>
+        <td width="100px">人气分</td>
+        <td width="100px">壕气分</td>
+        <td></td>
+    </tr>
+    {% for item in country_advise_score %}
+    <tr>
+        <td>{{item.0}}</td>
+        <td><input size=5 id="renqi_score_{{ item.1 }}" value="{{ item.2 }}"></td>
+        <td><input size=5 id="haoqi_score_{{ item.1 }}" value="{{ item.3 }}"></td>
+        <td><a href="#" onclick="change_country_advise_score({{ item.1 }})">修改</a></td>
+    </tr>
+    {% endfor %}
+</table>
+</br>
+<table border=1>
+    <tr>
+        <td width="50px" rowspan="2">操作</td>
+        <td>
+            <input style="color:red" type="button" value="初始化比武大会" onclick="init_pk_yard();" />
+        </td>
+        <td>
+            <input style="color:red" type="button" value="清理世界聊天" onclick="clean_chat_cache();" />
+        </td>
+        {% if settings.SUBTEST %}
+        <td>
+            <input style="color:red" type="button" value="清理答题数据" onclick="clean_ask();" />
+        </td>
+        <td>
+            <input style="color:red" type="button" value="清理新天下大势" onclick="clean_new_milepost();" />
+        </td>
+        <td>
+            <input style="color:red" type="button" value="模拟合服结算" onclick="simulate_merge();" />
+        </td>
+        <td>
+            <input style="color:red" type="button" value="清理选举国王数据" onclick="clean_elect();" />
+        </td>
+        <td>
+            <input style="color:red" type="button" value="清理新比武大会" onclick="clean_pk_yard_new();" />
+        </td>
+        {% endif %}
+    </tr>
+    <tr>
+        {% if settings.SUBTEST %}
+        <td>
+            届数
+            <input name="bindex" id="bindex" value="1" size=2>
+            <br/>
+            <input style="color:red" type="button" value="重置伏魔战场" onclick="reset_exorcism();" />
+        </td>
+        {% endif %}
+    </tr>
+</table>
+
+<br/>
+
+{% if settings.SUBTEST %}
+<table border=1>
+    <tr>
+        <td width="50px" rowspan="2">功能应用</td>
+        <td>
+            <input name="use_function" id="use_function"
+                                       value="use_city_control" checked
+                                       type="radio">城市接管({{use_function.use_city_control}})
+            <input name="use_function" id="use_function" value="use_pk_yard_new"
+                                          type="radio">新比武大会({{use_function.use_pk_yard_new}})
+            <input name="use_function" id="use_function" value="use_ng_task"
+                                          type="radio">新政务({{use_function.use_ng_task}})
+            <input name="use_function" id="use_function" value="use_milepost"
+                                          type="radio">新天下大势({{use_function.use_milepost}})
+            <input name="use_function" id="use_function" value="use_newinstall"
+                                          type="radio">新手引导({{use_function.use_newinstall}})
+            <input name="use_function" id="use_function" value="use_drink"
+                                          type="radio">酒宴({{use_function.use_drink}})
+            <input name="use_function" id="use_function" value="use_newpreward"
+                                          type="radio">奖励配置({{use_function.use_newpreward}})
+            <input name="use_function" id="use_function" value="use_office37"
+                                          type="radio">爵位37({{use_function.use_office37}})
+            <br/>
+            <input style="color:red" type="button" value="更改功能状态" onclick="change_use_function();" />
+        </td>
+    </tr>
+</table>
+<br/>
+{% endif %}
+
+<table border=1>
+    <tr>
+        <td width="100px">幻境测试</td>
+        <td>
+            傀儡等级: <input name="puppet_lv" id="puppet_lv" value="1" size=2>
+            次数: <input name="times" id="times" value="100" size=2>
+
+            <select name="dungeon_id" id="dungeon_id">
+                {%for item in story_dungeons%}
+                <option {% ifequal item.2 1%}selected=selected{% endifequal %} value="{{item.0}}">{{item.1}}({{item.0}})</option>
+                {%endfor%}
+            </select>
+            <input style="color:red" type="button" value="开始测试" onclick="test_story_dungeon();" />
+        </td>
+    </tr>
+    <tr>
+        <td width="100px">测试结果</td>
+        <td>
+            <p id="aver_time" style="margin: 1px"></p>
+            <p id="aver_goals" style="margin: 1px"></p>
+            <p id="aver_gifts" style="margin: 1px"></p>
+        </td>
+    </tr>
+</table>
+
+
+<div id='log_list' name="log_list">
+    {{log_str_list|safe}}
+</div>
+
+<div>
+<a target="_blank" href="{{settings.BASE_URL}}/admin/app_user/download_world/?zone={{zone}}">下载世界信息</a>
+<a target="_blank" href="{{settings.BASE_URL}}/admin/app_user/download_world/?zone={{zone}}&type=json">下载世界信息2</a>
+<a href="{{settings.BASE_URL}}/admin/app_user/user_power_rank/?zone={{zone}}">玩家排行</a>
+<a target="_blank" href="{{settings.BASE_URL}}/admin/app_user/ignore_user_list/?zone={{zone}}">未加载玩家列表</a>
+</div>
+<div>
+<a target="_blank" href="{{settings.BASE_URL}}/admin/app_user/get_pk_yard_log/?zone={{zone}}">比武战报</a>
+<input id="ym" value="1" size=2>轮
+<input id="tn" value="1" size=2>组
+<input id="sn" value="1" size=2>场
+<input style="color:red" type="button" value="读取" onclick="get_pk_yard_log();" />
+</div>
+        </td>
+        <td valign="top">
+            {%if honour_open%}
+                <table border=1>
+                    <tr>
+                        <td>
+                            赛季界数
+                        </td>
+                        <td>
+                            {{honour_dict.num}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            开始时间
+                        </td>
+                        <td>
+                            {{honour_dict.start_time}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            赛季进行天数
+                        </td>
+                        <td>
+                            {{honour_dict.keep_days}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            战绩强度
+                        </td>
+                        <td>
+                            {{honour_dict.strength}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            战绩难度
+                        </td>
+                        <td>
+                            {{honour_dict.exp_multiple}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            最大英雄赛季等级
+                        </td>
+                        <td>
+                            {{honour_dict.max_lv}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            最大英雄赛季经验
+                        </td>
+                        <td>
+                            {{honour_dict.max_exp}}
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <br/>
+                <table border=1>
+                    <tr>
+                        <td>
+                            名次
+                        </td>
+                        <td>
+                            Uid
+                        </td>
+                        <td>
+                            Uname
+                        </td>
+                        <td>
+                            国家
+                        </td>
+                        <td>
+                            战力
+                        </td>
+                        <td>
+                            总战绩等级
+                        </td>
+                    <tr>
+                        {%for item in honour_rank%}
+                    <tr>
+                        <td>
+                            {{item.rank}}
+                        </td>
+                        <td>
+                        <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.uid_zone}}">{{item.uid_zone}}</a>
+                        </td>
+                        <td>
+                            {{item.uname}}
+                        </td>
+                        <td>
+                            {{item.country}}
+                        </td>
+                        <td>
+                            {{item.power}}
+                        </td>
+                        <td>
+                            {{item.total_lv}}
+                        </td>
+                    <tr>
+                        {%endfor%}
+                <table>
+            {%else%}
+            <center><font color="red">赛季未开启</font></center>
+            {%endif%}
+        </td>
+    </tr>
+</table>
+<br/>
+<!--
+详细数据：
+ <input style="color:red" type="button" value="提交" onclick="save_world();" />
+ -->
+
+<br/>
+
+<!--
+<textarea id="world" name="world" style="width: 90%; height: 700px" readonly>{{world}}</textarea>
+ -->
+<script>
+    var subTest = '{{settings.SUBTEST}}'
+    if ( subTest == 'False' ) {
+        var x = document.getElementById('table_c').getElementsByTagName('input');
+        for(var i=0; i<x.length; i++){
+            x[i].disabled = 'disabled';
+        }
+    }
+</script>
+{% endif %}

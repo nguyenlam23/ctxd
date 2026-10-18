@@ -1,0 +1,19 @@
+
+<table>
+    {%for item in server_list%}
+    <tr>
+        {%for xx in item%}
+            <td align="center">
+                {{xx.1}}
+                <br/>
+                <input id="inp_{{ xx.0 }}"  style="color:{{xx.3}};font-weight:bold;" value='维护' type="button" />
+                <input id="lnp_{{ xx.0 }}" style="color:{{xx.4}};font-weight:bold;" value='登陆' type="button" />
+{#                <script type="text/javascript">#}
+{#                    get_zone_maintain_status('{{ xx.0 }}');#}
+{#                </script>#}
+            </td>
+        {%endfor%}
+    </tr>
+    {%endfor%}
+<table>
+

@@ -1,0 +1,453 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<style type="text/css">
+*{ margin:0; padding:0;}
+.imglist { width:650px; margin:0 auto;}
+.imglist li { width:100px; height:100px; list-style:none; float:left; border:5px solid white; margin:10px;}
+.imglist li img { width:100px; height:100px;}
+.fntlist font.border { border-color:red;}
+</style>
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js" type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet" href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css" type="text/css"/>
+<script type='text/javascript'>
+
+                
+    function check_one_pf(pid){
+        var ack = $("#"+pid).is(":checked");
+        if(ack) $('#pf_'+pid).css('color', 'red');
+        else   $('#pf_'+pid).css('color', 'black');
+    }
+
+    function check_all_pf(){
+        var ack = $("#pf_all").is(":checked");
+        var inputs = document.getElementsByName('pfs');
+        for (var i = 0; i < inputs.length; i++) { 
+                var cid = (inputs[i].id);
+                inputs[i].checked = ack;
+                if(ack) $('#pf_'+cid).css('color', 'red');
+                else   $('#pf_'+cid).css('color', 'black');
+            }
+        } 
+
+$(function() {
+		var dates = $('#end_date').datepicker({
+            dateFormat: "yy-mm-dd",
+			defaultDate: "-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+            maxDate: "",
+            //minDate: "2010-04-15",
+            minDate: "-0",
+			onSelect: function(selectedDate) {
+                //statistic();
+			}
+		});
+		var dates = $('#start_date').datepicker({
+            dateFormat: "yy-mm-dd",
+			defaultDate: "-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+            maxDate: "",
+            //minDate: "2010-04-15",
+            minDate: "-0",
+			onSelect: function(selectedDate) {
+                //statistic();
+			}
+		});
+
+	});
+
+
+$(function() {
+		var dates = $('#cond_login_date').datepicker({
+            dateFormat: "yy-mm-dd",
+			defaultDate: "-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+            maxDate: "+0",
+            minDate: "2010-04-15",
+            //minDate: "+0",
+			onSelect: function(selectedDate) {
+                //statistic();
+			}
+		});
+
+	});
+
+
+$(function() {
+		var dates = $('#cond_add_date_f').datepicker({
+            dateFormat: "yy-mm-dd",
+			defaultDate: "-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+            maxDate: "+0",
+            minDate: "2010-04-15",
+			onSelect: function(selectedDate) {
+                //statistic();
+			}
+		});
+
+	});
+
+$(function() {
+		var dates = $('#cond_add_date_t').datepicker({
+            dateFormat: "yy-mm-dd",
+			defaultDate: "-1",
+			changeMonth: true,
+			numberOfMonths: 1,
+            maxDate: "+0",
+            minDate: "2010-04-15",
+			onSelect: function(selectedDate) {
+                //statistic();
+			}
+		});
+
+	});
+
+
+
+
+function chk_reward_obj(v){
+    if (v=='all'){
+        $('#user_content').hide();
+        $('#condition_centent').hide();
+        $('#activecode_centent').hide();
+    }else if(v=='user'){
+        $('#user_content').show();
+        $('#condition_centent').hide(); 
+        $('#activecode_centent').hide();
+    }else if(v=='session_key'){
+        $('#user_content').show();
+        $('#condition_centent').hide(); 
+        $('#activecode_centent').hide();
+    }else if (v=='condition'){
+        $('#user_content').hide();
+        $('#condition_centent').show(); 
+        $('#activecode_centent').hide();
+     }else if (v=='activecode'){ 
+        $('#user_content').hide();
+        $('#condition_centent').hide(); 
+        $('#activecode_centent').show();
+    }
+}
+
+
+
+
+    function chk(){ 
+
+        if (document.getElementById('user').checked){
+            if ($('#user_file').val() == '' && $('#uids').val() == ''){
+                alert('导入文件和用户id不能同时为空');
+                $('#uids').focus();
+                return false;
+            }
+        }
+
+        if (document.getElementById('condition').checked){
+            var cond_flag = true;
+
+            if (document.getElementById('condition_type_user_lv').checked){
+                if ($('#condition_f_user_lv').val() == '' || $('#condition_t_user_lv').val() == ''){
+                    alert('请填写官邸等级');
+                    return false;
+                }
+                cond_flag = false;
+            }
+            if (document.getElementById('condition_type_effort_lv').checked){
+                if ($('#condition_f_effort_lv').val() == '' || $('#condition_t_effort_lv').val() == ''){
+                    alert('请填写爵位等级');
+                    return false;
+                }
+                cond_flag = false;
+            }
+
+            if (document.getElementById('condition_type_login_time').checked){
+                if (!$('#cond_login_date').val()){
+                    $('#cond_login_date').focus();
+                    alert('请填写条件登录时间');
+                    return false;
+                }
+                cond_flag = false;
+            }
+            if (document.getElementById('condition_type_add_time').checked){
+                if (!$('#cond_add_date_f').val()){
+                    $('#cond_add_date_f').focus();
+                    alert('请填写条件注册时间');
+                    return false;
+                }
+                if (!$('#cond_add_date_t').val()){
+                    $('#cond_add_date_t').focus();
+                    alert('请填写条件注册时间');
+                    return false;
+                }
+                cond_flag = false;
+            }
+            if(cond_flag){
+                alert('请填写发奖条件');
+                return false;
+            }
+        }
+
+
+
+        if ($('#name_{{nafo_list.0.0}}').val() == ''){
+            alert('{{nafo_list.0.0}}标题不能为空');
+            $('#name_{{nafo_list.0.0}}').focus();
+            return false;
+        }
+        if ($('#info_{{nafo_list.0.0}}').val() == ''){
+            alert('{{nafo_list.0.0}}正文描述不能为空');
+            $('#info_{{nafo_list.0.0}}').focus();
+            return false;
+        }
+
+        var inputs = document.getElementsByName('pfs');
+        var chk_pf = false;
+        for (var i = 0; i < inputs.length; i++) { 
+            if (inputs[i].checked){
+                chk_pf = true;
+            }
+            }
+        if (!chk_pf){
+            alert('请勾选pf ');
+            return false;
+        }
+
+
+
+
+        if ($('#end_date').val() == ''){
+            alert('请选择有效期');
+            $('#end_date').focus();
+            return false;
+        }
+        if ($('#start_date').val() == ''){
+            alert('请选择有效期');
+            $('#start_date').focus();
+            return false;
+        }
+        
+
+
+
+
+        var flag = true;
+        var n = 0
+
+        {%for item in input_list%}
+        if($('#{{item.0}}').val()!=''){ 
+            flag = false;
+            if(parseInt($('#{{item.0}}').val()) != $('#{{item.0}}').val()){
+                alert('请正确填写{{item.1}}数量');
+                $('#{{item.0}}').focus();
+            return false;
+            }
+            if(parseInt($('#{{item.0}}').val()) >parseInt({{item.2}})){
+                alert('{{item.1}}数量不能超过{{item.2}}');
+                $('#{{item.0}}').focus();
+            return false;
+            }
+            n+=1
+        }
+        {%endfor%}
+
+    }
+
+</script>
+<h2>{%if reward %}
+    编辑 一般奖励
+    {%else%}
+    添加 一般奖励
+    {%endif%}
+</h2>
+<br/>
+<form action="{{settings.BASE_URL}}/admin/reward/edit_reward_p/" method="post" enctype="multipart/form-data" onsubmit="return chk();">
+<table width="100%">
+    <tr>
+        <td width="10%">
+            标题正文
+        </td>
+        <td>
+         {%for item in nafo_list%}
+         <tr>
+             <td>
+                 name-{{item.0}}
+             </td>
+             <td>
+                 <input type="txt" name="name_{{item.0}}" id="name_{{item.0}}" value="{{item.1}}" /><br/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 info-{{item.0}}
+             </td>
+             <td>
+                 <textarea id="info_{{item.0}}" name="info_{{item.0}}" style="width: 60%; height: 30px">{{item.2}}</textarea>
+             </td>
+         </tr>
+         {%endfor%}
+
+        </td>
+    </tr> 
+    <tr>
+        <td>
+            发奖对象
+        </td>
+        <td>
+<p>
+<br/>
+            <input type="checkbox" name="pf_all" id="pf_all" value="" onclick="check_all_pf()"/>
+            <font color="red">pf全选</font>
+            <br />
+            {%for item in pf_list%}
+            <input type="checkbox" name="pfs" id="{{item.0}}" value="{{item.0}}" {%if item.1 %}checked=checked{%endif%} onclick="check_one_pf('{{item.0}}')"/>
+                        <font{%if item.1%} color="red"{%endif%} id='pf_{{item.0}}'>{{item.0}}</font>
+            {%endfor%}
+            <br />
+            <br />
+                 分区列表<textarea id="zone_list" name="zone_list" style="width: 60%; height: 30px">{{reward.zone_list}}</textarea>(1,2,3...|另：所有区填all)
+            <br />
+            <br />
+
+
+
+<input type="radio" name="reward_obj" id="all" value="all" {%if reward %}{%ifequal reward.reward_obj 'all'%}checked=checked{%endifequal%}{%else%}checked=checked{%endif%} onclick="chk_reward_obj(this.value)"/>整区
+<!--
+<input type="radio" name="reward_obj" id="user" value="user" onclick="chk_reward_obj(this.value)" {%ifequal reward.reward_obj 'user'%}checked=checked{%endifequal%} />指定用户
+-->
+
+
+<input type="radio" name="reward_obj" id='condition' value="condition" onclick="chk_reward_obj(this.value)" {%ifequal reward.reward_obj 'condition'%}checked=checked{%endifequal%} />条件 
+
+
+</p>
+<span {%ifequal reward.show_uid_txt '1'%} {%else%} style="display:none" {%endifequal%} id="user_content">
+<input name="user_file" id="user_file" type="file" />(导入xls文件，还可多用户英文逗号分隔填在下方)
+<br />
+<textarea id="uids" name="uids" style="width: 50%; height: 100px">{{reward.obj_content.uids}}</textarea>
+(共 {{reward.obj_content.uids_len}})
+<br />
+<br />
+
+</span>
+<span {%ifequal reward.reward_obj 'condition'%} {%else%} style="display:none" {%endifequal%} id="condition_centent">
+
+
+
+    <input type="checkbox" name="condition_type" id="condition_type_user_lv" value="user_lv" {%if user_lv_chk%}checked = checked{%else%}{%endif%}/> 
+    <input size=5 type="text" name="condition_f_user_lv" id="condition_f_user_lv" value="{{reward.obj_content.condition.user_lv.condition_f}}"/>
+    <=官邸等级<=
+    <input size=5 type="text" name="condition_t_user_lv" id="condition_t_user_lv" value="{{reward.obj_content.condition.user_lv.condition_t}}"/>
+    <br/ ><br/>
+    <input type="checkbox" name="condition_type" id="condition_type_effort_lv" value="effort_lv" {%if effort_lv_chk%}checked = checked{%else%}{%endif%}/> 
+    <input size=5 type="text" name="condition_f_effort_lv" id="condition_f_effort_lv" value="{{reward.obj_content.condition.effort_lv.condition_f}}"/>
+    <=爵位等级<=
+    <input size=5 type="text" name="condition_t_effort_lv" id="condition_t_effort_lv" value="{{reward.obj_content.condition.effort_lv.condition_t}}"/>
+    <br/ ><br/>
+
+    <input type="checkbox" name="condition_type" id="condition_type_login_time" value="login_time" {%if login_time_chk%}checked = checked{%else%}{%endif%}/>上次登录时间早于: 
+    <input readonly size="7" name="cond_login_date"  id="cond_login_date" value="{{reward.cond_login_date}}" /> 
+    <select name="cond_login_hour">
+        {% for item in hours %}
+        <option {%ifequal reward.cond_login_hour item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+    :
+    <select name="cond_login_minute">
+        {% for item in minutes %}
+        <option {%ifequal reward.cond_login_minute item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+    <br/ ><br/>
+
+    <input type="checkbox" name="condition_type" id="condition_type_add_time" value="add_time" {%if add_time_chk%}checked = checked{%else%}{%endif%}/>
+
+    <input readonly size="7" name="cond_add_date_f"  id="cond_add_date_f" value="{{reward.cond_add_date_f}}" /> 
+    <select name="cond_add_hour_f">
+        {% for item in hours %}
+        <option {%ifequal reward.cond_add_hour_f item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+    :
+    <select name="cond_add_minute_f">
+        {% for item in minutes %}
+        <option {%ifequal reward.cond_add_minute_f item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+    <=注册时间<=
+    <input readonly size="7" name="cond_add_date_t"  id="cond_add_date_t" value="{{reward.cond_add_date_t}}" /> 
+    <select name="cond_add_hour_t">
+        {% for item in hours %}
+        <option {%ifequal reward.cond_add_hour_t item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+    :
+    <select name="cond_add_minute_t">
+        {% for item in minutes %}
+        <option {%ifequal reward.cond_add_minute_t item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+</span>
+
+<br />
+<br /> 
+
+        </td>
+    </tr>
+
+    {%include 'admin/reward/reward_content.html'%}
+
+
+
+    <tr>
+        <td>
+            有效期
+        </td>
+        <td>
+
+
+            开始: <input readonly size="7" name="start_date"  id="start_date" value="{{reward.start_date}}" />
+    <select name="start_hour">
+        {% for item in hours %}
+        <option {%ifequal reward.start_hour item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+    :
+    <select name="start_minute">
+        {% for item in minutes %}
+        <option {%ifequal reward.start_minute item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+
+
+            结束: <input readonly size="7" name="end_date"  id="end_date" value="{{reward.end_date}}" />
+    <select name="end_hour">
+        {% for item in hours %}
+        <option {%ifequal reward.end_hour item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+    :
+    <select name="end_minute">
+        {% for item in minutes %}
+        <option {%ifequal reward.end_minute item%}selected=selected{%endifequal%} value="{{item}}">{{item}}</option>
+        {% endfor %}
+    </select>
+
+        </td>
+    </tr>
+    <tr>
+        <td>
+        </td>
+        <td>
+            <input type="hidden" name="id" value="{{reward.id}}" type="txt"/>
+            <input type="submit" value="提交"/>
+        </td>
+    </tr>
+</table>
+</form>
+
+
+{% endblock %}

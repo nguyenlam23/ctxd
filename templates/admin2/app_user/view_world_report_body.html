@@ -1,0 +1,541 @@
+{%if zone%}
+<script type="text/javascript">
+    $("input[type=radio][name=selectModel]").change(function () {
+        var selectModel = $('input:radio[name="selectModel"]:checked').val();
+        activeModel = selectModel;
+        $nx.request.postfs('app_user/view_world_report/', {'zone': activeZone, 'smodel': selectModel}, function (data) {
+            $('#world_report_body').html(data.world_report_body)
+        })
+    })
+</script>
+<div class="row">
+    <div class="btn-group btn-group-sm" role="group">
+        <div class="radio">
+            <h4><font color="red">{{zone}}</font></h4>
+        </div>
+    </div>
+    <div class="btn-group btn-group-sm" role="group">
+        <div class="radio">
+            <p>选择模块：</p>
+        </div>
+    </div>
+    <div class="btn-group btn-group-sm" role="group">
+        <div class="radio">
+            <label>
+                <input type="radio" name="selectModel" value='core' {%ifequal smodel 'core'%}checked{%endifequal%}>核心
+            </label>
+        </div>
+    </div>
+    <div class="btn-group btn-group-sm" role="group">
+        <div class="radio">
+            <label>
+                <input type="radio" name="selectModel" value='cities' {%ifequal smodel 'cities'%}checked{%endifequal%}>领土
+            </label>
+        </div>
+    </div>
+    <div class="btn-group btn-group-sm" role="group">
+        <div class="radio">
+            <label>
+                <input type="radio" name="selectModel" value='warehouse' {%ifequal smodel 'warehouse'%}checked{%endifequal%}>国库
+            </label>
+        </div>
+    </div>
+    <div class="btn-group btn-group-sm" role="group">
+        <div class="radio">
+            <label>
+                <input type="radio" name="selectModel" value='official' {%ifequal smodel 'official'%}checked{%endifequal%}>官职
+            </label>
+        </div>
+    </div>
+    <div class="btn-group btn-group-sm" role="group">
+        <div class="radio">
+            <label>
+                <input type="radio" name="selectModel" value='hero' {%ifequal smodel 'hero'%}checked{%endifequal%}>单将
+            </label>
+        </div>
+    </div>
+</div>
+
+{%ifequal smodel 'core'%}
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>
+                开服年度
+            </th>
+            <th>
+                国家
+            </th>
+            <th>
+                都城数
+            </th>
+            <th>
+                城池数
+            </th>
+            <th>
+                活跃高战数
+            </th>
+            <th>
+                活跃中坚数
+            </th>
+            <th>
+                活跃低战数
+            </th>
+            <th>
+                排名积分
+            </th>
+            <th>
+                活跃尖端战力
+            </th>
+            <th>
+                活跃总战力
+            </th>
+            <th>
+                30天活跃充值
+            </th>
+            <th>
+                活跃实际充值
+            </th>
+            <th>
+                活跃虚拟充值
+            </th>
+            <th>
+                活跃Coin
+            </th>
+            <th>
+                综合国力
+            </th>
+            <th>
+                前20战功和
+            </th>
+            <th>
+                国家活跃
+            </th>
+            <th>
+                单将最高战力
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for item in data%}
+            {%for c in item.country_list%}
+            <tr class={{item.bg_color}}>
+                {%ifequal c.country 0%}
+                <td rowspan="3" style="vertical-align:middle; text-align:center">{{item.years}}</td>
+                {%endifequal%}
+                <td>{{c.country_name}}</td>
+                <td>{{c.capital_num}}</td>
+                <td>{{c.city_num}}</td>
+                <td>{{c.powerful_num}}</td>
+                <td>{{c.active_num}}</td>
+                <td>{{c.normal_num}}</td>
+                <td>{{c.rank_score}}</td>
+                <td>{{c.top_power}}</td>
+                <td>{{c.active_power_sum}}</td>
+                <td>{{c.thirty_pay_money}}</td>
+                <td>{{c.active_pay}}</td>
+                <td>{{c.active_pay_fake}}</td>
+                <td>{{c.active_coin}}</td>
+                <td>{{c.multiple_power}}</td>
+                <td>{{c.top20_country_credit}}</td>
+                <td>{{c.country_active}}</td>
+                <td>{{c.best_hero_power}}</td>
+            </tr>
+            {%endfor%}
+        {%endfor%}
+    </tbody>
+</table>
+{%endifequal%}
+
+{%ifequal smodel 'cities'%}
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>
+                开服年度
+            </th>
+            <th>
+                国家
+            </th>
+            <th>
+                襄阳数
+            </th>
+            <th>
+                都城数
+            </th>
+            <th>
+                关城数
+            </th>
+            <th>
+                郡城数
+            </th>
+            <th>
+                县城数
+            </th>
+            <th>
+                要塞数
+            </th>
+            <th>
+                城池总数
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for item in data%}
+            {%for c in item.country_list%}
+            <tr class={{item.bg_color}}>
+                {%ifequal c.country 0%}
+                <td rowspan="3" style="vertical-align:middle; text-align:center">{{item.years}}</td>
+                {%endifequal%}
+                <td>{{c.country_name}}</td>
+                <td>{{c.city_9}}</td>
+                <td>{{c.city_4}}</td>
+                <td>{{c.city_3}}</td>
+                <td>{{c.city_2}}</td>
+                <td>{{c.city_1}}</td>
+                <td>{{c.city_0}}</td>
+                <td>{{c.total}}</td>
+            </tr>
+            {%endfor%}
+        {%endfor%}
+    </tbody>
+</table>
+{%endifequal%}
+
+{%ifequal smodel 'warehouse'%}
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>
+                开服年度
+            </th>
+            <th>
+                国家
+            </th>
+            <th>
+                襄阳数
+            </th>
+            <th>
+                都城数
+            </th>
+            <th>
+                城池总数
+            </th>
+            <th>
+                黄金库存
+            </th>
+            <th>
+                银两库存
+            </th>
+            <th>
+                粮草库存
+            </th>
+            <th>
+                年度歼敌数
+            </th>
+            <th>
+                年度战损数
+            </th>
+            <th>
+                年度建设值
+            </th>
+            <th>
+                奖励总倍数
+            </th>
+            <th>
+                分发人数
+            </th>
+            <th>
+                单倍黄金
+            </th>
+            <th>
+                单倍银两
+            </th>
+            <th>
+                单倍粮草
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for item in data%}
+            {%for c in item.country_list%}
+            <tr class={{item.bg_color}}>
+                {%ifequal c.country 0%}
+                <td rowspan="3" style="vertical-align:middle; text-align:center">{{item.years}}</td>
+                {%endifequal%}
+                <td>{{c.country_name}}</td>
+                <td>{{c.city_9}}</td>
+                <td>{{c.city_4}}</td>
+                <td>{{c.city_num}}</td>
+                <td>{{c.coin}}</td>
+                <td>{{c.gold}}</td>
+                <td>{{c.food}}</td>
+                <td>{{c.year_kill_num}}</td>
+                <td>{{c.year_dead_num}}</td>
+                <td>{{c.year_build}}</td>
+                <td>{{c.reward_copies}}</td>
+                <td>{{c.user_num}}</td>
+                <td>{{c.single_coin}}</td>
+                <td>{{c.single_gold}}</td>
+                <td>{{c.single_food}}</td>
+            </tr>
+            {%endfor%}
+        {%endfor%}
+    </tbody>
+</table>
+{%endifequal%}
+
+{%ifequal smodel 'official'%}
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>
+                开服年度
+            </th>
+            <th>
+                国家
+            </th>
+            <th>
+                国王
+            </th>
+            <th>
+                将军1
+            </th>
+            <th>
+                将军2
+            </th>
+            <th>
+                将军3
+            </th>
+            <th>
+                将军4
+            </th>
+            <th>
+                军师
+            </th>
+            <th>
+                郡丞
+            </th>
+            <th>
+                祭酒
+            </th>
+            <th>
+                御史
+            </th>
+            <th>
+                相国
+            </th>
+            <th>
+                主簿
+            </th>
+            <th>
+                世子
+            </th>
+            <th>
+                都尉
+            </th>
+            <th>
+                已封太守
+            </th>
+            <th>
+                可封太守
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for item in data%}
+            {%for c in item.country_list%}
+            <tr class={{item.bg_color}}>
+                {%ifequal c.country 0%}
+                <td rowspan="3" style="vertical-align:middle; text-align:center">{{item.years}}</td>
+                {%endifequal%}
+                <td>{{c.country_name}}</td>
+                <td>
+                    {%if c.official_0%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_0.0}}">{{c.official_0.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_1%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_1.0}}">{{c.official_1.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_2%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_2.0}}">{{c.official_2.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_3%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_3.0}}">{{c.official_3.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_4%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_4.0}}">{{c.official_4.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_5%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_5.0}}">{{c.official_5.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_6%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_6.0}}">{{c.official_6.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_7%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_7.0}}">{{c.official_7.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_8%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_8.0}}">{{c.official_8.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_9%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_9.0}}">{{c.official_9.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_10%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_10.0}}">{{c.official_10.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_11%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_11.0}}">{{c.official_11.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>
+                    {%if c.official_12%}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{c.official_12.0}}">{{c.official_12.1}}</a>
+                    {%else%}
+                    --
+                    {%endif%}
+                </td>
+                <td>{{c.mayor_num}}</td>
+                <td>{{c.not_mayor_num}}</td>
+            </tr>
+            {%endfor%}
+        {%endfor%}
+    </tbody>
+</table>
+{%endifequal%}
+
+{%ifequal smodel 'hero'%}
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>
+                开服年度
+            </th>
+            <th>
+                国家
+            </th>
+            <th>
+                No.1
+            </th>
+            <th>
+                No.2
+            </th>
+            <th>
+                No.3
+            </th>
+            <th>
+                No.4
+            </th>
+            <th>
+                No.5
+            </th>
+            <th>
+                No.6
+            </th>
+            <th>
+                No.7
+            </th>
+            <th>
+                No.8
+            </th>
+            <th>
+                No.9
+            </th>
+            <th>
+                No.10
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for item in data%}
+            {%for c in item.country_list%}
+            <tr class={{item.bg_color}}>
+                {%ifequal c.country 0%}
+                <td rowspan="3" style="vertical-align:middle; text-align:center">{{item.years}}</td>
+                {%endifequal%}
+                <td>{{c.country_name}}</td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=0&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.0.0}}({{c.0.1}})</a>
+                </td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=1&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.1.0}}({{c.1.1}})</a>
+                </td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=2&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.2.0}}({{c.2.1}})</a>
+                </td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=3&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.3.0}}({{c.3.1}})</a>
+                </td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=4&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.4.0}}({{c.4.1}})</a>
+                </td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=5&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.5.0}}({{c.5.1}})</a>
+                </td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=6&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.6.0}}({{c.6.1}})</a>
+                </td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=7&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.7.0}}({{c.7.1}})</a>
+                </td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=8&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.8.0}}({{c.8.1}})</a>
+                </td>
+                <td>
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_world_report_hero_dict/?hid=9&country={{c.country}}&zone={{zone}}&year={{item.years}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{c.9.0}}({{c.9.1}})</a>
+                </td>
+            </tr>
+            {%endfor%}
+        {%endfor%}
+    </tbody>
+</table>
+{%endifequal%}
+
+
+{%endif%}

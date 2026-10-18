@@ -1,0 +1,163 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+    var currentViewHero = undefined;
+    function do_sort(order_by) {
+        $('#order_by').val(order_by)
+        $('#frm').submit();
+    };
+</script>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<form id="frm" action="{{settings.BASE_URL}}/admin/app_user/hero_power_rank/" method="post">
+    <div style="display: inline-block;">
+        选择分区(按住ctrl多选):
+        <br/>
+        <select name='search_zone_list' multiple='true' style="width: 300px" size="20">
+            {% for z in zone_list%}
+            <option value='{{ z.0 }}' {%ifequal z.2 'checked'%}selected="true"{%endifequal%}>{{ z.1 }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div style="display: inline-block;">
+        <p>
+            采样英雄数量
+            <br/>
+            <input type="text" name="hero_count" value="{{ hero_count }}" />
+        </p>
+        <p>
+            战力区间：
+            <br/>
+            <input type="text" name="hero_power_min" value="{{ hero_power_min }}" /> +
+            <input type="text" name="hero_power_add" value="{{ hero_power_add }}" />
+        </p>
+        <input type='submit' value='&nbsp;&nbsp;查&nbsp;询&nbsp;&nbsp;'/>
+        <input type="hidden" name="order_by" id="order_by" value=""/>
+    </div>
+</form>
+<br/>
+
+{% if hero_power_list %}
+<table border=1>
+    <tr>
+        <td>英雄</td>
+        <td style="width: 100px">
+            样本数量
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_count')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_count')"></i>
+            </span>
+        </td>
+        <td>
+            No.1
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|0')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|0')"></i>
+            </span>
+        </td>
+        <td>
+            No.2
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|1')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|1')"></i>
+            </span>
+        </td>
+        <td>
+            No.3
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|2')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|2')"></i>
+            </span>
+        </td>
+        <td>
+            No.4
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|3')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|3')"></i>
+            </span>
+        </td>
+        <td>
+            No.5
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|4')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|4')"></i>
+            </span>
+        </td>
+        <td>
+            No.6
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|5')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|5')"></i>
+            </span>
+        </td>
+        <td>
+            No.7
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|6')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|6')"></i>
+            </span>
+        </td>
+        <td>
+            No.8
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|7')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|7')"></i>
+            </span>
+        </td>
+        <td>
+            No.9
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|8')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|8')"></i>
+            </span>
+        </td>
+        <td>
+            No.10
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="do_sort('hero_index|9')"></i>
+                <i class="sort-caret descending" onclick="do_sort('-hero_index|9')"></i>
+            </span>
+        </td>
+    </tr>
+    {%for item in hero_power_list%}
+    <tr>
+        <td>{{item.0}}</td>
+        <td>{{item.3|length}}</td>
+        {%for ii in item.3|slice:":10"%}
+            <td>
+            <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{ii.0}}">
+                {{ii.0}}&nbsp;{{ii.1}}
+            </a>
+                <br/>
+            <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_user_hero_dict/?uid_zone={{ii.0}}&hid={{item.0}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">
+                {%if ii.3%}神·{%endif%}{{item.2}}&nbsp;{{ii.2}}
+            </a>
+            </td>
+        {%endfor%}
+    </tr>
+    {%endfor%}
+    </table>
+{% endif%}
+<br/>
+
+{% endblock %}

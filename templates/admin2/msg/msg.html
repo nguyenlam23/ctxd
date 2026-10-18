@@ -1,0 +1,248 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<style type="text/css">
+/*分页*/
+div.page {
+	padding:5px;
+	font-family:Arial, Helvetica, sans-serif;
+	margin-left:10px;
+	background:#eee;
+	margin-top:20px;
+	text-align:center;
+	padding-top:6px;
+	color:#336699;
+}
+div.page a {
+	padding:0px 5px; margin:2px; color:#336699; background:#eee; text-decoration:none;
+}
+div.page a:hover {
+	color:#3399cc; background:#fff
+}
+div.page span.current {
+	padding:0px 5px; font-weight:bold; margin:2px; color:#336699; background:#fff;
+}
+div.page span.disabled {
+	padding:0px 5px; margin:2px; color:#797979;
+}
+/*分页结束*/
+
+
+</style>
+<script type='text/javascript'>
+    var status = '{{parameter.status}}';
+    function user_coin_records(uid){
+        $.post('{{ settings.base_url }}/admin/app_user/user_coin_records/', {
+                    'uid': uid
+                }, function(data){
+                        $('#cr_'+uid).text(data.coin_num);
+                    }, 'json');
+
+    } 
+    
+    function re_msg_p(){
+        var mid = $('#mid').val();
+        var uid = $('#uid').val();
+        var rcontent = $('#rcontent').val();
+        //if (mid.length == 0){
+        //    alert('请选择回复信息');
+        //    return false;
+        //}
+        if (rcontent.length == 0){
+            alert('请填写回复内容');
+            $('#rcontent').focus();
+            return false;
+        }
+        $.post('{{settings.base_url}}/admin/msg/re_msg/', {
+                    'mid': mid,
+                    'uid': uid,
+                    'rcontent': rcontent
+                }, function(data){
+                    if(data.state=='success'){
+                        $('#mid_'+mid).hide();
+                        $('#uid').val(null);
+                        $('#mid').val(null);
+                        //$('#content').text('');
+                        //$('#rcontent').text('');
+                        $('#rcontent').val(null);
+                        $('#content').val(null);
+                        alert('回复成功');
+                    }else{
+                        alert('出现错误: '+data.msg)
+                    }
+                    }, 'json');
+    }
+    function del_msg(mid){
+        var type = 'del';
+        if(status == 2){
+            type = 'back';
+        }
+        $.post('{{settings.base_url}}/admin/msg/re_msg/', {
+                    'mid': mid,
+                    'type': type
+                }, function(data){
+                    if(data.state=='success'){
+                        $('#mid_'+mid).hide();
+                    }else{
+                        alert('出现错误: '+data.msg)
+                    }
+                    }, 'json');
+    }
+    function re_msg(mid, uid, rtime){
+        $('#uid').val(uid);
+        $('#mid').val(mid);
+        var content = $('#ct_'+mid).val();
+        var rcontent = $('#rc_'+mid).val();
+        $('#content').val(content);
+        if(status == '1'){
+            $('#rtime').val(rtime);
+            $('#rcontent').val(rcontent);
+        }
+    }
+
+    function do_freezes(uid, name, fdays){
+        if (fdays == 7){
+            var s =  '冻结7天'
+        }else if(fdays==-1){
+            var s =  '永久冻结'
+        }else if(fdays==1){
+            var s =  '冻结1天' 
+        }else if(fdays==3){
+            var s =  '冻结3天'  
+        }else if(fdays==-1){
+            var s =  '永久冻结' 
+        }else if(fdays==0){
+            var s =  '解冻'  
+        }
+        if (!confirm('是否确定将 ' + name +' ' + uid + ' 进行 ' + s +' 操作')){
+            return false;
+        }
+        $.post('{{settings.base_url}}/admin/app_user/do_freezes/', {
+                    'uid': uid,
+                    'fdays': fdays 
+                }, function(data){
+                        $('#freezes_time_'+uid).text(data.freezes_time);
+                        $('#admin_user_'+uid).text(data.admin_user);
+                        $('#last_mark_'+uid).text(data.last_mark);
+                        return false;
+                    if(data.state=='success'){
+                        if(data.status == 1){
+                        $('#f_'+uid).text('解冻');
+                        $('#s_'+uid).text('已冻结');
+                        }else if(data.status == 2){
+                        $('#f_'+uid).text('冻结');
+                        $('#s_'+uid).text('未冻结但有不良记录');
+                        }
+                    }else{
+                        alert('出现错误: '+data.msg)
+                    }
+                    }, 'json');
+    }
+    function refresh_msg_status(status) {
+        var uid = '{{uid}}';
+        var url = '{{ settings.BASE_URL }}/admin/msg/msg_view/?status=' + status;
+        if (uid) {
+            url += '&uid=' + uid
+        }
+        var zone_groups = [];
+
+        $("#zone_group_list option:selected").each(function () {
+            zone_groups.push($(this).val());
+        })
+        if (zone_groups.length > 0) {
+            url += '&zone_group=' + zone_groups.join("|");
+        }
+        window.location.href = url;
+    }
+</script>
+
+</br>
+
+        <div style="margin-top:-11px; ">
+            <div>
+{#                {%ifequal parameter.status 0%}#}
+{#                未回复#}
+{#                [<a href="{{settings.BASE_URL}}/admin/msg/msg_view/?status=1{%if uid%}&uid={{uid}}{%endif%}">已回复</a>]#}
+{#                [<a href="{{settings.BASE_URL}}/admin/msg/msg_view/?status=2{%if uid%}&uid={{uid}}{%endif%}">疑难问题</a>]#}
+{#                {%endifequal%}#}
+{#                {%ifequal parameter.status 1%}#}
+{#                [<a href="{{settings.BASE_URL}}/admin/msg/msg_view/?status=0{%if uid%}&uid={{uid}}{%endif%}">未回复</a>]#}
+{#                已回复#}
+{#                [<a href="{{settings.BASE_URL}}/admin/msg/msg_view/?status=2{%if uid%}&uid={{uid}}{%endif%}">疑难问题</a>]#}
+{#                {%endifequal%}#}
+{#                {%ifequal parameter.status 2%}#}
+{#                [<a href="{{settings.BASE_URL}}/admin/msg/msg_view/?status=0{%if uid%}&uid={{uid}}{%endif%}">未回复</a>]#}
+{#                [<a href="{{settings.BASE_URL}}/admin/msg/msg_view/?status=1{%if uid%}&uid={{uid}}{%endif%}">已回复</a>]#}
+{#                疑难问题#}
+{#                {%endifequal%}#}
+                {%ifequal parameter.status 0%}
+                    <a href="javascript:refresh_msg_status(0)" style="color: red">[未回复]</a>
+                {% else %}
+                    <a href="javascript:refresh_msg_status(0)">[未回复]</a>
+                {% endifequal %}
+                {%ifequal parameter.status 1%}
+                    <a href="javascript:refresh_msg_status(1)" style="color: red">[已回复]</a>
+                {% else %}
+                    <a href="javascript:refresh_msg_status(1)">[已回复]</a>
+                {% endifequal %}
+                {%ifequal parameter.status 2%}
+                    <a href="javascript:refresh_msg_status(2)" style="color: red">[疑难问题]</a>
+                {% else %}
+                    <a href="javascript:refresh_msg_status(2)">[疑难问题]</a>
+                {% endifequal %}
+            </div>
+            <div>
+                选择分组(按住ctrl多选):<br />
+                <select id='zone_group_list' multiple='true' style="width: 300px" size="6">
+                {% for z in zone_group_list%}
+                <option value='{{ z.id }}' {%ifequal z.checked 'checked'%}selected="true"{%endifequal%}>{{ z.name }}</option>
+                {% endfor %}
+                </select>
+            </div>
+        </div>
+        <table border=1 width="100%">
+            <tr>
+                <td>
+                    Uid|Zone
+                </td>
+                <td>
+                    PF
+                </td>
+                <td>
+                    {%ifequal parameter.status 1%}回复{%else%}提交{%endifequal%}时间
+                </td>
+                <td width="60%">
+                    {%ifequal parameter.status 1%}回复{%else%}问题{%endifequal%}信息
+                </td>
+            </tr>
+            {%for item in msgs_list%} 
+            <tr id="mid_{{item.id}}">
+                <td>
+                   <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.uid}}">{{item.uid}}</a>
+                    &nbsp;
+                    &nbsp;
+                    &nbsp;
+                    <a href="{{settings.BASE_URL}}/admin/msg/msg_view_user/?uid_zone={{item.uid}}">回复</a>
+                </td>
+                <td>
+                    {{item.pf}}
+                </td>
+                <td>
+                    {{item.time}}
+                </td>
+                <td>
+                        {{item.content}}
+                </td>
+
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="16">
+                 <div class="page" style="background:#fff; margin-left:0; font-size:12px;">
+        {{p.render|safe}}
+                </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+
+{% endblock %}

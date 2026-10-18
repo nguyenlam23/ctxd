@@ -1,0 +1,138 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script type='text/javascript'>
+    function change_sessionid(){
+        var args = {}
+        var new_sessionid = $("#new_sessionid").val();
+        if (new_sessionid == ''){
+            alert('密码不能为空');
+            return false;
+        }
+        args['new_sessionid'] = $("#new_sessionid").val();
+        args['session_key'] = '{{udict.uid}}';
+        $.post('{{ settings.BASE_URL}}/admin/app_user/change_sessionid/', args,
+                 function(data){
+                    if(data.state=='success')
+                        alert('重置成功');
+                    else
+                        alert('出现错误: '+data.msg)
+                    }, 'json')
+    }
+
+function succ(){
+$('#desc').show();
+setTimeout("$('#desc').hide()",4000)
+}
+
+function view_user(zone){
+$('#zone').val(zone);
+$('#uid').val('{{uid}}');
+$('#frm').submit();
+}
+
+
+</script>
+<style type="text/css">
+/*分页*/
+div.page {
+	padding:5px;
+	font-family:Arial, Helvetica, sans-serif;
+	margin-left:10px;
+	background:#eee;
+	margin-top:20px;
+	text-align:center;
+	padding-top:6px;
+	color:#336699;
+}
+div.page a {
+	padding:0px 5px; margin:2px; color:#336699; background:#eee; text-decoration:none;
+}
+div.page a:hover {
+	color:#3399cc; background:#fff
+}
+div.page span.current {
+	padding:0px 5px; font-weight:bold; margin:2px; color:#336699; background:#fff;
+}
+div.page span.disabled {
+	padding:0px 5px; margin:2px; color:#797979;
+}
+/*分页结束*/
+
+
+</style>
+<style type="text/css">
+<!--
+body,td,th {
+	font-size: 14px;
+}
+table
+{
+	border-collapse:collapse;
+}
+td
+{
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+	padding-right:5px;
+}
+input {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	}
+-->
+</style>
+<h2>
+    车队排行榜
+</h2>
+{%if guild_list%}
+<table border="1" cellpadding="0" cellspacing="0">
+<tr>
+<td>
+    排名
+</td>
+<td>
+    Guild_id
+</td>
+<td>
+    Guild_name
+</td>
+<td>
+    车队杯数
+</td>
+<td>
+    人数
+</td>
+<tr>
+{%for item in guild_list%}
+<tr>
+<td>
+    {{item.rank}}
+</td>
+<td>
+    <a href="{{settings.BASE_URL}}/admin/app_user/view_guild/?guild_id={{item.id}}">{{item.id}}</a>
+</td>
+<td>
+    {{item.name}}
+</td>
+<td>
+    {{item.score}}
+</td>
+<td>
+    {{item.member_count}}
+</td>
+<tr>
+{%endfor%}
+            <tr>
+                <td colspan="16">
+                 <div class="page" style="background:#fff; margin-left:0; font-size:12px;">
+        {{p.render|safe}}
+                </div>
+                </td>
+            </tr>
+</table>
+
+{%endif%}
+<br/>
+
+{% endblock %}

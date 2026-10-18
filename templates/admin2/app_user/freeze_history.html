@@ -1,0 +1,98 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<style type="text/css">
+/*分页*/
+div.page {
+	padding:5px;
+	font-family:Arial, Helvetica, sans-serif;
+	margin-left:10px;
+	background:#eee;
+	margin-top:20px;
+	text-align:center;
+	padding-top:6px;
+	color:#336699;
+}
+div.page a {
+	padding:0px 5px; margin:2px; color:#336699; background:#eee; text-decoration:none;
+}
+div.page a:hover {
+	color:#3399cc; background:#fff
+}
+div.page span.current {
+	padding:0px 5px; font-weight:bold; margin:2px; color:#336699; background:#fff;
+}
+div.page span.disabled {
+	padding:0px 5px; margin:2px; color:#797979;
+}
+/*分页结束*/
+
+
+</style>
+<script type='text/javascript'>
+</script>
+
+</br>
+
+        <table border=1 width="100%">
+            <tr>
+                <td>
+                    Uid
+                </td>
+                <td>
+                    冻结截止时间
+                </td>
+                <td>
+                    冻结原因
+                </td>
+                <td>
+                    冻结类型
+                </td>
+                <td>
+                    管理员
+                </td>
+                <td>
+                    操作时间
+                </td>
+            </tr>
+            {%for item in freeze_history%}
+            <tr>
+                <td>
+                   <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{item.uid}}|{{ item.zone }}">{{item.uid}}|{{ item.zone }}</a>
+                </td>
+                <td>
+                    {{item.freeze_time}}
+                </td>
+                <td>
+                    {{item.freeze_msg}}
+                </td>
+                <td>
+                    {%ifequal item.status 0%}
+                        <font color="green">已解封</font>
+                    {%endifequal%}
+                    {%ifequal item.status 1%}
+                        <font color="red">冻结登录</font>
+                    {%endifequal%}
+                    {%ifequal item.status 2%}
+                        <font color="orange">禁止发言</font>
+                    {%endifequal%}
+                </td>
+                <td>
+                    {{item.admin_user}}
+                </td>
+                <td>
+                    {{item.admin_time}}
+                </td>
+
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="16">
+                 <div class="page" style="background:#fff; margin-left:0; font-size:12px;">
+        {{p.render|safe}}
+                </div>
+                </td>
+            </tr>
+        </table>
+    </td>
+
+{% endblock %}

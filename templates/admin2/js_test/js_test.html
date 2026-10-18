@@ -1,0 +1,173 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js" type="text/javascript"></script>
+<link REL="stylesheet" href="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/css/bootstrap.min.css" TYPE="text/css">
+
+<script src="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/js/bootstrap.min.js" type="text/javascript"></script>
+
+<script type='text/javascript'>
+    var ActiveCall;
+
+    $(document).ready(function () {
+        $("#req_data").bind("input propertychange", function () {
+            $('#desc').show();
+            $("#desc font").text('左侧已修改');
+        });
+
+        $("#days").change(function (data) {
+            var value = $("#days option:selected").attr("value");
+            window.location.href = "{{ settings.BASE_URL}}/admin/js_test/?days=" + value;
+        })
+    });
+
+    function call_interface() {
+        var start = new Date().getTime();
+        $('#desc').show();
+        $("#desc font").text('演算中...');
+        var do_method = $("input[name='do_method']:checked").val();
+        $nx.request.postfs('js_test/call_js_interface/', {'req_data': $('#req_data').val(), 'do_method': do_method}, function (data) {
+            $("#rsp_data").val(JSON.stringify(data));
+            var end = new Date().getTime();
+            $("#desc font").text('演算用时' + (end-start) + 'ms');
+        })
+    }
+    function save_call_interface() {
+        var params = {
+            'req_data': $('#req_data').val(),
+            'rsp_data': $('#rsp_data').val()
+        };
+        $nx.request.postfs('js_test/save_call_interface/', params, function (data) {
+             window.location.reload()
+        })
+    }
+    function get_call_record_data(call_id) {
+        if (call_id != ActiveCall) {
+            $('#cbtn_'+ActiveCall).css("color", "");
+            ActiveCall = call_id;
+        }
+        $("#cbtn_"+call_id).css("color", "#ff0000");
+        $('#desc').hide();
+        $nx.request.getfs('js_test/get_call_record_data/', {'call_id': call_id}, function (data) {
+            $("#req_data").val(JSON.stringify(data.req_data));
+            $("#rsp_data").val(JSON.stringify(data.rsp_data));
+            $('#desc').show();
+            $("#desc font").text('历史数据已加载');
+        })
+    }
+
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-1">
+            <h4>JS API测试</h4>
+        </div>
+        <div class="col-md-2" style="margin-top: 6px">
+            查询
+            <select name="days" id="days">
+                <option {% ifequal days "7" %}selected=selected{% endifequal %}
+                value="7">7天</option>
+                <option {% ifequal days "30" %}selected=selected{% endifequal %}
+                value="30">30天</option>
+                <option {% ifequal days "90" %}selected=selected{% endifequal %}
+                value="90">90天</option>
+            </select>
+            内记录
+        </div>
+        <div class="col-md-1">
+            <a target="_blank"
+                href="{{settings.BASE_URL}}/admin/js_test/download_js/" style="color: inherit"><button type="button" class="btn btn-link" style="color: red">下载JS({{js_version}})</button></a>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-12">
+            <label class="radio-inline col-md-2">
+                <input type="radio" name="do_method" value="testFight" {% ifequal do_method 'testFight' %}checked{% endifequal %}>
+                <span class="label label-success">testFight</span>
+            </label>
+            <label class="radio-inline col-md-2">
+                <input type="radio" name="do_method" value="testFightFormat" {% ifequal do_method 'testFightFormat' %}checked{% endifequal %}>
+                <span class="label label-success">testFightFormat</span>
+            </label>
+            <label class="radio-inline col-md-2">
+                <input type="radio" name="do_method" value="doFight" {% ifequal do_method 'doFight' %}checked{% endifequal %}>
+                <span class="label label-danger">doFight</span>
+            </label>
+            <label class="radio-inline col-md-2">
+                <input type="radio" name="do_method" value="doBattle" {% ifequal do_method 'doBattle' %}checked{% endifequal %}> <span class="label label-danger">doBattle</span>
+            </label>
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <span><font size="4">历史记录</font></span>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <td style="vertical-align:middle">
+                                ID
+                            </td>
+                            <td style="vertical-align:middle">
+                                时间
+                            </td>
+                            <td  style="vertical-align:middle">
+                                操作员/UID
+                            </td>
+                        </tr>
+                    </thead>
+                    
+                    <tbody style="overflow-y: scroll">
+                        {% for item in call_records %}
+                        <tr>
+                            <td><a target="_blank"
+                                   href="{{settings.BASE_URL}}/admin/js_test/get_call_record_data/?call_id={{item.id}}">{{item.id}}</a></td>
+                            <td><button id="cbtn_{{item.id}}" type="button"
+                                    class="btn-xs btn-link" onclick="get_call_record_data({{item.id}})">{{item.time}}</button></td>
+                            <td>
+                                {% if item.uid %}
+                                <a target="_blank"
+                                    href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid={{item.uid}}">{{item.op_user}}</a>
+                                {% else %}
+                                {{item.op_user}}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <span><font size="4">战斗数据</font></span>
+                <textarea class="form-control" id="req_data" rows="40">{{ js_req_data }}</textarea>
+            </div>
+        </div>
+        <div class="col-md-1" style="margin-top: 100px; text-align: center">
+            <div class="row">
+                <button type="button" class="btn btn-success" onclick="call_interface()">测试>></button>
+            </div>
+            <div class="row" style="margin-top:20px">
+                <button type="button" class="btn btn-success" onclick="save_call_interface()">>保存<</button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-3">
+                        <span><font size="4">战斗结果</font></span>
+                    </div>
+                    <div class="col-md-5">
+                        <span id="desc" style="display: none; color: red"><font size="4"></font></span>
+                    </div>
+                </div>
+                <textarea class="form-control" id="rsp_data" rows="40">{{ js_rsp_data }}</textarea>
+            </div>
+        </div>
+</div>
+{% endblock %}
+

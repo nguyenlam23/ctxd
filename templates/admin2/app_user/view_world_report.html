@@ -1,0 +1,58 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js" type="text/javascript"></script>
+<link REL="stylesheet" href="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/css/bootstrap.min.css" TYPE="text/css">
+
+<script src="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/js/bootstrap.min.js" type="text/javascript"></script>
+
+<script type='text/javascript'>
+    var activeZone = undefined;
+    var activeModel = 'core';
+
+    $(document).ready(function () {
+        var zone = $nx.request.getUrlParam('zone', window);
+        if (zone) {
+            view_world(zone);
+            window.location.hash="#" + zone;
+        }
+
+    });
+
+    function view_world(zone){
+        if (activeZone !== zone) {
+            $('#'+activeZone).removeClass('active-zone');
+            $('#'+zone).addClass('active-zone');
+            activeZone = zone;
+        }
+        $nx.request.postfs('app_user/view_world_report/', {'zone': zone, 'smodel': activeModel}, function (data) {
+            $('#world_report_body').html(data.world_report_body)
+        })
+    }
+
+</script>
+<style type="text/css">
+.row {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+</style>
+
+<div class="container-fluid">
+{%if zone_list%}
+    <div class="row zone-list">
+        {%for item in zone_list%}
+            <div class="row" style="margin-top: 5px; margin-right: 0px; margin-left: 0px">
+                {%for k,v in item%}
+                    <div class="col-md-1">
+                        <input  id='{{ k }}' style="{%ifequal k zone%}color:red;{%endifequal%}{%ifequal k zone%}font-weight:bold;{%endifequal%}"  value='{{v}}' type="button" onclick="view_world('{{k}}');"/>
+                    </div>
+                {%endfor%}
+            </div>
+        {%endfor%}
+    </div>
+{%endif%}
+
+<div class="row" id="world_report_body"></div>
+</div>
+{% endblock %}

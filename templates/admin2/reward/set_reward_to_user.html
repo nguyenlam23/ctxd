@@ -1,0 +1,140 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js" type="text/javascript"></script>
+<script type='text/javascript' src='{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.js'></script>
+<link rel="stylesheet" href="{{settings.BASE_URL}}/static/js/jquery-ui-1.12.1/jquery-ui.min.css" type="text/css"/>
+<script type='text/javascript' src='{{settings.MEDIA_URL}}/js/reward_content.js?v=22'></script>
+<script type='text/javascript'>
+
+    function chk(){
+        var userObj = document.getElementById('uids');
+        if (userObj.value.length == 0){
+            alert('请填写用户Id');
+            userObj.focus();
+            return false;
+        }
+        /*
+        var chkObj = document.getElementsByName("aid"); 
+        var flag = true;
+        for (var i = 0; i < chkObj.length; i++) { 
+            if(chkObj[i].checked){
+                flag = false; 
+            }       
+        } 
+        var chkObj2 = document.getElementsByName("eid"); 
+        for (var i = 0; i < chkObj2.length; i++) { 
+            if(chkObj2[i].checked){
+                flag = false; 
+            }       
+        } 
+        */
+        if ($('#name_{{nafo_list.0.0}}').val() == ''){
+            alert('{{nafo_list.0.0}}标题不能为空');
+            $('#name_{{nafo_list.0.0}}').focus();
+            return false;
+        }
+        if ($('#info_{{nafo_list.0.0}}').val() == ''){
+            alert('{{nafo_list.0.0}}正文描述不能为空');
+            $('#info_{{nafo_list.0.0}}').focus();
+            return false;
+        }
+
+        {%for item in input_list%}
+        if($('#{{item.0}}').val()!=''){ 
+            flag = false;
+            if(parseInt($('#{{item.0}}').val()) != $('#{{item.0}}').val()){
+                alert('请正确填写{{item.1}}数量');
+                $('#{{item.0}}').focus();
+            return false;
+            }
+            if(parseInt($('#{{item.0}}').val()) >parseInt({{item.2}})){
+                alert('{{item.1}}数量不能超过{{item.2}}');
+                $('#{{item.0}}').focus();
+            return false;
+            }
+        }
+        {%endfor%}
+
+
+
+
+
+
+        return true;
+    }
+function show_zz(t){
+    //var zz = jQuery("#zone").val();
+    var zz = $("select option:selected").val();
+    if (t==1){
+        $('#zz_' + zz).show();
+    }else{
+        $('#uids_' + zz).val('')
+        $('#zz_' + zz).hide()
+    }
+}
+
+</script>
+<h2>邮件发奖 {%if reward_content.id%}编辑{%else%}添加{%endif%}</h2>
+<br/>
+<form action="{{settings.BASE_URL}}/admin/reward/set_reward_to_user_p/"
+    method="post" onsubmit="return chk();">
+            <input type="submit" value="发送"/>
+            <input id="rid" name="rid" type="hidden" value="{{reward_content.id}}" />
+
+
+            <input id="rid" name="rid" type="hidden" value="{{reward_content.id}}" />
+<table width="100%">
+    <tr>
+        <td width="10%">用户UID</td>
+        <td>
+            <textarea id="uids" name="uids" style="width: 70%; height: 50px">{{ uids }}</textarea>
+            (多用户用英文逗号分割，<font color="red">填写用户长uid</font>)
+        </td>
+    </tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr>
+        <td>
+            标题正文
+        </td>
+        <td>
+         {%for item in nafo_list%}
+         <tr>
+             <td>
+                 name-{{item.0}}
+             </td>
+             <td>
+                 <input type="txt" name="name_{{item.0}}" id="name_{{item.0}}" value="{{item.1}}" /><br/>
+             </td>
+         </tr>
+         <tr>
+             <td>
+                 info-{{item.0}}
+             </td>
+             <td>
+                 <textarea id="info_{{item.0}}" name="info_{{item.0}}" style="width: 90%; height: 30px">{{item.2}}</textarea>
+             </td>
+         </tr>
+         {%endfor%}
+
+        </td>
+    </tr> 
+    <tr>
+        <td>
+        <td/>
+        <td>
+        <td/>
+    <tr/>
+        {%include 'admin/reward/reward_content.html'%}
+
+
+</table>
+</form>
+
+{% endblock %}

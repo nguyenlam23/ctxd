@@ -1,0 +1,76 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script>
+    function admin_pay_sort(order_by) {
+        window.location.replace('{{ settings.BASE_URL}}/admin/admin_pay_records/?username={{ username }}&show_real={{ show_real }}&order_by=' + order_by)
+    };
+    function show_real_data() {
+        window.location.replace('{{ settings.BASE_URL}}/admin/admin_pay_records/?username={{ username }}&show_real=1')
+    };
+</script>
+<h2>账号充值记录</h2>
+
+    <div>
+    <button type="button" onclick="show_real_data()">显示实际充值</button>
+    </div>
+<table border='1'>
+    <tr>
+        <th>操作用户</th>
+        <th>充值UID</th>
+        <th>最近充值区服</th>
+        <th>最近充值昵称</th>
+        <th>PF</th>
+        <th>平台ID</th>
+        <th>
+            虚拟充值总额
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="admin_pay_sort('pay_money')"></i>
+                <i class="sort-caret descending" onclick="admin_pay_sort('-pay_money')"></i>
+            </span>
+        </th>
+        <th>
+            最初虚拟充值时间
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="admin_pay_sort('first_time')"></i>
+                <i class="sort-caret descending" onclick="admin_pay_sort('-first_time')"></i>
+            </span>
+        </th>
+        <th>
+            最近虚拟充值时间
+            <span class="sort-wrapper">
+                <i class="sort-caret ascending" onclick="admin_pay_sort('last_time')"></i>
+                <i class="sort-caret descending" onclick="admin_pay_sort('-last_time')"></i>
+            </span>
+        </th>
+        {% ifequal show_real 1 %}
+        <th style="color: #ff0000">实际充值总额</th>
+        <th style="color: #ff0000">最初实际充值时间</th>
+        <th style="color: #ff0000">最近实际充值时间</th>
+        <th style="color: #ff0000">是否先有实际充值</th>
+        <th style="color: #ff0000">20级以上区服数量</th>
+        {% endifequal %}
+    </tr>
+    {% for item in records %}
+    <tr>
+        <td>{{ item.admin_user }}</td>
+        <td><a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid={{item.uid}}">{{item.uid}}</a></td>
+        <td>{{ item.last_zone}}</td>
+        <td>{{ item.last_uname}}</td>
+        <td>{{ item.pf}}</td>
+        <td>{{ item.pf_key}}</td>
+        <td>{{ item.pay_money}}</td>
+        <td>{{ item.first_time}}</td>
+        <td>{{ item.last_time}}</td>
+        {% ifequal show_real 1 %}
+        <td style="color: #ff0000">{{ item.real_pay_money}}</td>
+        <td style="color: #ff0000">{{ item.real_first_time}}</td>
+        <td style="color: #ff0000">{{ item.real_last_time}}</td>
+        <td style="color: #ff0000">{{ item.first_real}}</td>
+        <td style="color: #ff0000">{{ item.lv20_count}}</td>
+        {% endifequal %}
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
+

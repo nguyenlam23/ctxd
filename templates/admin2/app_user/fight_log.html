@@ -1,0 +1,153 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<script src="{{settings.MEDIA_URL}}/js/jquery-1.12.3.min.js" type="text/javascript"></script>
+<link REL="stylesheet" href="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/css/bootstrap.min.css" TYPE="text/css">
+<link REL="stylesheet" href="{{settings.MEDIA_URL}}/bootstrap/datetimepicker/css/bootstrap-datetimepicker.min.css" TYPE="text/css">
+
+<script src="{{settings.MEDIA_URL}}/bootstrap/bootstrap-3.3.7-dist/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="{{settings.MEDIA_URL}}/bootstrap/datetimepicker/js/bootstrap-datetimepicker.min.js" type="text/javascript"></script>
+<script src="{{settings.MEDIA_URL}}/bootstrap/datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" type="text/javascript"></script>
+
+<script type='text/javascript'>
+
+    $(document).ready(function () {
+        $("#start_at").datetimepicker({
+            language: "zh-CN",
+            format: 'yyyy-mm-dd hh:ii',
+            autoclose: true,
+            todayHighlight: true,
+            minuteStep: 15
+        });
+        $("#end_at").datetimepicker({
+            language: "zh-CN",
+            format: 'yyyy-mm-dd hh:ii',
+            autoclose: true,
+            todayHighlight: true,
+            minuteStep: 15
+        });
+    });
+</script>
+
+<div class="container-fluid">
+    <h4>战斗列表</h4>
+    <hr/>
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-inline" action="{{settings.BASE_URL}}/admin/app_user/get_fight_logs/" method="post">
+                <div class="form-group">
+                    <label for="zone_group">区服</label>
+                    <select name="zone" id="zone" class="form-control">
+                        {%for item in zone_list%}
+                        <option {%ifequal item.0 zone%}selected=true{%endifequal%} value="{{item.0}}">{{item.1}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="search_keyword">搜索</label>
+                    <input class="form-control" id="search_keyword" name="search_keyword" placeholder="城市ID/UID/战斗ID" {% if search_keyword %}value="{{ search_keyword }}"{% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="merge_times">时间</label>
+                    <input class="form-control" type="text" id="start_at" name="start_at" value="{{ start_at }}">
+                    -
+                    <input class="form-control" type="text" id="end_at" name="end_at" value="{{ end_at }}">
+                </div>
+                <button type="submit" class="btn btn-primary">查询</button>
+            </form>
+        </div>
+    </div>
+    <hr/>
+    <table class="table table-bordered table-hover" style="margin-top: 1px; text-align: center">
+        <tr>
+            <td style="vertical-align:middle; width: 100px">
+                战斗ID
+            </td>
+            <td style="vertical-align:middle; width: 100px">
+                城市
+            </td>
+            <td  style="vertical-align:middle; width: 120px">
+                战斗时间
+            </td>
+            <td  style="vertical-align:middle; width: 120px">
+                攻击方
+            </td>
+            <td  style="vertical-align:middle; width: 120px">
+                防守方
+            </td>
+        </tr>
+        {% for item in fight_logs %}
+            <tr>
+                <td>
+                    <a onclick="
+                        window.open('{{settings.BASE_URL}}/admin/app_user/get_battle_dict/?battle_id={{ item.battle_id }}&zone={{zone}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{ item.battle_id }}</a>&nbsp;&nbsp;<a href="{{settings.BASE_URL}}/admin/js_test/?battle_id={{item.battle_id}}" style="color: red" target="_blank">JS测试</a>
+                </td>
+                <td>
+                    {{ item.cid }}
+                </td>
+                <td>{{ item.fight_time }}</td>
+                <td>
+                    {% if item.attack.winner %}
+                        <font color="green">胜</font>
+                    {% else %}
+                        <font color="red">负</font>
+                    {% endif %}
+                    &nbsp;
+                    {{ item.attack.attack_fight_before_hp_rate }}% > {{ item.attack.attack_fight_after_hp_rate }}%
+                    &nbsp;
+                    {% if item.attack.is_user %}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{ item.attack.uid }}|{{ item.attack.zone }}">{{ item.attack.uid }}|{{ item.attack.zone }}</a>
+                    {% else %}
+                    {{ item.attack.uid }}
+                    {% endif %}
+                    &nbsp;&nbsp;
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_battle_hero_dict/?battle_id={{item.battle_id}}&troop_index=0&zone={{zone}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{item.attack.hero.name}}</a>
+                </td>
+                <td>
+                    {% if item.defense.winner %}
+                        <font color="green">胜</font>
+                    {% else %}
+                        <font color="red">负</font>
+                    {% endif %}
+                    &nbsp;
+                    {{ item.defense.defense_fight_before_hp_rate }}% > {{ item.defense.defense_fight_after_hp_rate }}%
+                    &nbsp;
+                    {% if item.defense.is_user %}
+                    <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{ item.defense.uid }}|{{ item.defense.zone }}">{{ item.defense.uid }}|{{ item.defense.zone }}</a>
+                    {% else %}
+                    {{ item.defense.uid }}
+                    {% endif %}
+                    &nbsp;&nbsp;
+                    <a onclick=" window.open('{{settings.BASE_URL}}/admin/app_user/get_battle_hero_dict/?battle_id={{item.battle_id}}&troop_index=1&zone={{zone}}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{item.defense.hero.name}}</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div class="page">
+    {{p.render|safe}}
+    </div>
+</div>
+<div class="modal fade" id="batchImport" tableindex="-1" role="dialog" aria-labelledby="batchImportTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="batchImportTitle">批量导入新服</h4>
+            </div>
+            <div class="modal-body">
+                <form id="importForm" enctype="multipart/form-data">
+                    <input type="file" name="batch_import_file" id="batch_import_file" class="file-loading" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="submit_import_file()">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="editZone" tableindex="-1" role="dialog">
+</div>
+{% endblock %}
+

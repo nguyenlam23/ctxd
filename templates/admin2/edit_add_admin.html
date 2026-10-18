@@ -1,0 +1,85 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<script>
+    function change_user_role(_this) {
+        var selectIndex = _this.options.selectedIndex;
+        var role_name = _this.options[selectIndex].value;
+        $.get('{{ settings.base_url }}/admin/get_role_permissions/', {
+                    'role_name': role_name
+                }, function(data){
+                    $('#role_info').text(data.info);
+                    var p_options = $('#permissions option');
+                    for (var i=0; i<p_options.length; i++) {
+                        var option = p_options[i]
+                        document.getElementById(option.id).selected = false;
+                        document.getElementById(option.id).disabled = false;
+                        if (data.permissions.includes(option.value)) {
+                        document.getElementById(option.id).selected = true;
+                        document.getElementById(option.id).disabled = true;
+                        }
+                    }
+                }, 'json')
+    }
+
+</script>
+
+<h2>添加或修改管理员</h2>
+
+<p>
+</p>
+<form action="{{settings.BASE_URL}}/admin/edit_add_admin_p/" method="post">
+<label>用户角色：</label>
+<select name="role_name" id="role_name" onchange="change_user_role(this)">
+    {%for item in user_roles%}
+    <option {% if item.checked %}selected="selected"{% endif %} value="{{item.name}}">{{item.cname}}</option>
+    {%endfor%}
+</select>
+{% if admin_user %}
+<p>角色备注：<font id="role_info" color="red">{{ admin_user.role_info }}</font></p>
+<input name="action" value="edit" type="hidden" />
+<p>用户名: {{ admin_user.username }}<input type='hidden' name='username' value='{{ admin_user.username }}' /></p>
+{% else %}
+<input name="action" value="add" type="hidden" />
+<p>角色备注：<font id="role_info" color="red"></font></p>
+<p>用户名：<input name='username' /></p>
+<p>默认密码：{{de_pwd}}</p>
+{% endif %}
+<table>
+    <tr>
+        <td>
+            <p>
+            选择权限(按住ctrl多选):<br />
+            <select name='permissions' id="permissions" multiple='true' style="width: 300px" size="20">
+            {% for p in permissions %}
+            <option id="p_{{ p.0 }}" value='{{ p.0 }}' {%ifequal p.2 'checked'%}selected="true"{%endifequal%} {% if p.3 %}disabled{% endif %}>{{ p.1 }}</option>
+            {% endfor %}
+            </select>
+            </p>
+        </td>
+        <td>
+            <p>
+            选择分区(按住ctrl多选):<br />
+            <select name='zone_list' multiple='true' style="width: 300px" size="20">
+            {% for z in zone_list%}
+            <option value='{{ z.0 }}' {%ifequal z.2 'checked'%}selected="true"{%endifequal%}>{{ z.1 }}</option>
+            {% endfor %}
+            </select>
+            </p>
+        </td>
+        <td>
+            <p>
+            选择分组(按住ctrl多选):<br />
+            <select name='zone_group_list' multiple='true' style="width: 300px" size="20">
+            {% for z in zone_group_list%}
+            <option value='{{ z.id }}' {%ifequal z.checked 'checked'%}selected="true"{%endifequal%}>{{ z.name }}</option>
+            {% endfor %}
+            </select>
+            </p>
+        </td>
+    </tr>
+</table>
+
+<p><input type='submit' value='提交' /></p>
+</form>
+
+{% endblock %}

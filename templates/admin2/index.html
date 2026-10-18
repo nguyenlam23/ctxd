@@ -1,0 +1,16 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>{{settings.ADMIN_STYLE_CONFIG.APP_NAME}} 管理后台({{settings.ADMIN_STYLE_CONFIG.APP_NAME_CN}})</title>
+        <link REL="icon" href="{{settings.MEDIA_URL}}/{{settings.ADMIN_STYLE_CONFIG.ICON}}">
+    </head>
+<frameset cols="180,*" frameborder="yes" border="1" framespacing="0">
+    <frame src="{{settings.BASE_URL}}/admin/left/" name="leftFrame" noresize="noresize" id="leftFrame" title="leftFrame" />
+    <frame src="{{settings.BASE_URL}}/admin/welcome/" name="mainFrame" id="mainFrame" title="mainFrame" />
+</frameset>
+<noframes><body>
+        浏览器不支持frameset
+</body>
+</noframes>
+</html>

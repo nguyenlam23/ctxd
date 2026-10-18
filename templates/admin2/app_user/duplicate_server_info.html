@@ -1,0 +1,261 @@
+<script>
+    function view_city_data(cid) {
+        window.open('{{settings.BASE_URL}}/admin/app_user/get_duplicate_city_dict/?server_port={{ server_port }}&open_date={{ open_date }}&cid=' + cid,'newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no')
+    }
+    function server_user_sort(order_by) {
+        open_server_modal('{{ server_name }}', '{{ server_port }}', order_by)
+    };
+    function refresh_duplicate() {
+        $.post('{{ settings.BASE_URL }}/admin/app_user/duplication_operate/', {action: 'refresh_duplicate', open_date: '{{ open_date }}', server_port: '{{ server_port }}'}, function (data) {
+            if (data.state == 'success') {
+                setTimeout(function () {
+                    open_server_modal('{{ server_name }}', '{{ server_port }}')
+                }, 2000)
+            }
+        }, 'json')
+    }
+</script>
+<div style="width: 60%; float: left;">
+    <div>
+        <table id="table_c" border=1 width="100%">
+            <tr>
+                <td>时间表</td>
+                <td>截止报名</td>
+                <td>可入战场</td>
+                <td>开始对战</td>
+                <td>截止指令</td>
+                <td>入口消失</td>
+            </tr>
+            <tr>
+                <td>{{duplicate_time.open_date}}</td>
+                <td>{{duplicate_time.join_end_time}}</td>
+                <td>{{duplicate_time.enter_time}}</td>
+                <td>{{duplicate_time.fight_start_time}}</td>
+                <td>{{duplicate_time.fight_end_time}}</td>
+                <td>{{duplicate_time.close_time}}</td>
+            </tr>
+        </table>
+    </div>
+    <hr>
+    <div>
+        <table border=1 width="100%">
+            <tr>
+                <td>阵营</td>
+                <td>玩家数</td>
+                <td>总充值</td>
+                <td>总虚拟充值</td>
+                <td>总参赛战力</td>
+                <td>武勋</td>
+                <td>对战积分</td>
+                <td>消耗黄金</td>
+                <td>行军次数</td>
+                <td>对战胜率</td>
+            </tr>
+            {% for item in country_collect_list %}
+            <tr>
+                <td>{{item.country}}</td>
+                <td>{{item.user_count}}</td>
+                <td>{{item.pay_money}}</td>
+                <td>{{item.admin_pay}}</td>
+                <td>{{item.power}}</td>
+                <td>{{item.d_score}}</td>
+                <td>{{item.k_score}}</td>
+                <td>{{item.cost_coin}}</td>
+                <td>{{item.move_times}}</td>
+                <td>{{item.win_info}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div>
+        <div style="float: left;">
+            <p><font style="font-weight: bold">战场状态：</font>
+                <button onclick="open_server_modal('{{ server_name }}', '{{ server_port }}')" type="button" style="background-color: {{ duplicate_status.background_color }};color: {{ duplicate_status.color }}">{{ duplicate_status.status }}</button>
+            </p>
+            <p>
+                <font style="font-weight: bold">胜利方式：{{ world.win_type }}</font>
+                {% ifequal world.win_type 1 %}
+                    &nbsp;{{ city_count.40 }} VS {{ city_count.41 }}
+                {% endifequal %}
+                {% ifequal world.win_type 0 %}
+                    &nbsp;攻占大本营
+                {% endifequal %}
+            </p>
+            <button onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_duplicate_world_dict/?server_port={{ server_port }}&open_date={{ open_date }}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;">总览json数据</button>
+            <button onclick="window.open('{{settings.BASE_URL}}/admin/app_user/duplicate_chat/?server_port={{ server_port }}&open_date={{ open_date }}','newwindow','height=800,width=600,top=0,left=0,toolbar=yes,menubar=yes,scrollbars=yes,resizable=no,location=no,status=no') ;">跨服聊天</button>
+            {% if settings.SUBTEST %}
+            <button onclick="refresh_duplicate()">重置战场</button>
+            {% endif %}
+            <button onclick="open_server_modal('{{ server_name }}', '{{ server_port }}')">刷新页面</button>
+        </div>
+    </div>
+    <div style="display: inline-block;">
+        <hr>
+        <table border=1 style="text-align: center; width: 100%;border-collapse:collapse;">
+            <thead style="width: calc(100% - 1em)">
+                <tr>
+                    <th style="width: 15%">玩家ID</th>
+                    <th style="width: 5%">阵营</th>
+                    <th style="width: 10%">Uname</th>
+                    <th>
+                        信誉战力
+                        <span class="sort-wrapper">
+                            <i class="sort-caret ascending" onclick="server_user_sort('prestige_power')"></i>
+                            <i class="sort-caret descending" onclick="server_user_sort('-prestige_power')"></i>
+                        </span>
+                    </th>
+                    <th style="width: 10%">
+                        总充值
+                        <span class="sort-wrapper">
+                            <i class="sort-caret ascending" onclick="server_user_sort('pay_money')"></i>
+                            <i class="sort-caret descending" onclick="server_user_sort('-pay_money')"></i>
+                        </span>
+                    </th>
+                    <th style="width: 10%">
+                        总虚拟充值
+                        <span class="sort-wrapper">
+                            <i class="sort-caret ascending" onclick="server_user_sort('admin_pay')"></i>
+                            <i class="sort-caret descending" onclick="server_user_sort('-admin_pay')"></i>
+                        </span>
+                    </th>
+                    <th>
+                        信誉分
+                        <span class="sort-wrapper">
+                            <i class="sort-caret ascending" onclick="server_user_sort('prestige')"></i>
+                            <i class="sort-caret descending" onclick="server_user_sort('-prestige')"></i>
+                        </span>
+                    </th>
+                    <th style="width: 10%">
+                        参赛战力
+                        <span class="sort-wrapper">
+                            <i class="sort-caret ascending" onclick="server_user_sort('power')"></i>
+                            <i class="sort-caret descending" onclick="server_user_sort('-power')"></i>
+                        </span>
+                    </th>
+                    <th style="width: 40%">参赛队伍</th>
+                    <th style="width: 40%">
+                        武勋
+                        <span class="sort-wrapper">
+                            <i class="sort-caret ascending" onclick="server_user_sort('d_score')"></i>
+                            <i class="sort-caret descending" onclick="server_user_sort('-d_score')"></i>
+                        </span>
+                    </th>
+                    <th style="width: 40%">
+                        对战积分
+                        <span class="sort-wrapper">
+                            <i class="sort-caret ascending" onclick="server_user_sort('k_score')"></i>
+                            <i class="sort-caret descending" onclick="server_user_sort('-k_score')"></i>
+                        </span>
+                    </th>
+                    <th style="width: 40%">
+                        消耗黄金
+                        <span class="sort-wrapper">
+                            <i class="sort-caret ascending" onclick="server_user_sort('cost_coin')"></i>
+                            <i class="sort-caret descending" onclick="server_user_sort('-cost_coin')"></i>
+                        </span>
+                    </th>
+                    <th style="width: 40%">
+                        行军次数
+                        <span class="sort-wrapper">
+                            <i class="sort-caret ascending" onclick="server_user_sort('move_times')"></i>
+                            <i class="sort-caret descending" onclick="server_user_sort('-move_times')"></i>
+                        </span>
+                    </th>
+                    <th style="width: 40%">对战胜场</th>
+                </tr>
+            </thead>
+            <tbody style="overflow-y: scroll">
+                {% for i in users %}
+                <tr>
+                    <td>
+                        <a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{i.old_uid}}|{{ i.old_zone }}">{{i.old_uid}}|{{ i.old_zone }}</a>
+                        <button onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_duplicate_user_dict/?uid={{i.uid}}&server_port={{ server_port }}&open_date={{ open_date }}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;">JSON数据</button></a>
+                    </td>
+                    <td>
+                        {% ifequal i.country 40 %}
+                        楚
+                        {% else %}
+                        汉
+                        {% endifequal %}
+                    </td>
+                    <td>{{ i.uname }}</td>
+                    <td>{{ i.prestige_power }}</td>
+                    <td>{{ i.pay_money }}</td>
+                    <td>{{ i.admin_pay }}</td>
+                    <td>{{ i.prestige }}</td>
+                    <td>{{ i.power }}</td>
+                    <td>
+                        {%for h in i.heros%}
+                        <a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_duplicate_user_hero_dict/?uid_zone={{i.uid}}|{{i.zone}}&hid={{h.0}}&open_date={{ open_date }}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{h.1}}{{h.2}},</a>
+                        {%endfor%}
+                    </td>
+                    <td>{{ i.d_score }}</td>
+                    <td>{{ i.k_score }}</td>
+                    <td>{{ i.cost_coin }}</td>
+                    <td>{{ i.move_times }}</td>
+                    <td>{{ i.win_info }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div style="float: right; max-width: 38%; margin-left: 10px;">
+    <div style="float: left; overflow: auto;">
+        <table border=1 style="text-align: center; width:20%;border-collapse:collapse;">
+            <tbody style="overflow-y: scroll">
+            {% for citys in city_data %}
+                <tr>
+                    {% for city in citys %}
+                    <td style="min-width: 40px; min-height: 30px; background-color: {{ city.bg_color }}" onclick="view_city_data({{ city.cid }})">{{ city.info }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div style="display: inline-block;">
+        <h3>跨服战报</h3>
+        <table border=1 style="text-align: center; border-collapse:collapse;">
+            <thead>
+                <tr>
+                    <th style="width: 15%">时间</th>
+                    <th style="width: 10%">地格ID</th>
+                    <th style="width: 20%">进攻方</th>
+                    <th style="width: 20%">防守方</th>
+                    <th style="width: 10%">winner</th>
+                    <th style="width: 10%">回放</th>
+                </tr>
+            </thead>
+            <tbody style="overflow-y: scroll">
+                {% for i in fight_logs %}
+                <tr>
+                    <td>{{ i.fight_time }}</td>
+                    <td>{{ i.cid }}</td>
+                    <td>
+                        {% ifequal i.attack.country 40 %}
+                        <p>楚</p>
+                        {% else %}
+                        <p>汉</p>
+                        {% endifequal %}
+                        <p><a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{i.attack.old_uid}}|{{ i.attack.old_zone }}">{{i.attack.old_uid}}|{{ i.attack.old_zone }}</a>&nbsp;{{ i.attack.uname }}</p>
+                        <p><a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_duplicate_user_hero_dict/?uid_zone={{i.attack.uid}}|{{i.attack.zone}}&hid={{i.attack.hero.0}}&open_date={{ open_date }}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{i.attack.hero.1}}{{i.attack.hero.2}}</a></p>
+                    </td>
+                    <td>
+                        {% ifequal i.defend.country 40 %}
+                        <p>楚</p>
+                        {% else %}
+                        <p>汉</p>
+                        {% endifequal %}
+                        <p><a href="{{settings.BASE_URL}}/admin/app_user/view_app_user/?uid_zone={{i.defend.old_uid}}|{{ i.defend.old_zone }}">{{i.defend.old_uid}}|{{ i.defend.old_zone }}</a>&nbsp;{{ i.defend.uname }}</p>
+                        <p><a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_duplicate_user_hero_dict/?uid_zone={{i.defend.uid}}|{{i.defend.zone}}&hid={{i.defend.hero.0}}&open_date={{ open_date }}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">{{i.defend.hero.1}}{{i.defend.hero.2}}</a></p>
+                    </td>
+                    <td>{{ i.winner }}</td>
+                    <td><a onclick="window.open('{{settings.BASE_URL}}/admin/app_user/get_duplicate_fight_js_data/?server_port={{ server_port }}&fid={{i.fid}}&open_date={{ open_date }}','newwindow','height=800,width=600,top=0,left=0,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no') ;" href="javascript:void(0);">回放数据</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
